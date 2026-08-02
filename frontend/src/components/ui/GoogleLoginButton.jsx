@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 
-const GOOGLE_CLIENT_ID = '798271672760-m61an45o2h033erd10gdrut2msne5ms7.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID =
+  import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+  '798271672760-m61an45o2h033erd10gdrut2msne5ms7.apps.googleusercontent.com';
 
 const GoogleLoginButton = ({ role = 'candidate', text = 'continue_with' }) => {
   const { googleLogin } = useAuth();
