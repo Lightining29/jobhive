@@ -161,46 +161,28 @@ const me = asyncHandler(async (req, res) => {
 });
 
 const googleLogin = asyncHandler(async (req, res, next) => {
-  const { credential, role, userInfo } = req.body;
+  const { credential, role } = req.body;
   if (!credential) return next(new ApiError(400, 'Google credential is required.'));
 
   let payload;
-
-  // Path 1: userInfo provided directly (access_token flow from popup)
-  if (userInfo && userInfo.sub && userInfo.email) {
-    payload = userInfo;
-    logger.info(`[auth] google login via userInfo: email=${userInfo.email}`);
-  } else {
-    // Path 2: verify as id_token via tokeninfo
-    try {
-      const resp = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`);
-      if (!resp.ok) {
-        // Path 3: try as access_token via userinfo endpoint
-        const uResp = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: `Bearer ${credential}` },
-        });
-        if (!uResp.ok) {
-          const text = await resp.text();
-          logger.warn(`[auth] google tokeninfo failed: ${resp.status} ${text}`);
-          throw new Error(`token verification failed: ${resp.status}`);
-        }
-        payload = await uResp.json();
-        logger.info(`[auth] google login via access_token userinfo: email=${payload.email}`);
-      } else {
-        payload = await resp.json();
-        logger.info(`[auth] google login via id_token: email=${payload.email}`);
-      }
-    } catch (err) {
-      logger.warn(`[auth] google verification error: ${err.message}`);
-      return next(new ApiError(401, 'Invalid Google token. Please try again.'));
+  try {
+    const resp = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`);
+    if (!resp.ok) {
+      const text = await resp.text();
+      logger.warn(`[auth] google tokeninfo failed: ${resp.status} ${text}`);
+      throw new Error(`token verification failed: ${resp.status}`);
     }
+    payload = await resp.json();
+    logger.info(`[auth] google login: email=${payload.email}`);
+  } catch (err) {
+    logger.warn(`[auth] google verification error: ${err.message}`);
+    return next(new ApiError(401, 'Invalid Google token. Please try again.'));
   }
 
   const { sub: googleId, email, name, picture } = payload;
   if (!email) return next(new ApiError(401, 'Google account has no email.'));
 
   let user = await User.findOne({ $or: [{ googleId }, { email }] });
-
   if (user) {
     if (!user.googleId) user.googleId = googleId;
     if (!user.avatar && picture) user.avatar = picture;
