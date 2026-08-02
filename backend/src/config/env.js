@@ -5,8 +5,11 @@ module.exports = {
   nodeEnv: process.env.NODE_ENV || 'development',
   isProd: process.env.NODE_ENV === 'production',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
-  // Public base URL for served portfolios. In production set to https://mydomain.com
-  baseUrl: (process.env.BASE_URL || process.env.CLIENT_URL || 'http://localhost:5000').replace(':5173', ':5000'),
+  // Public base URL for served portfolios.
+  // On Render: set BASE_URL=https://your-backend.onrender.com
+  baseUrl: (process.env.BASE_URL || process.env.CLIENT_URL || 'http://localhost:5000')
+    .replace(':5173', ':5000')
+    .replace(/\/$/, ''),
   // Wildcard subdomain support: set to your apex domain e.g. "mydomain.com"
   // then https://{slug}.mydomain.com will serve the same portfolio as /p/{slug}
   appDomain: (process.env.APP_DOMAIN || '').replace(/^https?:\/\//, '').replace(/\/$/, '').toLowerCase(),
