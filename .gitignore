@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Builds
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Uploads
+uploads/
+
+# Generated portfolio deployments (server-side static sites)
+backend/deployments/
+
+# Coverage
+coverage/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Misc
+npm-debug.log*
+yarn-error.log*
