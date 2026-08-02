@@ -1,0 +1,25 @@
+# Render Blueprint Specification for JobHive
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: job-hive
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGO_URI
+        sync: false
+        # Enter your MongoDB connection string (e.g. MongoDB Atlas cluster URL) in Render dashboard
+      - key: CLIENT_URL
+        sync: false
+        # Set to your Render web service URL (e.g. https://job-hive.onrender.com)

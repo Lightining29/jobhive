@@ -212,6 +212,26 @@ app.get('/p/:slug/sitemap.xml', async (req, res) => {
   }
 });
 
+// ── Serve Frontend static files if dist directory exists, or root health endpoint ──
+const frontendDist = path.join(__dirname, '../../frontend/dist');
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/p/') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.json({
+      success: true,
+      message: 'JobHive API is running',
+      health: '/api/health',
+    });
+  });
+}
+
 app.use(notFound);
 app.use(errorHandler);
 
