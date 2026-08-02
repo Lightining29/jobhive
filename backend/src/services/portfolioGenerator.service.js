@@ -22,14 +22,23 @@ const logger = require('../config/logger');
 const { applyTheme } = require('./portfolioThemes');
 
 // ── Load template files once at startup ────────────────────────────────────
-const TEMPLATE_DIR = path.resolve(__dirname, '..', '..', '..', '..');
+// style.css and script.js live at the repo root (same folder as backend/)
+// Path: backend/src/services/ → ../../.. → repo root
+const TEMPLATE_DIR = path.resolve(__dirname, '..', '..', '..');
 
 function loadFile(filename) {
   const p = path.join(TEMPLATE_DIR, filename);
   if (!fs.existsSync(p)) {
-    logger.warn(`[portfolio] Template file not found: ${p}`);
+    // Fallback: try one level higher (local dev structure where workspace is nested)
+    const p2 = path.join(path.resolve(__dirname, '..', '..', '..', '..'), filename);
+    if (fs.existsSync(p2)) {
+      logger.info(`[portfolio] Template found at fallback path: ${p2}`);
+      return fs.readFileSync(p2, 'utf8');
+    }
+    logger.warn(`[portfolio] Template file not found at: ${p} or ${p2}`);
     return '';
   }
+  logger.info(`[portfolio] Loaded ${filename} (${fs.statSync(p).size} bytes) from ${TEMPLATE_DIR}`);
   return fs.readFileSync(p, 'utf8');
 }
 
