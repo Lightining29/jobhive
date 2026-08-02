@@ -20,7 +20,7 @@ const CandidateProfilePage = () => {
   const [completion, setCompletion] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [skillInput, setSkillInput] = useState('');
+  const skillInputRef = useRef(null);
   const [uploading, setUploading] = useState(null);
   const [aiFillOpen, setAiFillOpen] = useState(false);
 
@@ -81,14 +81,14 @@ const CandidateProfilePage = () => {
   }, [load]);
 
   const addSkill = () => {
-    const s = skillInput.trim().toLowerCase();
+    const s = (skillInputRef.current?.value || '').trim().toLowerCase();
     if (!s) return;
     if (skills.some((x) => x.toLowerCase() === s)) {
       toast('Skill already added');
       return;
     }
     setValue('skills', [...skills, s]);
-    setSkillInput('');
+    if (skillInputRef.current) skillInputRef.current.value = '';
   };
 
   const removeSkill = (idx) => setValue('skills', skills.filter((_, i) => i !== idx));
@@ -314,7 +314,7 @@ const CandidateProfilePage = () => {
             {skills.length === 0 && <span className="text-sm text-muted">Add at least 3 skills for AI matching.</span>}
           </div>
           <div className="flex gap-2">
-            <input value={skillInput} onChange={(e) => setSkillInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())} placeholder="Add a skill..." className="input" />
+            <input ref={skillInputRef} defaultValue="" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())} placeholder="Add a skill..." className="input" />
             <button type="button" onClick={addSkill} className="btn-outline shrink-0"><FaPlus className="h-4 w-4" /> Add</button>
           </div>
           <div className="flex flex-wrap gap-1.5 mt-3">
