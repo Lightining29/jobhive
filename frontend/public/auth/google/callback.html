@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head><title>Google Sign In</title></head>
+<body>
+<script>
+  // This page receives the OAuth redirect from Google.
+  // The hash/query contains access_token. We just close — the
+  // opener's polling timer will read window.location.href before close.
+  // Nothing needs to happen here; the opener polls for location.origin match.
+  
+  // If opened as a popup, the opener's setInterval will detect
+  // this page is on our origin and extract the token from the hash.
+  // Just keep the page alive briefly so the poller can read it.
+  setTimeout(() => {
+    // Fallback: if not read by poller, post message to opener
+    try {
+      if (window.opener) {
+        window.opener.postMessage(
+          { type: 'google-oauth', hash: window.location.hash, search: window.location.search },
+          window.location.origin
+        );
+      }
+    } catch(e) {}
+  }, 100);
+</script>
+<p style="font-family:sans-serif;text-align:center;padding:2rem;color:#666">
+  Completing sign in… please wait
+</p>
+</body>
+</html>
