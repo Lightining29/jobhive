@@ -53,6 +53,7 @@ const GoogleLoginButton = ({ role = 'candidate', text = 'continue_with' }) => {
       client_id: GOOGLE_CLIENT_ID,
       callback: handleCredential,
       auto_select: false,
+      use_fedcm_for_prompt: true,
     });
 
     window.google.accounts.id.renderButton(btnRef.current, {
