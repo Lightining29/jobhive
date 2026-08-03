@@ -17,6 +17,11 @@ const logger = require('../config/logger');
 
 // ── Credentials (lazy-read so tests can override process.env) ─────────────
 const getConfig = () => ({
+  gemini: {
+    key:   process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || '',
+    model: process.env.GEMINI_MODEL   || 'gemini-2.5-flash',
+    base:  'https://generativelanguage.googleapis.com/v1beta/openai',
+  },
   openrouter: {
     key:   process.env.OPENROUTER_API_KEY || '',
     model: process.env.OPENROUTER_MODEL   || 'google/gemma-4-26b-a4b-it:free',
@@ -73,6 +78,30 @@ function extractJSON(text) {
   const end     = cleaned.lastIndexOf('}');
   if (start === -1 || end === -1) return null;
   try { return JSON.parse(cleaned.slice(start, end + 1)); } catch { return null; }
+}
+
+// ── Gemini chat completion ────────────────────────────────────────────────
+async function geminiChat(systemPrompt, userMessage, maxTokens) {
+  const cfg = getConfig();
+  if (!cfg.gemini.key) throw new Error('GEMINI_API_KEY not set');
+
+  const { status, data } = await httpsPost(
+    `${cfg.gemini.base}/chat/completions`,
+    {
+      model: cfg.gemini.model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user',   content: userMessage  },
+      ],
+      max_tokens:  maxTokens || cfg.maxTokens,
+      temperature: cfg.temperature,
+    },
+    { Authorization: `Bearer ${cfg.gemini.key}` },
+    cfg.timeout
+  );
+
+  if (status !== 200) throw new Error(`Gemini HTTP ${status}: ${data?.error?.message || JSON.stringify(data).slice(0, 100)}`);
+  return data.choices?.[0]?.message?.content || '';
 }
 
 // ── OpenRouter chat completion ────────────────────────────────────────────
@@ -177,6 +206,7 @@ async function generateJSON(systemPrompt, userMessage, maxTokens = 800) {
   const cfg = getConfig();
   const providers = [];
 
+  if (cfg.gemini.key)     providers.push({ name: 'Gemini',     fn: () => geminiChat(systemPrompt, userMessage, maxTokens) });
   if (cfg.openrouter.key) providers.push({ name: 'OpenRouter', fn: () => openRouterChat(systemPrompt, userMessage, maxTokens) });
   if (cfg.qwen.key)       providers.push({ name: 'Qwen',       fn: () => qwenChat(systemPrompt, userMessage, maxTokens) });
   providers.push({ name: 'Ollama', fn: () => ollamaChat(systemPrompt, userMessage, maxTokens) });
@@ -211,4 +241,4 @@ async function grammarCorrect(text) {
   }
 }
 
-module.exports = { generateJSON, grammarCorrect, openRouterChat, qwenChat };
+module.exports = { generateJSON, grammarCorrect, geminiChat, openRouterChat, qwenChat };

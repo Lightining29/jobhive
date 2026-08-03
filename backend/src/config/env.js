@@ -26,6 +26,11 @@ module.exports = {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
   },
 
+  gemini: {
+    apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || '',
+    model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+  },
+
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
     apiKey: process.env.CLOUDINARY_API_KEY || '',

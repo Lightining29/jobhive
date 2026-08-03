@@ -23,3 +23,7 @@ services:
       - key: CLIENT_URL
         sync: false
         # Set to your Render web service URL (e.g. https://job-hive.onrender.com)
+      - key: GEMINI_API_KEY
+        sync: false
+        # Add your Gemini API Key from https://aistudio.google.com/app/apikey
+

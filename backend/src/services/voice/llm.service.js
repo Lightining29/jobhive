@@ -16,8 +16,20 @@ const http = require('http');
 
 // ── Config ──────────────────────────────────────────────────────────────────
 
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || '';
+const USE_GEMINI_API = Boolean(GEMINI_API_KEY);
+
 const QWEN_API_KEY = process.env.QWEN_API_KEY || '';
-const USE_QWEN_API = Boolean(QWEN_API_KEY);
+const USE_QWEN_API = !USE_GEMINI_API && Boolean(QWEN_API_KEY);
+
+const GEMINI_API_CONFIG = {
+  baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
+  model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+  maxTokens: parseInt(process.env.LLM_MAX_TOKENS, 10) || 1024,
+  temperature: parseFloat(process.env.LLM_TEMPERATURE) || 0.7,
+  topP: parseFloat(process.env.LLM_TOP_P) || 0.9,
+  timeout: parseInt(process.env.LLM_TIMEOUT, 10) || 30000,
+};
 
 const QWEN_API_CONFIG = {
   baseUrl: process.env.QWEN_API_BASE_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1',
@@ -39,7 +51,9 @@ const OLLAMA_CONFIG = {
 };
 
 // Export active config for health checks / controller inspection
-const LLM_CONFIG = USE_QWEN_API
+const LLM_CONFIG = USE_GEMINI_API
+  ? { ...GEMINI_API_CONFIG, provider: 'gemini-api' }
+  : USE_QWEN_API
   ? { ...QWEN_API_CONFIG, provider: 'qwen-api' }
   : { ...OLLAMA_CONFIG, provider: 'ollama' };
 
@@ -195,6 +209,71 @@ function httpStream(url, body, headers = {}, onToken, timeout = 30000) {
   });
 }
 
+// ── Gemini API (OpenAI-compatible) ──────────────────────────────────────────
+
+function buildGeminiPayload(messages, options = {}) {
+  return {
+    model: options.model || GEMINI_API_CONFIG.model,
+    messages: [{ role: 'system', content: options.systemPrompt || SYSTEM_PROMPT }, ...messages],
+    stream: options.stream !== false,
+    max_tokens: options.maxTokens || GEMINI_API_CONFIG.maxTokens,
+    temperature: options.temperature ?? GEMINI_API_CONFIG.temperature,
+  };
+}
+
+function geminiHeaders() {
+  return { Authorization: `Bearer ${GEMINI_API_KEY}` };
+}
+
+async function geminiGenerate(messages, options = {}) {
+  const url = `${GEMINI_API_CONFIG.baseUrl}/chat/completions`;
+  const payload = buildGeminiPayload(messages, { ...options, stream: false });
+  const { status, data } = await httpPost(url, payload, geminiHeaders(), options.timeout || GEMINI_API_CONFIG.timeout);
+
+  if (status !== 200) {
+    throw new Error(`Gemini API error ${status}: ${data?.error?.message || JSON.stringify(data)}`);
+  }
+
+  return data.choices?.[0]?.message?.content || '';
+}
+
+async function geminiStream(messages, onToken, options = {}) {
+  const url = `${GEMINI_API_CONFIG.baseUrl}/chat/completions`;
+  const payload = buildGeminiPayload(messages, { ...options, stream: true });
+  return httpStream(url, payload, geminiHeaders(), onToken, options.timeout || GEMINI_API_CONFIG.timeout);
+}
+
+async function geminiHealthCheck() {
+  try {
+    const url = `${GEMINI_API_CONFIG.baseUrl}/chat/completions`;
+    const payload = {
+      model: GEMINI_API_CONFIG.model,
+      messages: [{ role: 'user', content: 'ping' }],
+      stream: false,
+      max_tokens: 5,
+    };
+    const { status, data } = await httpPost(url, payload, geminiHeaders(), 8000);
+    if (status === 200) {
+      return { status: 'ok', available: true, provider: 'gemini-api', model: GEMINI_API_CONFIG.model };
+    }
+    return {
+      status: 'error',
+      available: false,
+      provider: 'gemini-api',
+      model: GEMINI_API_CONFIG.model,
+      error: data?.error?.message || `HTTP ${status}`,
+    };
+  } catch (err) {
+    return {
+      status: 'offline',
+      available: false,
+      provider: 'gemini-api',
+      model: GEMINI_API_CONFIG.model,
+      error: err.message,
+    };
+  }
+}
+
 // ── Qwen API (OpenAI-compatible) ────────────────────────────────────────────
 
 function buildQwenPayload(messages, options = {}) {
@@ -328,15 +407,15 @@ async function ollamaHealthCheck() {
 // ── Public API — delegates to active provider ────────────────────────────────
 
 async function generateResponse(messages, options = {}) {
-  return USE_QWEN_API
-    ? qwenGenerate(messages, options)
-    : ollamaGenerate(messages, options);
+  if (USE_GEMINI_API) return geminiGenerate(messages, options);
+  if (USE_QWEN_API)   return qwenGenerate(messages, options);
+  return ollamaGenerate(messages, options);
 }
 
 async function generateStreamingResponse(messages, onToken, options = {}) {
-  return USE_QWEN_API
-    ? qwenStream(messages, onToken, options)
-    : ollamaStream(messages, onToken, options);
+  if (USE_GEMINI_API) return geminiStream(messages, onToken, options);
+  if (USE_QWEN_API)   return qwenStream(messages, onToken, options);
+  return ollamaStream(messages, onToken, options);
 }
 
 async function generateWithFallback(messages, options = {}) {
@@ -344,7 +423,7 @@ async function generateWithFallback(messages, options = {}) {
     return await generateResponse(messages, options);
   } catch (err) {
     // If using Ollama, try the fallback model
-    if (!USE_QWEN_API && options.model !== OLLAMA_CONFIG.fallbackModel) {
+    if (!USE_GEMINI_API && !USE_QWEN_API && options.model !== OLLAMA_CONFIG.fallbackModel) {
       try {
         return await ollamaGenerate(messages, {
           ...options,
@@ -359,7 +438,9 @@ async function generateWithFallback(messages, options = {}) {
 }
 
 async function healthCheck() {
-  return USE_QWEN_API ? qwenHealthCheck() : ollamaHealthCheck();
+  if (USE_GEMINI_API) return geminiHealthCheck();
+  if (USE_QWEN_API)   return qwenHealthCheck();
+  return ollamaHealthCheck();
 }
 
 function generateFallbackResponse(messages) {
@@ -389,5 +470,6 @@ module.exports = {
   generateFallbackResponse,
   LLM_CONFIG,
   SYSTEM_PROMPT,
+  USE_GEMINI_API,
   USE_QWEN_API,
 };
