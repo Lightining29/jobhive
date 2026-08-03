@@ -99,12 +99,12 @@ export default function VoiceSettings({ isOpen, onClose, settings, onChange, kok
               </button>
             </div>
 
-            {/* Kokoro voice picker */}
+            {/* Gemini Voice picker */}
             <div className="py-2.5 border-b border-line">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1.5">
-                  <FaMicrochip className="h-3.5 w-3.5 text-muted" />
-                  <p className="text-sm font-medium text-ink">Kokoro voice</p>
+                  <FaMicrochip className="h-3.5 w-3.5 text-primary-600" />
+                  <p className="text-sm font-medium text-ink">Gemini Voice</p>
                 </div>
                 <span
                   className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
@@ -115,31 +115,21 @@ export default function VoiceSettings({ isOpen, onClose, settings, onChange, kok
                       : 'bg-slate-50 text-slate-500 border border-line'
                   }`}
                 >
-                  {kokoroAvailable === true ? '● online'
-                    : kokoroAvailable === false ? '● fallback'
+                  {kokoroAvailable === true ? '● Gemini AI'
+                    : kokoroAvailable === false ? '● Browser TTS'
                     : '● …'}
                 </span>
               </div>
               <select
-                value={settings.kokoroVoice || 'af_heart'}
+                value={settings.kokoroVoice || 'en-US-Journey-F'}
                 onChange={(e) => onChange({ ...settings, kokoroVoice: e.target.value })}
                 className="input !py-2 !text-sm"
-                aria-label="Kokoro voice"
-                disabled={kokoroAvailable === false}
+                aria-label="Gemini Voice model"
               >
                 {KOKORO_VOICES.map((v) => (
                   <option key={v.id} value={v.id}>{v.label}</option>
                 ))}
               </select>
-              {kokoroAvailable === false && (
-                <p className="text-[10px] text-amber-600 mt-1.5 leading-relaxed">
-                  Kokoro offline — using browser TTS.<br />
-                  Start:{' '}
-                  <code className="bg-amber-50 px-1 py-0.5 rounded text-[10px]">
-                    docker run -p 8880:8880 ghcr.io/remsky/kokoro-fastapi-cpu:v0.2.2
-                  </code>
-                </p>
-              )}
             </div>
 
             {/* Audio format */}

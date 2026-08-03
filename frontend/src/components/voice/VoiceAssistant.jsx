@@ -29,7 +29,7 @@ const DEFAULT_SETTINGS = {
   rate: 1.0,
   volume: 1.0,
   lang: 'en-US',
-  kokoroVoice: 'af_heart',
+  kokoroVoice: 'en-US-Journey-F',
   ttsFormat: 'mp3',
 };
 

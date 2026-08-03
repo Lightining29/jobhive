@@ -12,22 +12,16 @@
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-const KOKORO_VOICES = [
-  { id: 'af_heart',    label: 'Heart (US Female — Most Natural)', lang: 'en-US' },
-  { id: 'af_sarah',    label: 'Sarah (US Female)',     lang: 'en-US' },
-  { id: 'af_bella',    label: 'Bella (US Female)',     lang: 'en-US' },
-  { id: 'af_nicole',   label: 'Nicole (US Female)',    lang: 'en-US' },
-  { id: 'af_sky',      label: 'Sky (US Female)',       lang: 'en-US' },
-  { id: 'am_adam',     label: 'Adam (US Male)',        lang: 'en-US' },
-  { id: 'am_michael',  label: 'Michael (US Male)',     lang: 'en-US' },
-  { id: 'bf_emma',     label: 'Emma (UK Female)',      lang: 'en-GB' },
-  { id: 'bf_isabella', label: 'Isabella (UK Female)',  lang: 'en-GB' },
-  { id: 'bm_george',   label: 'George (UK Male)',      lang: 'en-GB' },
-  { id: 'bm_lewis',    label: 'Lewis (UK Male)',       lang: 'en-GB' },
+const GEMINI_VOICES = [
+  { id: 'en-US-Journey-F', label: 'Journey Female (Gemini Neural — Most Natural)', lang: 'en-US' },
+  { id: 'en-US-Journey-D', label: 'Journey Male (Gemini Neural)', lang: 'en-US' },
+  { id: 'en-US-Neural2-F', label: 'Neural2 Female (Gemini High Quality)', lang: 'en-US' },
+  { id: 'en-US-Neural2-D', label: 'Neural2 Male (Gemini High Quality)', lang: 'en-US' },
+  { id: 'en-US-Studio-O',  label: 'Studio Female (Gemini Professional)', lang: 'en-US' },
 ];
 
-const DEFAULT_VOICE = 'af_heart';  // Most natural-sounding female voice
-const DEFAULT_SPEED = 0.95;         // Slightly slower than 1.0 for more natural pacing
+const DEFAULT_VOICE = 'en-US-Journey-F';  // Most natural-sounding Gemini Neural voice
+const DEFAULT_SPEED = 1.0;
 
 // ── Browser TTS fallback ─────────────────────────────────────────────────────
 const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
@@ -243,9 +237,9 @@ export function useKokoroTTS({
     isLoading,
     usingFallback,
     kokoroAvailable,
-    isSupported: true, // always supported (Kokoro or browser fallback)
-    voices: KOKORO_VOICES,
+    isSupported: true, // always supported (Gemini or browser fallback)
+    voices: GEMINI_VOICES,
   };
 }
 
-export { KOKORO_VOICES };
+export { GEMINI_VOICES, GEMINI_VOICES as KOKORO_VOICES };
