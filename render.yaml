@@ -26,4 +26,9 @@ services:
       - key: GEMINI_API_KEY
         sync: false
         # Add your Gemini API Key from https://aistudio.google.com/app/apikey
-
+      - key: OPENROUTER_API_KEY
+        sync: false
+        # Add your OpenRouter API key from https://openrouter.ai/keys
+      - key: HUGGINGFACE_API_KEY
+        sync: false
+        # Add your HuggingFace API key from https://huggingface.co/settings/tokens

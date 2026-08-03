@@ -24,11 +24,11 @@ const getConfig = () => ({
   },
   openrouter: {
     key:   process.env.OPENROUTER_API_KEY || '',
-    model: process.env.OPENROUTER_MODEL   || 'google/gemma-4-26b-a4b-it:free',
+    model: process.env.OPENROUTER_MODEL   || 'openrouter/auto',
     base:  'https://openrouter.ai/api/v1',
   },
   huggingface: {
-    key:  process.env.HUGGINGFACE_API_KEY || '',
+    key:  process.env.HUGGINGFACE_API_KEY || process.env.HF_TOKEN || '',
     base: 'https://api-inference.huggingface.co/models',
   },
   qwen: {
@@ -128,27 +128,90 @@ async function openRouterChat(systemPrompt, userMessage, maxTokens) {
   const cfg = getConfig();
   if (!cfg.openrouter.key) throw new Error('OPENROUTER_API_KEY not set');
 
-  const { status, data } = await httpsPost(
-    `${cfg.openrouter.base}/chat/completions`,
-    {
-      model: cfg.openrouter.model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user',   content: userMessage  },
-      ],
-      max_tokens:  maxTokens || cfg.maxTokens,
-      temperature: cfg.temperature,
-    },
-    {
-      Authorization: `Bearer ${cfg.openrouter.key}`,
-      'HTTP-Referer': 'https://jobhive.app',
-      'X-Title': 'JobHive AI',
-    },
-    cfg.timeout
-  );
+  const modelsToTry = Array.from(new Set([
+    cfg.openrouter.model,
+    'openrouter/auto',
+    'meta-llama/llama-3.3-70b-instruct:free',
+    'deepseek/deepseek-r1:free',
+    'google/gemini-2.0-flash-exp:free',
+    'qwen/qwen-2.5-72b-instruct:free',
+  ])).filter(Boolean);
 
-  if (status !== 200) throw new Error(`OpenRouter HTTP ${status}: ${data?.error?.message || JSON.stringify(data).slice(0, 100)}`);
-  return data.choices?.[0]?.message?.content || '';
+  let lastErr = null;
+
+  for (const model of modelsToTry) {
+    try {
+      const { status, data } = await httpsPost(
+        `${cfg.openrouter.base}/chat/completions`,
+        {
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user',   content: userMessage  },
+          ],
+          max_tokens:  maxTokens || cfg.maxTokens,
+          temperature: cfg.temperature,
+        },
+        {
+          Authorization: `Bearer ${cfg.openrouter.key}`,
+          'HTTP-Referer': 'https://jobhive.app',
+          'X-Title': 'JobHive AI',
+        },
+        cfg.timeout
+      );
+
+      if (status === 200 && data.choices?.[0]?.message?.content) {
+        return data.choices[0].message.content;
+      }
+      lastErr = new Error(`OpenRouter (${model}) HTTP ${status}: ${data?.error?.message || JSON.stringify(data).slice(0, 100)}`);
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+
+  throw lastErr || new Error('OpenRouter API call failed');
+}
+
+// ── HuggingFace chat completion ──────────────────────────────────────────
+async function huggingFaceChat(systemPrompt, userMessage, maxTokens) {
+  const cfg = getConfig();
+  if (!cfg.huggingface.key) throw new Error('HUGGINGFACE_API_KEY not set');
+
+  const modelsToTry = Array.from(new Set([
+    'Qwen/Qwen2.5-72B-Instruct',
+    'mistralai/Mistral-7B-Instruct-v0.2',
+    'meta-llama/Meta-Llama-3-8B-Instruct',
+  ])).filter(Boolean);
+
+  let lastErr = null;
+
+  for (const model of modelsToTry) {
+    try {
+      const { status, data } = await httpsPost(
+        `https://api-inference.huggingface.co/models/${model}/v1/chat/completions`,
+        {
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user',   content: userMessage  },
+          ],
+          max_tokens:  Math.min(maxTokens || cfg.maxTokens, 4096),
+          temperature: cfg.temperature,
+        },
+        { Authorization: `Bearer ${cfg.huggingface.key}` },
+        cfg.timeout
+      );
+
+      if (status === 200 && data.choices?.[0]?.message?.content) {
+        return data.choices[0].message.content;
+      }
+      lastErr = new Error(`HuggingFace (${model}) HTTP ${status}: ${data?.error?.message || JSON.stringify(data).slice(0, 100)}`);
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+
+  throw lastErr || new Error('HuggingFace API call failed');
 }
 
 // ── HuggingFace text generation (for grammar correction) ─────────────────
@@ -218,16 +281,17 @@ async function ollamaChat(systemPrompt, userMessage, maxTokens) {
 // ── Primary export: chat with JSON output ─────────────────────────────────
 /**
  * Generate a response from the best available provider.
- * Tries OpenRouter → Qwen → Ollama in order.
+ * Tries Gemini → OpenRouter → HuggingFace → Qwen → Ollama in order.
  * Returns parsed JSON object or null.
  */
 async function generateJSON(systemPrompt, userMessage, maxTokens = 800) {
   const cfg = getConfig();
   const providers = [];
 
-  if (cfg.gemini.key)     providers.push({ name: 'Gemini',     fn: () => geminiChat(systemPrompt, userMessage, maxTokens) });
-  if (cfg.openrouter.key) providers.push({ name: 'OpenRouter', fn: () => openRouterChat(systemPrompt, userMessage, maxTokens) });
-  if (cfg.qwen.key)       providers.push({ name: 'Qwen',       fn: () => qwenChat(systemPrompt, userMessage, maxTokens) });
+  if (cfg.gemini.key)      providers.push({ name: 'Gemini',      fn: () => geminiChat(systemPrompt, userMessage, maxTokens) });
+  if (cfg.openrouter.key)  providers.push({ name: 'OpenRouter',  fn: () => openRouterChat(systemPrompt, userMessage, maxTokens) });
+  if (cfg.huggingface.key) providers.push({ name: 'HuggingFace',  fn: () => huggingFaceChat(systemPrompt, userMessage, maxTokens) });
+  if (cfg.qwen.key)        providers.push({ name: 'Qwen',        fn: () => qwenChat(systemPrompt, userMessage, maxTokens) });
   providers.push({ name: 'Ollama', fn: () => ollamaChat(systemPrompt, userMessage, maxTokens) });
 
   for (const provider of providers) {
@@ -260,4 +324,4 @@ async function grammarCorrect(text) {
   }
 }
 
-module.exports = { generateJSON, grammarCorrect, geminiChat, openRouterChat, qwenChat };
+module.exports = { generateJSON, grammarCorrect, geminiChat, openRouterChat, huggingFaceChat, qwenChat };
