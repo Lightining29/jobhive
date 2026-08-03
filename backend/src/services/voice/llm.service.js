@@ -24,7 +24,7 @@ const USE_QWEN_API = !USE_GEMINI_API && Boolean(QWEN_API_KEY);
 
 const GEMINI_API_CONFIG = {
   baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
-  model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+  model: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
   maxTokens: parseInt(process.env.LLM_MAX_TOKENS, 10) || 1024,
   temperature: parseFloat(process.env.LLM_TEMPERATURE) || 0.7,
   topP: parseFloat(process.env.LLM_TOP_P) || 0.9,
@@ -226,15 +226,31 @@ function geminiHeaders() {
 }
 
 async function geminiGenerate(messages, options = {}) {
-  const url = `${GEMINI_API_CONFIG.baseUrl}/chat/completions`;
-  const payload = buildGeminiPayload(messages, { ...options, stream: false });
-  const { status, data } = await httpPost(url, payload, geminiHeaders(), options.timeout || GEMINI_API_CONFIG.timeout);
+  const modelsToTry = Array.from(new Set([
+    options.model || GEMINI_API_CONFIG.model,
+    'gemini-1.5-flash',
+    'gemini-2.0-flash',
+    'gemini-1.5-pro',
+  ])).filter(Boolean);
 
-  if (status !== 200) {
-    throw new Error(`Gemini API error ${status}: ${data?.error?.message || JSON.stringify(data)}`);
+  let lastErr = null;
+
+  for (const model of modelsToTry) {
+    try {
+      const url = `${GEMINI_API_CONFIG.baseUrl}/chat/completions`;
+      const payload = buildGeminiPayload(messages, { ...options, model, stream: false });
+      const { status, data } = await httpPost(url, payload, geminiHeaders(), options.timeout || GEMINI_API_CONFIG.timeout);
+
+      if (status === 200 && data.choices?.[0]?.message?.content) {
+        return data.choices[0].message.content;
+      }
+      lastErr = new Error(`Gemini (${model}) API error ${status}: ${data?.error?.message || JSON.stringify(data)}`);
+    } catch (err) {
+      lastErr = err;
+    }
   }
 
-  return data.choices?.[0]?.message?.content || '';
+  throw lastErr || new Error('Gemini API generate failed');
 }
 
 async function geminiStream(messages, onToken, options = {}) {

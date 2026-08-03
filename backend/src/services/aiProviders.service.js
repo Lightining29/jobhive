@@ -19,7 +19,7 @@ const logger = require('../config/logger');
 const getConfig = () => ({
   gemini: {
     key:   process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || '',
-    model: process.env.GEMINI_MODEL   || 'gemini-2.5-flash',
+    model: process.env.GEMINI_MODEL   || 'gemini-1.5-flash',
     base:  'https://generativelanguage.googleapis.com/v1beta/openai',
   },
   openrouter: {
@@ -85,23 +85,42 @@ async function geminiChat(systemPrompt, userMessage, maxTokens) {
   const cfg = getConfig();
   if (!cfg.gemini.key) throw new Error('GEMINI_API_KEY not set');
 
-  const { status, data } = await httpsPost(
-    `${cfg.gemini.base}/chat/completions`,
-    {
-      model: cfg.gemini.model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user',   content: userMessage  },
-      ],
-      max_tokens:  maxTokens || cfg.maxTokens,
-      temperature: cfg.temperature,
-    },
-    { Authorization: `Bearer ${cfg.gemini.key}` },
-    cfg.timeout
-  );
+  const modelsToTry = Array.from(new Set([
+    cfg.gemini.model,
+    'gemini-1.5-flash',
+    'gemini-2.0-flash',
+    'gemini-1.5-pro',
+  ])).filter(Boolean);
 
-  if (status !== 200) throw new Error(`Gemini HTTP ${status}: ${data?.error?.message || JSON.stringify(data).slice(0, 100)}`);
-  return data.choices?.[0]?.message?.content || '';
+  let lastErr = null;
+
+  for (const model of modelsToTry) {
+    try {
+      const { status, data } = await httpsPost(
+        `${cfg.gemini.base}/chat/completions`,
+        {
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user',   content: userMessage  },
+          ],
+          max_tokens:  Math.min(maxTokens || cfg.maxTokens, 8192),
+          temperature: cfg.temperature,
+        },
+        { Authorization: `Bearer ${cfg.gemini.key}` },
+        cfg.timeout
+      );
+
+      if (status === 200 && data.choices?.[0]?.message?.content) {
+        return data.choices[0].message.content;
+      }
+      lastErr = new Error(`Gemini (${model}) HTTP ${status}: ${data?.error?.message || JSON.stringify(data).slice(0, 100)}`);
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+
+  throw lastErr || new Error('Gemini API call failed');
 }
 
 // ── OpenRouter chat completion ────────────────────────────────────────────
