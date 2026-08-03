@@ -16,6 +16,8 @@
 const https = require('https');
 const http = require('http');
 
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || '';
+
 const TTS_CONFIG = {
   baseUrl: process.env.KOKORO_URL || 'http://localhost:8880',
   voice: process.env.KOKORO_VOICE || 'af_heart',    // af_heart has most natural prosody
@@ -175,10 +177,47 @@ function splitIntoChunks(text, maxChars = TTS_CONFIG.maxChunkSize) {
   return chunks.length > 0 ? chunks : [text.slice(0, maxChars)];
 }
 
+// ── Gemini Voice / Google Cloud TTS synthesis ────────────────────────────────
+async function geminiSynthesise(text, opts = {}) {
+  if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY not set');
+
+  const cleaned = cleanText(text);
+  if (!cleaned) throw new Error('Empty text');
+
+  const voiceName = opts.voice || process.env.GEMINI_VOICE || 'en-US-Journey-F';
+  const languageCode = opts.lang || 'en-US';
+  const speed = opts.speed || 1.0;
+
+  const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${GEMINI_API_KEY}`;
+  const body = {
+    input: { text: cleaned },
+    voice: { languageCode, name: voiceName },
+    audioConfig: { audioEncoding: 'MP3', speakingRate: speed },
+  };
+
+  const { status, data } = await httpPostJSON(url, body, TTS_CONFIG.timeout);
+  if (status !== 200 || !data?.audioContent) {
+    throw new Error(`Gemini Voice error ${status}: ${data?.error?.message || 'No audioContent'}`);
+  }
+
+  const buffer = Buffer.from(data.audioContent, 'base64');
+  return { buffer, contentType: 'audio/mpeg', format: 'mp3', provider: 'gemini-voice' };
+}
+
 /**
- * Check if Kokoro TTS server is running.
+ * Check if TTS server is running.
  */
 async function healthCheck() {
+  if (GEMINI_API_KEY) {
+    return {
+      available: true,
+      provider: 'gemini-voice',
+      voices: ['en-US-Journey-F', 'en-US-Journey-D', 'en-US-Neural2-F', 'en-US-Neural2-D', 'en-US-Studio-O'],
+      voice: process.env.GEMINI_VOICE || 'en-US-Journey-F',
+      format: 'mp3',
+    };
+  }
+
   try {
     const url = `${TTS_CONFIG.baseUrl}/v1/voices`;
     const result = await httpGet(url, TTS_CONFIG.timeout);
@@ -196,6 +235,14 @@ async function healthCheck() {
  * Enhanced with natural text preprocessing.
  */
 async function synthesise(text, opts = {}) {
+  if (GEMINI_API_KEY) {
+    try {
+      return await geminiSynthesise(text, opts);
+    } catch (err) {
+      console.warn('[TTS] Gemini Voice failed, falling back to Kokoro:', err.message);
+    }
+  }
+
   const voice = opts.voice || TTS_CONFIG.voice;
   const speed = opts.speed || TTS_CONFIG.speed;
   const format = opts.format || TTS_CONFIG.format;
@@ -213,9 +260,22 @@ async function synthesise(text, opts = {}) {
 
 /**
  * Stream audio directly into an HTTP response (chunked transfer).
- * Pipes Kokoro's response straight to the client — no buffering.
+ * Pipes response straight to the client — no buffering.
  */
 async function stream(text, res, opts = {}) {
+  if (GEMINI_API_KEY) {
+    try {
+      const { buffer, contentType } = await geminiSynthesise(text, opts);
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Length', buffer.length);
+      res.setHeader('Cache-Control', 'no-cache');
+      res.end(buffer);
+      return;
+    } catch (err) {
+      console.warn('[TTS] Gemini Voice stream failed, falling back to Kokoro:', err.message);
+    }
+  }
+
   const voice = opts.voice || TTS_CONFIG.voice;
   const speed = opts.speed || TTS_CONFIG.speed;
   const format = opts.format || TTS_CONFIG.format;
@@ -356,4 +416,38 @@ function httpPostBinary(url, body, timeout = 15000) {
   });
 }
 
-module.exports = { synthesise, stream, streamChunked, healthCheck, splitIntoChunks, TTS_CONFIG, cleanText };
+function httpPostJSON(url, body, timeout = 15000) {
+  return new Promise((resolve, reject) => {
+    const parsed = new URL(url);
+    const transport = parsed.protocol === 'https:' ? https : http;
+    const data = JSON.stringify(body);
+
+    const req = transport.request(
+      {
+        hostname: parsed.hostname,
+        port: parsed.port || (parsed.protocol === 'https:' ? 443 : 80),
+        path: parsed.pathname + (parsed.search || ''),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) },
+        timeout,
+      },
+      (res) => {
+        let bodyStr = '';
+        res.on('data', (c) => (bodyStr += c));
+        res.on('end', () => {
+          try {
+            resolve({ status: res.statusCode, data: JSON.parse(bodyStr) });
+          } catch {
+            resolve({ status: res.statusCode, data: { raw: bodyStr } });
+          }
+        });
+      }
+    );
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('HTTP POST request timed out')); });
+    req.write(data);
+    req.end();
+  });
+}
+
+module.exports = { synthesise, stream, streamChunked, healthCheck, splitIntoChunks, TTS_CONFIG, cleanText, geminiSynthesise };
