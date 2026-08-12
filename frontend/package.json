@@ -5,9 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node -e \"if(process.platform==='linux'){try{require('child_process').execSync('npm install --no-save @rollup/rollup-linux-x64-gnu',{stdio:'inherit'})}catch(e){}}\"",
-    "postinstall": "node -e \"if(process.platform==='linux'){try{require('child_process').execSync('npm install --no-save @rollup/rollup-linux-x64-gnu',{stdio:'inherit'})}catch(e){}}\"",
-    "build": "node -e \"if(process.platform==='linux'){try{require('child_process').execSync('npm install --no-save @rollup/rollup-linux-x64-gnu',{stdio:'inherit'})}catch(e){}}\" && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
