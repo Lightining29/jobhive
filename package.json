@@ -17,12 +17,14 @@
     "seed": "npm run seed -w backend",
     "cron:fetch": "npm run cron:fetch -w backend"
   },
-  "devDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.62.4",
-    "concurrently": "^9.1.0"
+  "overrides": {
+    "vite": {
+      "rollup": "npm:@rollup/wasm-node@^4.28.1"
+    },
+    "rollup": "npm:@rollup/wasm-node@^4.28.1"
   },
-  "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "*"
+  "devDependencies": {
+    "concurrently": "^9.1.0"
   },
   "engines": {
     "node": ">=18.0.0"
