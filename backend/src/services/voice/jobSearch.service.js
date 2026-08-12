@@ -2,109 +2,19 @@ const Job = require('../../models/Job');
 const Company = require('../../models/Company');
 const { computeMatchScore } = require('../aiRecommendation.service');
 const { formatCurrency } = require('../../utils/helpers');
-
-const baseJobFilter = () => ({
-  isActive: true,
-  isExpired: false,
-  postedDate: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-});
-
-const indiaScopeFilter = () => ({
-  $or: [
-    { remote: true },
-    { country: { $regex: 'india', $options: 'i' } },
-    { location: { $regex: 'india', $options: 'i' } },
-  ],
-});
+const {
+  buildFilters,
+  sortOptions,
+  baseJobFilter,
+  indiaScopeFilter,
+} = require('../../controllers/jobs.controller');
+const { paginate } = require('../../utils/query');
 
 async function searchJobs(params, user = null) {
-  const filter = baseJobFilter();
+  const filter = buildFilters(params);
+  const sort = sortOptions(params.sort);
 
-  if (params.search) {
-    const escaped = params.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    filter.$text = { $search: escaped };
-  }
-
-  if (params.skills) {
-    const skills = params.skills.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
-    if (skills.length) {
-      filter.$or = [
-        { requiredSkills: { $in: skills } },
-        { jobTitle: { $regex: skills.join('|'), $options: 'i' } },
-      ];
-    }
-  }
-
-  if (params.workMode) filter.workMode = params.workMode;
-  if (params.employmentType) filter.employmentType = params.employmentType;
-  if (params.experienceLevel) filter.experienceLevel = params.experienceLevel;
-  if (params.category) filter.category = params.category;
-  if (params.company) filter.companyName = { $regex: new RegExp(params.company, 'i') };
-  if (params.city) filter.city = new RegExp(params.city, 'i');
-  if (params.state) filter.state = new RegExp(params.state, 'i');
-  if (params.country) filter.country = new RegExp(params.country, 'i');
-  if (params.source) filter.source = params.source;
-
-  if (params.remote === 'true' || params.remote === true) {
-    filter.workMode = 'remote';
-  }
-
-  if (params.internship === 'true' || params.employmentType === 'internship') {
-    filter.employmentType = 'internship';
-  }
-
-  if (params.fresher === 'true') {
-    filter.experienceLevel = { $in: ['fresher', 'internship'] };
-  }
-
-  if (params.experience) {
-    const raw = String(params.experience).trim().toLowerCase();
-    const LEVELS = ['internship', 'fresher', 'junior', 'mid', 'senior', 'lead'];
-    if (LEVELS.includes(raw)) {
-      filter.experienceLevel = raw;
-    } else {
-      const exp = Number(raw);
-      if (Number.isFinite(exp) && exp >= 0) {
-        filter.experienceLevel = exp <= 1 ? 'internship' : exp <= 2 ? 'fresher' : exp <= 4 ? 'junior' : exp <= 7 ? 'mid' : 'senior';
-      }
-    }
-  }
-
-  if (params.salaryMin) {
-    const min = Number(params.salaryMin);
-    if (Number.isFinite(min) && min > 0) filter.salaryMax = { $gte: min };
-  }
-  if (params.salaryMax) {
-    const max = Number(params.salaryMax);
-    if (Number.isFinite(max) && max > 0) {
-      filter.$and = [...(filter.$and || []), { salaryMin: { $lte: max } }];
-    }
-  }
-
-  if (params.postedWithinDays) {
-    const days = Number(params.postedWithinDays);
-    if (Number.isFinite(days) && days > 0) {
-      filter.postedDate = { $gte: new Date(Date.now() - days * 24 * 60 * 60 * 1000) };
-    }
-  }
-
-  const hasExplicitGeo = params.city || params.state || params.country;
-  if (!hasExplicitGeo && params.scope !== 'global') {
-    filter.$and = [...(filter.$and || []), indiaScopeFilter()];
-  }
-
-  const sortMap = {
-    salary: { salaryMax: -1, salaryMin: -1 },
-    newest: { postedDate: -1 },
-    trending: { trendingScore: -1, postedDate: -1 },
-    oldest: { postedDate: 1 },
-    relevance: { postedDate: -1 },
-  };
-  const sort = sortMap[params.sort] || sortMap.newest;
-
-  const limit = Math.min(parseInt(params.limit, 10) || 10, 25);
-  const page = Math.max(parseInt(params.page, 10) || 1, 1);
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = paginate({ page: params.page || 1, limit: params.limit || 10 });
 
   const baseQuery = Job.find(filter);
   if (params.search) {
@@ -157,11 +67,7 @@ async function getCompanyByName(name) {
 }
 
 async function getJobStats(params = {}) {
-  const filter = baseJobFilter();
-  const hasExplicitGeo = params.city || params.state || params.country;
-  if (!hasExplicitGeo && params.scope !== 'global') {
-    filter.$and = [indiaScopeFilter()];
-  }
+  const filter = buildFilters(params);
 
   const [total, remote, hybrid, onsite, internships, fullTime, partTime] = await Promise.all([
     Job.countDocuments(filter),

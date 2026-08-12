@@ -19,6 +19,7 @@ const memoryService = require('../services/voice/memory.service');
 const intentService = require('../services/voice/intent.service');
 const jobSearchService = require('../services/voice/jobSearch.service');
 const llmService = require('../services/voice/llm.service');
+const { parseNaturalQuery } = require('../services/semanticSearch.service');
 const logger = require('../config/logger');
 const Application = require('../models/Application');
 
@@ -108,21 +109,30 @@ function voiceHandler(socket, io) {
 
       // ── 4. Fetch real data based on intent ────────────────────────────────
       let contextData = null;
+      let parsedQuery = null;
 
       switch (intent) {
         case 'job_search': {
           const lastSearch = memCtx.searchHistory[memCtx.searchHistory.length - 1]?.params || {};
-          const query = intentService.buildSearchQuery(intent, entities, {
+          const baseQuery = intentService.buildSearchQuery(intent, entities, {
             lastSearch,
+            memoryContext: memCtx,
           });
-          const results = await jobSearchService.searchJobs(query, user);
-          memoryService.addSearchContext(userId, sid, query, results);
+          try {
+            parsedQuery = await parseNaturalQuery(sanitised);
+          } catch (_) {
+            parsedQuery = {};
+          }
+          const mergedQuery = { ...baseQuery, ...parsedQuery, scope: baseQuery.scope || parsedQuery.scope };
+          const results = await jobSearchService.searchJobs(mergedQuery, user);
+          memoryService.addSearchContext(userId, sid, mergedQuery, results);
           contextData = {
             type: 'jobs',
             jobs: results.jobs.slice(0, 5),
             total: results.total,
             stats: await buildSalaryStats(results.jobs),
-            query,
+            query: mergedQuery,
+            parsedQuery,
           };
           break;
         }
@@ -149,6 +159,8 @@ function voiceHandler(socket, io) {
             } else if (job?.companyName) {
               company = await jobSearchService.getCompanyByName(job.companyName);
             }
+          } else if (entities.company) {
+            company = await jobSearchService.getCompanyByName(entities.company);
           } else if (entities.skills?.length) {
             company = await jobSearchService.getCompanyByName(entities.skills[0]);
           }
@@ -158,24 +170,35 @@ function voiceHandler(socket, io) {
 
         case 'recommendation': {
           if (user) {
-            const query = intentService.buildSearchQuery('job_search', entities, {});
-            const results = await jobSearchService.searchJobs(
-              { ...query, sort: 'relevance', limit: '5' },
-              user
-            );
+            try {
+              parsedQuery = await parseNaturalQuery(sanitised);
+            } catch (_) {
+              parsedQuery = {};
+            }
+            const baseQuery = intentService.buildSearchQuery('job_search', entities, { memoryContext: memCtx });
+            const mergedQuery = { ...baseQuery, ...parsedQuery, sort: 'relevance', limit: '5' };
+            const results = await jobSearchService.searchJobs(mergedQuery, user);
             contextData = {
               type: 'recommendations',
               jobs: results.jobs.slice(0, 5),
               total: results.total,
+              query: mergedQuery,
+              parsedQuery,
             };
           }
           break;
         }
 
         case 'salary_insight': {
-          const query = intentService.buildSearchQuery('job_search', entities, {});
-          const stats = await jobSearchService.getJobStats(query);
-          contextData = { type: 'salary_stats', stats, query };
+          const baseQuery = intentService.buildSearchQuery('job_search', entities, {});
+          try {
+            parsedQuery = await parseNaturalQuery(sanitised);
+          } catch (_) {
+            parsedQuery = {};
+          }
+          const mergedQuery = { ...baseQuery, ...parsedQuery };
+          const stats = await jobSearchService.getJobStats(mergedQuery);
+          contextData = { type: 'salary_stats', stats, query: mergedQuery, parsedQuery };
           break;
         }
 
@@ -282,6 +305,8 @@ function voiceHandler(socket, io) {
         company: contextData?.type === 'company' ? contextData.company : undefined,
         link: contextData?.link || undefined,
         linkTab: contextData?.tab || undefined,
+        parsedQuery: contextData?.parsedQuery || parsedQuery || undefined,
+        rawQuery: contextData?.query || undefined,
       });
     } catch (err) {
       logger.error('[voice] handler error', { message: err.message, stack: err.stack });
@@ -309,12 +334,32 @@ function buildSalaryStats(jobs) {
   return { avg: Math.round(avg), max, min };
 }
 
+function formatParsedQuery(pq) {
+  if (!pq || Object.keys(pq).length === 0) return '';
+  const parts = [];
+  if (pq.search) parts.push(`Role: "${pq.search}"`);
+  if (pq.skills) parts.push(`Skills: ${pq.skills}`);
+  if (pq.workMode) parts.push(`Mode: ${pq.workMode}`);
+  if (pq.employmentType) parts.push(`Type: ${pq.employmentType}`);
+  if (pq.experience) parts.push(`Experience: ${pq.experience}`);
+  if (pq.city) parts.push(`City: ${pq.city}`);
+  if (pq.country) parts.push(`Country: ${pq.country}`);
+  if (pq.company) parts.push(`Company: ${pq.company}`);
+  if (pq.salaryMin) parts.push(`Min salary: ${pq.salaryMin}`);
+  if (pq.category) parts.push(`Category: ${pq.category}`);
+  if (pq.sort) parts.push(`Sort: ${pq.sort}`);
+  if (pq.scope) parts.push(`Scope: ${pq.scope}`);
+  if (pq.postedWithinDays) parts.push(`Posted within: ${pq.postedWithinDays}d`);
+  return parts.length ? `Query understood: ${parts.join(' | ')}` : '';
+}
+
 function buildDataBlock(intent, contextData, entities, user, pageCtx) {
   if (!contextData) return '';
 
   switch (contextData.type) {
     case 'jobs':
     case 'recommendations': {
+      const pqStr = formatParsedQuery(contextData.parsedQuery || contextData.query);
       const jobLines = contextData.jobs
         .slice(0, 5)
         .map((j, i) => {
@@ -330,7 +375,7 @@ function buildDataBlock(intent, contextData, entities, user, pageCtx) {
         ? `Average salary: ${contextData.stats.avg?.toLocaleString()} ${contextData.jobs[0]?.currency || 'USD'}.`
         : '';
 
-      return `REAL JOB DATA (${contextData.total} total matches):\n${jobLines}\n${salStr}`;
+      return `REAL JOB DATA (${contextData.total} total matches)${pqStr ? `\n${pqStr}` : ''}:\n${jobLines}\n${salStr}`;
     }
 
     case 'job_detail': {
@@ -345,7 +390,12 @@ function buildDataBlock(intent, contextData, entities, user, pageCtx) {
 
     case 'salary_stats': {
       const s = contextData.stats;
-      return `SALARY DATA:\nTotal jobs: ${s.total}\nAverage salary: ${Math.round(s.salary?.avgSalary || 0)}\nMin: ${s.salary?.minSalary || 0}\nMax: ${s.salary?.maxSalary || 0}`;
+      const pqStr = formatParsedQuery(contextData.parsedQuery || contextData.query);
+      const avg = s.salary?.avgSalary ? Math.round(s.salary.avgSalary) : 0;
+      const min = s.salary?.minSalary || 0;
+      const max = s.salary?.maxSalary || 0;
+      const med = s.salary?.medianSalary ? Math.round(s.salary.medianSalary) : null;
+      return `SALARY DATA${pqStr ? ` — ${pqStr}` : ''}:\nTotal jobs: ${s.total}\nAverage: ${avg}\nMedian: ${med || 'N/A'}\nMin: ${min}\nMax: ${max}`;
     }
 
     case 'applications': {

@@ -36,6 +36,12 @@ function getOrCreateSessionId() {
  * @property {Array} [jobs]
  * @property {number} [total]
  * @property {Object} [stats]
+ * @property {Object} [jobDetail]
+ * @property {Object} [company]
+ * @property {string} [link]
+ * @property {string} [linkTab]
+ * @property {Object} [parsedQuery]
+ * @property {Object} [rawQuery]
  */
 
 export function useVoiceSocket() {
@@ -121,7 +127,7 @@ export function useVoiceSocket() {
       setStreamingText(streamBufferRef.current);
     });
 
-    socket.on('voice:done', ({ text, intent, jobs, total, stats, jobDetail, company, link, linkTab }) => {
+    socket.on('voice:done', ({ text, intent, jobs, total, stats, jobDetail, company, link, linkTab, parsedQuery, rawQuery }) => {
       setIsThinking(false);
       setIsStreaming(false);
 
@@ -141,6 +147,8 @@ export function useVoiceSocket() {
         company,
         link,
         linkTab,
+        parsedQuery,
+        rawQuery,
         timestamp: Date.now(),
       };
 

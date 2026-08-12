@@ -12,6 +12,14 @@ const INTENT_PATTERNS = {
       /remote\s+(.*)?/i,
       /internship/i,
       /fresher\s+(.*)?/i,
+      /(i\s+need|want|looking)\s+(a\s+)?(job|work|role|position)/i,
+      /(job\s+)?(openings?|vacancies?|opportunities?)/i,
+      /(hiring|recruiting|we\s+are\s+hiring)/i,
+      /work\s+(from\s+home|remote|from\s+office)/i,
+      /(backend|frontend|fullstack|full.stack|devops|data\s+scientist|data\s+engineer|software|web|mobile)\s+(developer|engineer|jobs?)/i,
+      /(react|angular|vue|python|java|node|golang|typescript|javascript)\s+(jobs?|developer|roles?)/i,
+      /jobs?\s+for\s+(freshers?|seniors?|juniors?|students?|interns?)/i,
+      /(apply|applying)\s+for\s+(a\s+)?(job|role|position)/i,
     ],
     examples: [
       'find java jobs in delhi',
@@ -20,6 +28,9 @@ const INTENT_PATTERNS = {
       'any devops jobs available',
       'internships in bangalore',
       'fresher jobs',
+      'I need a job in Mumbai',
+      'backend developer openings',
+      'work from home vacancies',
     ],
   },
   job_detail: {
@@ -226,20 +237,20 @@ const INTENT_PATTERNS = {
 
 const CONTEXT_KEYWORDS = {
   filters: {
-    remote: /remote|work\s+from\s+home|wfh|telecommute/i,
-    onsite: /onsite|on-site|office|in-office/i,
-    hybrid: /hybrid|flexible/i,
-    fullTime: /full[\s-]?time/i,
+    remote: /remote|work\s+from\s+home|wfh|telecommute|work\s+at\s+home/i,
+    onsite: /onsite|on-site|office|in-office|in\s+person|at\s+office/i,
+    hybrid: /hybrid|flexible|mixed\s+mode/i,
+    fullTime: /full[\s-]?time|permanent/i,
     partTime: /part[\s-]?time/i,
-    contract: /contract|freelance|gig/i,
-    internship: /intern|internship/i,
-    fresher: /fresher|entry[\s-]?level|junior/i,
-    senior: /senior|sr\.?|lead|principal/i,
+    contract: /contract|freelance|gig|temporary/i,
+    internship: /intern|internship|apprentice|training/i,
+    fresher: /fresher|entry[\s-]?level|junior|0\s*year|no\s+experience/i,
+    senior: /senior|sr\.?|lead|principal|architect/i,
   },
   sort: {
-    salary: /salary|pay|highest\s+pay|highest\s+salary|well[\s-]?paid/i,
-    newest: /newest|latest|recent|new/i,
-    trending: /trending|popular|hot/i,
+    salary: /salary|pay|highest\s+pay|highest\s+salary|well[\s-]?paid|top\s+pay|best\s+pay/i,
+    newest: /newest|latest|recent|new|just\s+posted|fresh/i,
+    trending: /trending|popular|hot|top|most\s+viewed/i,
   },
   techStack: [
     'javascript', 'typescript', 'python', 'java', 'react', 'angular', 'vue',
@@ -249,6 +260,50 @@ const CONTEXT_KEYWORDS = {
     'rails', 'sql', 'mongodb', 'postgresql', 'redis', 'graphql', 'rest',
     'html', 'css', 'tailwind', 'sass', 'nextjs', 'nuxt', 'svelte',
     'git', 'ci/cd', 'agile', 'scrum', 'microservices', 'api',
+    'c++', 'c#', '.net', 'go', 'solidity', 'blockchain',
+    'pandas', 'numpy', 'tensorflow', 'pytorch',
+  ],
+  jobTitles: [
+    'software engineer', 'software developer', 'web developer', 'frontend developer',
+    'backend developer', 'full stack developer', 'fullstack developer',
+    'mobile developer', 'ios developer', 'android developer', 'flutter developer',
+    'react developer', 'angular developer', 'vue developer',
+    'python developer', 'java developer', 'node developer', 'nodejs developer',
+    'golang developer', 'rust developer', 'php developer',
+    'data scientist', 'data engineer', 'data analyst', 'ml engineer',
+    'machine learning engineer', 'ai engineer', 'devops engineer', 'sre',
+    'cloud engineer', 'cloud architect', 'solutions architect',
+    'qa engineer', 'test engineer', 'software tester',
+    'product manager', 'project manager', 'engineering manager',
+    'ux designer', 'ui designer', 'product designer', 'graphic designer',
+    'security engineer', 'cybersecurity', 'blockchain developer',
+    'database administrator', 'dba', 'network engineer',
+    'technical writer', 'content writer', 'seo specialist',
+    'digital marketing', 'marketing manager', 'sales executive',
+    'business analyst', 'operations analyst', 'hr manager',
+    'recruiter', 'talent acquisition', 'finance analyst',
+    'accountant', 'customer support', 'customer success',
+  ],
+  commonCompanies: [
+    'google', 'microsoft', 'amazon', 'meta', 'facebook', 'apple',
+    'tcs', 'infosys', 'wipro', 'accenture', 'ibm', 'cognizant',
+    'capgemini', 'hcl', 'tech mahindra', 'paytm', 'flipkart',
+    'swiggy', 'zomato', 'ola', 'uber', 'byjus', 'unacademy',
+    'upgrad', 'cRED', 'phonepe', 'razorpay', 'swiggy',
+  ],
+  countries: [
+    'india', 'usa', 'united states', 'uk', 'united kingdom', 'canada',
+    'australia', 'singapore', 'dubai', 'uae', 'germany', 'france',
+    'japan', 'china', 'brazil', 'netherlands', 'sweden', 'norway',
+  ],
+  cities: [
+    'bangalore', 'mumbai', 'delhi', 'ncr', 'gurgaon', 'gurugram',
+    'noida', 'pune', 'hyderabad', 'chennai', 'kolkata', 'ahmedabad',
+    'surat', 'jaipur', 'lucknow', 'kanpur', 'nagpur', 'indore',
+    'thiruvananthapuram', 'coimbatore', 'vadodara', 'rajkot',
+    'bhopal', 'patna', 'chandigarh', 'kochi', 'goa',
+    'new york', 'san francisco', 'los angeles', 'seattle',
+    'london', 'toronto', 'sydney', 'berlin', 'paris', 'singapore',
   ],
 };
 
@@ -294,6 +349,7 @@ function detectFallbackIntent(text) {
 
 function extractEntities(text) {
   const entities = {};
+  const lower = text.toLowerCase();
 
   for (const [filter, pattern] of Object.entries(CONTEXT_KEYWORDS.filters)) {
     if (pattern.test(text)) {
@@ -307,29 +363,84 @@ function extractEntities(text) {
     }
   }
 
-  const detectedTech = CONTEXT_KEYWORDS.techStack.filter((tech) => text.includes(tech));
+  const detectedTech = CONTEXT_KEYWORDS.techStack.filter((tech) => lower.includes(tech));
   if (detectedTech.length) {
     entities.skills = detectedTech;
   }
 
+  const detectedJobTitles = CONTEXT_KEYWORDS.jobTitles.filter((t) => lower.includes(t));
+  if (detectedJobTitles.length) {
+    entities.jobTitles = detectedJobTitles;
+    entities.search = detectedJobTitles[0];
+  }
+
+  const detectedCompany = CONTEXT_KEYWORDS.commonCompanies.find((c) => lower.includes(c));
+  if (detectedCompany) {
+    entities.company = detectedCompany;
+  }
+
+  const detectedCity = CONTEXT_KEYWORDS.cities.find((c) => lower.includes(` ${c} `) || lower.endsWith(` ${c}`) || lower.startsWith(`${c} `) || lower === c);
+  const detectedCountry = CONTEXT_KEYWORDS.countries.find((c) => lower.includes(c));
+
   const locationMatch = text.match(/(?:in|at|near|around)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/);
-  if (locationMatch) {
+  if (detectedCity) {
+    entities.location = detectedCity.charAt(0).toUpperCase() + detectedCity.slice(1);
+    entities.city = entities.location;
+  } else if (locationMatch) {
     entities.location = locationMatch[1];
+    entities.city = locationMatch[1];
+  }
+  if (detectedCountry) {
+    entities.country = detectedCountry.charAt(0).toUpperCase() + detectedCountry.slice(1);
   }
 
-  const salaryMatch = text.match(/(\d+)\s*(?:lpa|lakhs?|lac|k|lakh|crore|cr)/i);
+  const salaryMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:lpa|lakhs?|lac|k|lakh|crore|cr)/i);
   if (salaryMatch) {
-    entities.salary = salaryMatch[1];
+    const raw = parseFloat(salaryMatch[1]);
+    const suffix = salaryMatch[0].toLowerCase();
+    if (/crore|cr/.test(suffix)) {
+      entities.salary = Math.round(raw * 100);
+    } else if (/k/i.test(suffix)) {
+      entities.salary = Math.round(raw / 100);
+    } else {
+      entities.salary = Math.round(raw);
+    }
   }
 
-  if (/today|now|right\s+now|current/i.test(text)) {
+  const salaryRangeMatch = text.match(/(\d+)\s*[-–to]+\s*(\d+)\s*(?:lpa|lakhs?|lac)/i);
+  if (salaryRangeMatch) {
+    entities.salary = parseInt(salaryRangeMatch[1], 10);
+  }
+
+  const expMatch = text.match(/(\d+)\s*(?:\s*\+?\s*years?\s*(?:of\s*)?experience|yrs?)/i);
+  if (expMatch) {
+    entities.yearsExp = parseInt(expMatch[1], 10);
+  } else if (/(1|2|3|4|5|6|7|8|9|10)\+?\s*(?:yoe|years)/i.test(text)) {
+    const m = text.match(/(1|2|3|4|5|6|7|8|9|10)\+?\s*(?:yoe|years)/i);
+    entities.yearsExp = parseInt(m[1], 10);
+  }
+
+  if (/today|now|right\s+now|current|latest|just\s+posted/i.test(text)) {
     entities.freshness = 'today';
-  } else if (/this\s+week|recent/i.test(text)) {
+  } else if (/this\s+week|recent|past\s+week|last\s+7\s*days/i.test(text)) {
     entities.freshness = 'week';
+  } else if (/this\s+month|last\s+30\s*days/i.test(text)) {
+    entities.freshness = 'month';
   }
 
-  if (/highest\s+salary|top\s+pay|best\s+pay|well[\s-]?paid/i.test(text)) {
+  if (/highest\s+salary|top\s+pay|best\s+pay|well[\s-]?paid|maximum\s+salary|max\s+pay/i.test(text)) {
     entities.sortBy = 'salary';
+  }
+
+  if (/(?:scope|search|find|global|worldwide|international)/i.test(text) && !detectedCity && !detectedCountry && !locationMatch) {
+    entities.scope = 'global';
+  }
+
+  const categoryHints = /(tech|technical|technology|it\s+|software|engineering|developer|coding|programming)/i;
+  if (categoryHints.test(text) || (detectedTech.length && detectedTech.length > 0)) {
+    entities.category = 'technical';
+  } else if (/(marketing|sales|hr|human\s+resources|finance|accounting|content|writing|design|non\s*tech|nontechnical|support|customer)/i.test(text)) {
+    entities.category = 'non-technical';
   }
 
   return entities;
@@ -338,9 +449,18 @@ function extractEntities(text) {
 function buildSearchQuery(intent, entities, context = {}) {
   const query = {};
 
-  if (entities.skills && entities.skills.length) {
-    query.skills = entities.skills.join(',');
+  const skillsFromEntities = entities.skills || [];
+  const skillsFromTitles = entities.jobTitles ? entities.jobTitles.flatMap((t) => {
+    const words = t.toLowerCase().split(/[\s-]+/);
+    return CONTEXT_KEYWORDS.techStack.filter((tech) => words.includes(tech));
+  }) : [];
+  const allSkills = [...new Set([...skillsFromEntities, ...skillsFromTitles])];
+  if (allSkills.length) {
+    query.skills = allSkills.join(',');
   }
+
+  if (entities.search) query.search = entities.search;
+  if (entities.company) query.company = entities.company;
 
   if (entities.remote) query.workMode = 'remote';
   else if (entities.hybrid) query.workMode = 'hybrid';
@@ -353,22 +473,46 @@ function buildSearchQuery(intent, entities, context = {}) {
 
   if (entities.fresher) query.experience = 'fresher';
   else if (entities.senior) query.experience = 'senior';
+  else if (entities.yearsExp !== undefined) query.experience = String(entities.yearsExp);
 
-  if (entities.location) query.city = entities.location;
+  if (entities.city) query.city = entities.city;
+  if (entities.country) query.country = entities.country;
 
-  if (entities.salary) query.salaryMin = entities.salary;
+  if (entities.salary) {
+    query.salaryMin = String(entities.salary * 100000);
+  }
+
+  if (entities.category) query.category = entities.category;
+  if (entities.scope) query.scope = entities.scope;
 
   if (entities.sortBy) query.sort = entities.sortBy;
   else query.sort = 'newest';
 
   if (entities.freshness === 'today') query.postedWithinDays = '1';
   else if (entities.freshness === 'week') query.postedWithinDays = '7';
+  else if (entities.freshness === 'month') query.postedWithinDays = '30';
+
+  query.limit = query.limit || '10';
 
   if (context.lastSearch) {
     if (!query.workMode && context.lastSearch.workMode) query.workMode = context.lastSearch.workMode;
     if (!query.employmentType && context.lastSearch.employmentType) query.employmentType = context.lastSearch.employmentType;
     if (!query.skills && context.lastSearch.skills) query.skills = context.lastSearch.skills;
     if (!query.city && context.lastSearch.city) query.city = context.lastSearch.city;
+    if (!query.country && context.lastSearch.country) query.country = context.lastSearch.country;
+    if (!query.category && context.lastSearch.category) query.category = context.lastSearch.category;
+    if (!query.search && context.lastSearch.search) query.search = context.lastSearch.search;
+    if (!query.scope && context.lastSearch.scope) query.scope = context.lastSearch.scope;
+  }
+
+  if (context.memoryContext?.preferredWorkMode && !query.workMode) {
+    query.workMode = context.memoryContext.preferredWorkMode;
+  }
+  if (context.memoryContext?.preferredLocation && !query.city && !query.country) {
+    query.city = context.memoryContext.preferredLocation;
+  }
+  if (context.memoryContext?.preferredSkills?.length && !query.skills) {
+    query.skills = context.memoryContext.preferredSkills.join(',');
   }
 
   return query;

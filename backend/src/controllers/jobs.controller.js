@@ -432,4 +432,8 @@ module.exports = {
   myApplications,
   reportJob,
   semanticSearch,
+  buildFilters,
+  sortOptions,
+  baseJobFilter,
+  indiaScopeFilter,
 };

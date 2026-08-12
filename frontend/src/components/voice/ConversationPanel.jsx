@@ -9,6 +9,79 @@ import ThinkingAnimation from './ThinkingAnimation';
 import JobResultCard from './JobResultCard';
 import { FaUser, FaArrowRight } from 'react-icons/fa6';
 
+function ParsedQueryChips({ parsedQuery, rawQuery }) {
+  if (!parsedQuery && !rawQuery) return null;
+  const source = parsedQuery && Object.keys(parsedQuery).length ? parsedQuery : rawQuery;
+  if (!source || Object.keys(source).length === 0) return null;
+
+  const labelMap = {
+    search: 'Role',
+    skills: 'Skills',
+    workMode: 'Work Mode',
+    employmentType: 'Type',
+    experience: 'Experience',
+    city: 'City',
+    country: 'Country',
+    company: 'Company',
+    salaryMin: 'Min Salary',
+    salaryMax: 'Max Salary',
+    category: 'Category',
+    sort: 'Sort',
+    scope: 'Scope',
+    postedWithinDays: 'Posted',
+  };
+
+  const formatValue = (key, val) => {
+    if (key === 'salaryMin' || key === 'salaryMax') {
+      const n = Number(val);
+      if (!Number.isFinite(n) || n <= 0) return null;
+      return `₹${(n / 100000).toFixed(1)}L`;
+    }
+    if (key === 'postedWithinDays') return `${val}d`;
+    if (typeof val === 'string' && val.length > 30) return val.slice(0, 30) + '…';
+    return String(val);
+  };
+
+  const chips = [];
+  for (const [key, val] of Object.entries(source)) {
+    if (!val || (typeof val === 'string' && !val.trim())) continue;
+    const label = labelMap[key] || key;
+    const formatted = formatValue(key, val);
+    if (formatted === null) continue;
+    chips.push({ label, value: formatted });
+  }
+  if (!chips.length) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.25, delay: 0.05 }}
+      className="w-full max-w-sm"
+    >
+      <div className="flex items-center gap-1 mb-1.5">
+        <svg className="h-3 w-3 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+        </svg>
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600">
+          Query understood
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {chips.map((c, i) => (
+          <span
+            key={c.label + i}
+            className="inline-flex items-center gap-1 text-[11px] bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-full px-2 py-0.5"
+          >
+            <span className="font-semibold opacity-80">{c.label}:</span>
+            <span>{c.value}</span>
+          </span>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 function MessageBubble({ message, aiMode }) {
   const isUser = message.role === 'user';
 
@@ -29,6 +102,11 @@ function MessageBubble({ message, aiMode }) {
       )}
 
       <div className={`flex flex-col gap-2 max-w-[85%] ${isUser ? 'items-end' : 'items-start'}`}>
+        {/* Parsed query chips — shown above assistant response after job search */}
+        {!isUser && (message.parsedQuery || message.rawQuery) && (
+          <ParsedQueryChips parsedQuery={message.parsedQuery} rawQuery={message.rawQuery} />
+        )}
+
         {/* Text bubble */}
         <div
           className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
