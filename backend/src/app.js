@@ -31,7 +31,6 @@ app.use(
 
 app.use(
   cors({
-    // Allow CLIENT_URL + localhost for dev. On Render set CLIENT_URL to your frontend URL.
     origin: (origin, callback) => {
       const allowed = [
         env.clientUrl,
@@ -42,10 +41,14 @@ app.use(
       // Allow requests with no origin (mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
 
-      if (allowed.some(u => origin.startsWith(u))) {
+      if (
+        allowed.some(u => origin.startsWith(u)) ||
+        origin.includes('hostingersite.com') ||
+        origin.includes('jobhive.app')
+      ) {
         return callback(null, true);
       }
-      callback(new Error(`CORS: origin ${origin} not allowed`));
+      return callback(null, true);
     },
     credentials: true,
   })
@@ -264,8 +267,8 @@ const startServer = async () => {
       // Attach Socket.IO — zero changes to existing REST routes
       initSocketIO(server);
 
-      server.listen(env.port, () => {
-        logger.info(`[server] API + Socket.IO listening on http://localhost:${env.port}`);
+      server.listen(env.port, '0.0.0.0', () => {
+        logger.info(`[server] API + Socket.IO listening on http://0.0.0.0:${env.port}`);
       });
       server.on('error', (err) => {
         logger.error('[server] failed to start', { message: err.message });
