@@ -22,7 +22,7 @@
     "concurrently": "^9.1.0"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.62.4"
+    "@rollup/rollup-linux-x64-gnu": "*"
   },
   "engines": {
     "node": ">=18.0.0"
