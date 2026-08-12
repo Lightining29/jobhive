@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node -e \"if(process.platform==='linux'){try{require('child_process').execSync('npm install --no-save @rollup/rollup-linux-x64-gnu @rollup/rollup-linux-x64-musl',{stdio:'inherit'})}catch(e){}}\"",
-    "postinstall": "node -e \"if(process.platform==='linux'){try{require('child_process').execSync('npm install --no-save @rollup/rollup-linux-x64-gnu @rollup/rollup-linux-x64-musl',{stdio:'inherit'})}catch(e){}}\"",
-    "build": "node -e \"if(process.platform==='linux'){try{require('child_process').execSync('npm install --no-save @rollup/rollup-linux-x64-gnu @rollup/rollup-linux-x64-musl',{stdio:'inherit'})}catch(e){}}\" && vite build",
+    "prebuild": "node -e \"if(process.platform==='linux'){try{require('child_process').execSync('npm install --no-save @rollup/rollup-linux-x64-gnu',{stdio:'inherit'})}catch(e){}}\"",
+    "postinstall": "node -e \"if(process.platform==='linux'){try{require('child_process').execSync('npm install --no-save @rollup/rollup-linux-x64-gnu',{stdio:'inherit'})}catch(e){}}\"",
+    "build": "node -e \"if(process.platform==='linux'){try{require('child_process').execSync('npm install --no-save @rollup/rollup-linux-x64-gnu',{stdio:'inherit'})}catch(e){}}\" && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -24,7 +24,6 @@
   },
   "devDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.62.4",
-    "@rollup/rollup-linux-x64-musl": "^4.62.4",
     "@vitejs/plugin-react": "^4.3.3",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
@@ -32,7 +31,6 @@
     "vite": "^5.4.10"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.62.3",
-    "@rollup/rollup-linux-x64-musl": "^4.62.3"
+    "@rollup/rollup-linux-x64-gnu": "^4.62.4"
   }
 }
