@@ -17,7 +17,26 @@ const mongoose = require('mongoose');
 
 const DEPLOYMENTS_DIR = path.join(__dirname, '..', 'deployments');
 
+// Recursive directory copy fallback for older Node versions
+function copyRecursiveSync(src, dest) {
+  const exists = fs.existsSync(src);
+  const stats = exists && fs.statSync(src);
+  const isDirectory = exists && stats.isDirectory();
+  if (isDirectory) {
+    fs.mkdirSync(dest, { recursive: true });
+    fs.readdirSync(src).forEach((childItemName) => {
+      copyRecursiveSync(path.join(src, childItemName), path.join(dest, childItemName));
+    });
+  } else {
+    fs.copyFileSync(src, dest);
+  }
+}
+
 async function main() {
+  if (!process.env.MONGO_URI) {
+    throw new Error('MONGO_URI is not defined in environment variables');
+  }
+
   await mongoose.connect(process.env.MONGO_URI);
   console.log('[migrate] Connected to MongoDB');
 
@@ -25,7 +44,8 @@ async function main() {
   const all = await Deployment.find({}).lean();
   console.log(`[migrate] Found ${all.length} deployment(s)`);
 
-  let updated = 0;
+  const bulkOps = [];
+  let copiedCount = 0;
   let skipped = 0;
 
   for (const dep of all) {
@@ -51,29 +71,40 @@ async function main() {
           if (typeof fs.cpSync === 'function') {
             fs.cpSync(src, dest, { recursive: true });
           } else {
-            fs.copyFileSync(src, dest);
+            copyRecursiveSync(src, dest);
           }
         }
         console.log(`  [copy]   ${dep.slug} — copied ${items.length} items to current/`);
+        copiedCount++;
       } else {
         console.log(`  [warn]   ${dep.slug} — slug dir missing, skipping disk copy`);
       }
     }
 
-    // Update DB
-    await Deployment.updateOne(
-      { _id: dep._id },
-      { $set: { deploymentPath: currentPath } }
-    );
-    console.log(`  [updated] ${dep.slug} → ${currentPath}`);
-    updated++;
+    // Queue update
+    bulkOps.push({
+      updateOne: {
+        filter: { _id: dep._id },
+        update: { $set: { deploymentPath: currentPath } }
+      }
+    });
+    console.log(`  [queued]  ${dep.slug} → ${currentPath}`);
   }
 
-  console.log(`\n[migrate] Done. Updated: ${updated}, Skipped: ${skipped}`);
-  await mongoose.disconnect();
+  if (bulkOps.length > 0) {
+    const result = await Deployment.bulkWrite(bulkOps);
+    console.log(`\n[migrate] Bulk updates completed. Modified count: ${result.modifiedCount}`);
+  }
+
+  console.log(`\n[migrate] Done. Copied/Created: ${copiedCount}, Skipped: ${skipped}`);
 }
 
-main().catch(err => {
-  console.error('[migrate] Error:', err.message);
-  process.exit(1);
-});
+main()
+  .catch(err => {
+    console.error('[migrate] Error:', err.message);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await mongoose.disconnect();
+    console.log('[migrate] Disconnected from MongoDB');
+  });

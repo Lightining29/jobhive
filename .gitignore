@@ -1,33 +1,12 @@
-# Dependencies
-node_modules/
-
-# Builds
-dist/
-build/
-
-# Environment
+node_modules
 .env
-.env.local
-.env.*.local
-
-# Logs
-*.log
-logs/
-
-# Uploads
-uploads/
-
-# Generated portfolio deployments (server-side static sites)
-backend/deployments/
-
-# Coverage
-coverage/
-
-# Editor / OS
-.vscode/
-.idea/
+*.env
+backend/.env
+frontend/.env
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/deployments/*
+!backend/deployments/.gitkeep
+frontend/dist
 .DS_Store
-
-# Misc
-npm-debug.log*
-yarn-error.log*
+*.log

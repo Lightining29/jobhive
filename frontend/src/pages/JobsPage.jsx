@@ -233,7 +233,7 @@ const JobsPage = () => {
               {/* Job cards */}
               {loading ? (
                 <LoadingJobs count={PAGE_SIZE} />
-              ) : !Array.isArray(jobs) || jobs.length === 0 ? (
+              ) : !Array.isArray(jobs) || jobs?.length < 1 ? (
                 <div className="card">
                   <EmptyState
                     icon={FaMagnifyingGlass}
@@ -251,7 +251,7 @@ const JobsPage = () => {
               )}
 
               {/* ── Pagination ─────────────────────────────────────────── */}
-              {!loading && Array.isArray(jobs) && jobs.length > 0 && (
+              {!loading && Array.isArray(jobs) && jobs?.length > 0 && (
                 <Pagination
                   page={page}
                   pages={pages}

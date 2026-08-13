@@ -178,25 +178,26 @@ const fetchAllJobs = async () => {
 
 const cleanupExpiredJobs = async () => {
   const now = new Date();
-  const expired = await Job.find({
+  const filter = {
     source: { $ne: 'recruiter' },
     isExpired: false,
     expiresAt: { $lt: now },
-  }).select('_id');
+  };
+  const result = await Job.updateMany(
+    filter,
+    { $set: { isExpired: true, isActive: false } }
+  );
+  const count = result.modifiedCount || 0;
 
-  if (expired.length) {
-    await Job.updateMany(
-      { _id: { $in: expired.map((j) => j._id) } },
-      { $set: { isExpired: true, isActive: false } }
-    );
-    logger.info(`[jobs] marked ${expired.length} expired`);
+  if (count > 0) {
+    logger.info(`[jobs] marked ${count} expired`);
   }
   await JobLog.create({
     provider: 'cron',
     type: 'expire',
-    message: `Marked ${expired.length} jobs expired`,
+    message: `Marked ${count} jobs expired`,
   });
-  return expired.length;
+  return count;
 };
 
 module.exports = { fetchAllJobs, fetchFromProvider, cleanupExpiredJobs, buildJobDoc, getProviders };

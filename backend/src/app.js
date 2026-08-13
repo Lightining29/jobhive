@@ -110,7 +110,17 @@ app.use('/api/voice',  apiLimiter, require('./routes/voice.routes'));
 app.use('/api/resume',             require('./routes/resumeAnalyzer.routes'));
 app.use('/api/news',      require('./routes/careerNews.routes'));
 app.use('/api/portfolio',    require('./routes/portfolio.routes'));
-app.use('/api/deployments', apiLimiter, require('./routes/deployment.routes'));
+// ── Serve Published User Portfolios at /p/:slug ──
+const deploymentService = require('./services/deployment.service');
+app.use('/p/:slug', (req, res, next) => {
+  const { slug } = req.params;
+  const currentDir = path.join(deploymentService.DEPLOYMENTS_DIR, slug, 'current');
+  if (fs.existsSync(currentDir)) {
+    deploymentService.incrementViews(slug).catch(() => {});
+    return express.static(currentDir)(req, res, next);
+  }
+  next();
+});
 
 const fs = require('fs');
 
