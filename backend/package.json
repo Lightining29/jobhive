@@ -7,6 +7,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
+    "build": "echo 'Backend build complete'",
     "dev": "node --watch server.js",
     "seed": "node src/seed.js",
     "cron:fetch": "node src/cron/runNow.js"
