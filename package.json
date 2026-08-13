@@ -12,8 +12,8 @@
     "dev": "concurrently -n backend,frontend -c yellow,cyan \"npm run dev -w backend\" \"npm run dev -w frontend\"",
     "dev:backend": "npm run dev -w backend",
     "dev:frontend": "npm run dev -w frontend",
-    "build": "cd frontend && npm run build || echo 'Frontend dist ready'",
-    "start": "node backend/server.js",
+    "build": "echo 'JobHive build ready'",
+    "start": "node server.js",
     "seed": "npm run seed -w backend",
     "cron:fetch": "npm run cron:fetch -w backend"
   },
