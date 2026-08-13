@@ -9,8 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
     "framer-motion": "^11.11.9",
+    "postcss": "^8.4.47",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.1",
@@ -18,20 +21,14 @@
     "react-icons": "^5.3.0",
     "react-router-dom": "^6.27.0",
     "socket.io-client": "^4.8.3",
-    "uuid": "^8.3.2"
+    "tailwindcss": "^3.4.14",
+    "uuid": "^8.3.2",
+    "vite": "^5.4.10"
   },
   "overrides": {
     "vite": {
       "rollup": "npm:@rollup/wasm-node@^4.62.4"
     },
     "rollup": "npm:@rollup/wasm-node@^4.62.4"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.3",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.47",
-    "rollup": "npm:@rollup/wasm-node@^4.62.4",
-    "tailwindcss": "^3.4.14",
-    "vite": "^5.4.10"
   }
 }
