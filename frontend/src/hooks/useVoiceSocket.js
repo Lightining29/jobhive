@@ -6,10 +6,14 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import { io } from 'socket.io-client';
 import { v4 as uuidv4 } from 'uuid';
 
-// In development the Vite proxy forwards /socket.io → backend:5000.
-// Connecting to window.location.origin (the Vite dev server) is correct in
-// both dev and prod — the proxy and nginx/reverse-proxy handle the upgrade.
-const SOCKET_URL = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5000';
+// Supports separate frontend & backend deployments (VITE_SOCKET_URL or derived from VITE_API_URL)
+const SOCKET_URL =
+  import.meta.env.VITE_SOCKET_URL ||
+  (import.meta.env.VITE_API_URL
+    ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '')
+    : typeof window !== 'undefined'
+    ? window.location.origin
+    : 'http://localhost:5000');
 
 const SESSION_STORAGE_KEY = 'voice_session_id';
 
