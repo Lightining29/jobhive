@@ -217,45 +217,17 @@ async function healthCheck() {
       format: 'mp3',
     };
   }
-
-  try {
-    const url = `${TTS_CONFIG.baseUrl}/v1/voices`;
-    const result = await httpGet(url, TTS_CONFIG.timeout);
-    const voices = Array.isArray(result)
-      ? result.map((v) => (typeof v === 'string' ? v : v.id || v.name))
-      : [];
-    return { available: true, voices, voice: TTS_CONFIG.voice, format: TTS_CONFIG.format };
-  } catch {
-    return { available: false, voices: [], voice: TTS_CONFIG.voice };
-  }
+  return { available: false, fallback: true, voices: [], voice: TTS_CONFIG.voice };
 }
 
 /**
  * Synthesise text → audio buffer.
- * Enhanced with natural text preprocessing.
  */
 async function synthesise(text, opts = {}) {
   if (GEMINI_API_KEY) {
-    try {
-      return await geminiSynthesise(text, opts);
-    } catch (err) {
-      console.warn('[TTS] Gemini Voice failed, falling back to Kokoro:', err.message);
-    }
+    return await geminiSynthesise(text, opts);
   }
-
-  const voice = opts.voice || TTS_CONFIG.voice;
-  const speed = opts.speed || TTS_CONFIG.speed;
-  const format = opts.format || TTS_CONFIG.format;
-  const cleaned = cleanText(text);
-
-  const url = `${TTS_CONFIG.baseUrl}/v1/audio/speech`;
-  const body = { model: 'kokoro', input: cleaned, voice, speed, response_format: format };
-
-  const mimeMap = { mp3: 'audio/mpeg', wav: 'audio/wav', opus: 'audio/opus', flac: 'audio/flac', pcm: 'audio/pcm' };
-  const contentType = mimeMap[format] || 'audio/mpeg';
-
-  const buffer = await httpPostBinary(url, body, TTS_CONFIG.timeout);
-  return { buffer, contentType, format };
+  throw new Error('TTS server offline. Using browser Web Speech fallback.');
 }
 
 /**
@@ -264,62 +236,14 @@ async function synthesise(text, opts = {}) {
  */
 async function stream(text, res, opts = {}) {
   if (GEMINI_API_KEY) {
-    try {
-      const { buffer, contentType } = await geminiSynthesise(text, opts);
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Content-Length', buffer.length);
-      res.setHeader('Cache-Control', 'no-cache');
-      res.end(buffer);
-      return;
-    } catch (err) {
-      console.warn('[TTS] Gemini Voice stream failed, falling back to Kokoro:', err.message);
-    }
+    const { buffer, contentType } = await geminiSynthesise(text, opts);
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Length', buffer.length);
+    res.setHeader('Cache-Control', 'no-cache');
+    res.end(buffer);
+    return;
   }
-
-  const voice = opts.voice || TTS_CONFIG.voice;
-  const speed = opts.speed || TTS_CONFIG.speed;
-  const format = opts.format || TTS_CONFIG.format;
-  const cleaned = cleanText(text);
-
-  const mimeMap = { mp3: 'audio/mpeg', wav: 'audio/wav', opus: 'audio/opus', flac: 'audio/flac' };
-  const contentType = mimeMap[format] || 'audio/mpeg';
-
-  const url = `${TTS_CONFIG.baseUrl}/v1/audio/speech`;
-  const body = { model: 'kokoro', input: cleaned, voice, speed, response_format: format };
-
-  res.setHeader('Content-Type', contentType);
-  res.setHeader('Transfer-Encoding', 'chunked');
-  res.setHeader('Cache-Control', 'no-cache');
-
-  return new Promise((resolve, reject) => {
-    const parsed = new URL(url);
-    const transport = parsed.protocol === 'https:' ? https : http;
-    const data = JSON.stringify(body);
-
-    const req = transport.request(
-      {
-        hostname: parsed.hostname,
-        port: parsed.port || (parsed.protocol === 'https:' ? 443 : 80),
-        path: parsed.pathname,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) },
-        timeout: TTS_CONFIG.timeout,
-      },
-      (kokoroRes) => {
-        if (kokoroRes.statusCode !== 200) {
-          reject(new Error(`Kokoro returned HTTP ${kokoroRes.statusCode}`));
-          return;
-        }
-        kokoroRes.pipe(res);
-        kokoroRes.on('end', resolve);
-        kokoroRes.on('error', reject);
-      }
-    );
-    req.on('error', reject);
-    req.on('timeout', () => { req.destroy(); reject(new Error('Kokoro TTS request timed out')); });
-    req.write(data);
-    req.end();
-  });
+  throw new Error('TTS server offline. Using browser Web Speech fallback.');
 }
 
 /**
