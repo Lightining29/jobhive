@@ -52,12 +52,14 @@ export default function SemanticSearchBar({ onResultsChange }) {
 
     try {
       const { data } = await jobService.semanticSearch(text);
-      setResults(data.jobs || []);
-      setParsed(data.parsed || {});
-      setTotal(data.pagination?.total || 0);
-      onResultsChange?.(data.jobs, data.pagination?.total);
+      const jobsList = Array.isArray(data?.jobs) ? data.jobs : [];
+      setResults(jobsList);
+      setParsed(data?.parsed || {});
+      setTotal(data?.pagination?.total || 0);
+      onResultsChange?.(jobsList, data?.pagination?.total || 0);
     } catch (err) {
-      setError(err.response?.data?.message || 'Search failed. Try again.');
+      setResults([]);
+      setError(err.response?.data?.message || err.message || 'Search failed. Try again.');
     } finally {
       setLoading(false);
     }
@@ -195,14 +197,14 @@ export default function SemanticSearchBar({ onResultsChange }) {
                   ? <><span className="text-primary-600">{total.toLocaleString()}</span> jobs matched your description</>
                   : 'No jobs matched — try rephrasing your search'}
               </p>
-              {results.length > 0 && (
+              {Array.isArray(results) && results.length > 0 && (
                 <button onClick={clear} className="text-xs text-muted hover:text-red-500 transition-colors">
                   Clear results
                 </button>
               )}
             </div>
 
-            {results.length > 0 && (
+            {Array.isArray(results) && results.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {results.map((job) => (
                   <JobCard key={job._id} job={job} />

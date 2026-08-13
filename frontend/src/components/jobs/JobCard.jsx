@@ -133,7 +133,7 @@ const SOURCE_DOT_COLORS = {
 
 const JobCard = ({ job, match }) => {
   const { user, savedJobs, toggleSaved } = useAuth();
-  const isSaved = savedJobs.some((j) => j._id === job._id);
+  const isSaved = Array.isArray(savedJobs) && savedJobs.some((j) => j?._id === job?._id);
   const showSave = user && user.role === 'candidate';
 
   const workMode =

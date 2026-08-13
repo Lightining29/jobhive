@@ -153,6 +153,7 @@ const startServer = async () => {
 
       server.listen(env.port, '0.0.0.0', () => {
         logger.info(`[server] API + Socket.IO listening on http://0.0.0.0:${env.port}`);
+        console.log("Backend Start Successfully")
       });
       server.on('error', (err) => {
         logger.error('[server] failed to start', { message: err.message });

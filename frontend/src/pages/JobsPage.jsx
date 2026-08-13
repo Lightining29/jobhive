@@ -87,17 +87,24 @@ const JobsPage = () => {
 
     try {
       const { data } = await jobService.list(q);
-      setJobs(data.jobs);
-      setTotal(data.pagination.total);
-      setPages(data.pagination.pages);
-      setPage(data.pagination.page);
+      const jobsList = Array.isArray(data?.jobs) ? data.jobs : [];
+      const pageInfo = data?.pagination || {};
+      setJobs(jobsList);
+      setTotal(pageInfo.total || 0);
+      setPages(pageInfo.pages || 1);
+      setPage(pageInfo.page || 1);
       setParams((prev) => {
         const sp = new URLSearchParams(prev);
-        sp.set('page', String(data.pagination.page));
+        if (pageInfo.page) {
+          sp.set('page', String(pageInfo.page));
+        }
         return sp;
       }, { replace: true });
     } catch (err) {
-      toast.error(err.message);
+      setJobs([]);
+      setTotal(0);
+      setPages(1);
+      toast.error(err.message || 'Failed to fetch jobs');
     } finally {
       setLoading(false);
     }
@@ -226,7 +233,7 @@ const JobsPage = () => {
               {/* Job cards */}
               {loading ? (
                 <LoadingJobs count={PAGE_SIZE} />
-              ) : jobs.length === 0 ? (
+              ) : !Array.isArray(jobs) || jobs.length === 0 ? (
                 <div className="card">
                   <EmptyState
                     icon={FaMagnifyingGlass}
@@ -244,7 +251,7 @@ const JobsPage = () => {
               )}
 
               {/* ── Pagination ─────────────────────────────────────────── */}
-              {!loading && jobs.length > 0 && (
+              {!loading && Array.isArray(jobs) && jobs.length > 0 && (
                 <Pagination
                   page={page}
                   pages={pages}
