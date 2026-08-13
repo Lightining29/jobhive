@@ -22,24 +22,31 @@ const logger = require('../config/logger');
 const { applyTheme } = require('./portfolioThemes');
 
 // ── Load template files once at startup ────────────────────────────────────
-// style.css and script.js live at the repo root (same folder as backend/)
-// Path: backend/src/services/ → ../../.. → repo root
-const TEMPLATE_DIR = path.resolve(__dirname, '..', '..', '..');
+// style.css and script.js live in backend/src/templates/portfolio/ (or fallback to repo root)
+const TEMPLATE_DIR = path.resolve(__dirname, '..', 'templates', 'portfolio');
+const REPO_ROOT_DIR = path.resolve(__dirname, '..', '..', '..');
 
 function loadFile(filename) {
-  const p = path.join(TEMPLATE_DIR, filename);
-  if (!fs.existsSync(p)) {
-    // Fallback: try one level higher (local dev structure where workspace is nested)
-    const p2 = path.join(path.resolve(__dirname, '..', '..', '..', '..'), filename);
-    if (fs.existsSync(p2)) {
-      logger.info(`[portfolio] Template found at fallback path: ${p2}`);
-      return fs.readFileSync(p2, 'utf8');
-    }
-    logger.warn(`[portfolio] Template file not found at: ${p} or ${p2}`);
-    return '';
+  const primaryPath = path.join(TEMPLATE_DIR, filename);
+  if (fs.existsSync(primaryPath)) {
+    logger.info(`[portfolio] Loaded ${filename} (${fs.statSync(primaryPath).size} bytes) from ${TEMPLATE_DIR}`);
+    return fs.readFileSync(primaryPath, 'utf8');
   }
-  logger.info(`[portfolio] Loaded ${filename} (${fs.statSync(p).size} bytes) from ${TEMPLATE_DIR}`);
-  return fs.readFileSync(p, 'utf8');
+
+  const fallbackRootPath = path.join(REPO_ROOT_DIR, filename);
+  if (fs.existsSync(fallbackRootPath)) {
+    logger.info(`[portfolio] Template found at repo root fallback: ${fallbackRootPath}`);
+    return fs.readFileSync(fallbackRootPath, 'utf8');
+  }
+
+  const fallbackOuterPath = path.join(path.resolve(REPO_ROOT_DIR, '..'), filename);
+  if (fs.existsSync(fallbackOuterPath)) {
+    logger.info(`[portfolio] Template found at outer fallback: ${fallbackOuterPath}`);
+    return fs.readFileSync(fallbackOuterPath, 'utf8');
+  }
+
+  logger.warn(`[portfolio] Template file ${filename} not found in template paths`);
+  return '';
 }
 
 const BASE_CSS = loadFile('style.css');

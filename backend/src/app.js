@@ -34,8 +34,6 @@ app.use(
     origin: (origin, callback) => {
       const allowed = [
         env.clientUrl,
-        'http://localhost:5173',
-        'http://localhost:3000',
       ].filter(Boolean);
 
       // Allow requests with no origin (mobile apps, curl, Postman)

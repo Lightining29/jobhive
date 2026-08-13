@@ -7,7 +7,7 @@ Install once:
     pip install kokoro-onnx soundfile fastapi uvicorn
 
 Run:
-    python kokoro_server.py
+    python backend/scripts/kokoro_server.py
 
 Then set in backend/.env:
     KOKORO_URL=http://localhost:8880
