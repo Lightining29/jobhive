@@ -15,6 +15,7 @@ const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/auth/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('./pages/auth/ResetPasswordPage'));
 const VerifyEmailPage = lazy(() => import('./pages/auth/VerifyEmailPage'));
+const GoogleCallbackPage = lazy(() => import('./pages/auth/GoogleCallbackPage'));
 const JobsPage = lazy(() => import('./pages/JobsPage'));
 const JobDetailPage = lazy(() => import('./pages/JobDetailPage'));
 const RecommendedJobsPage = lazy(() => import('./pages/RecommendedJobsPage'));
@@ -68,6 +69,7 @@ const App = () => (
               <Route path="/auth/forgot-password" element={withSuspense(<ForgotPasswordPage />)} />
               <Route path="/auth/reset-password" element={withSuspense(<ResetPasswordPage />)} />
               <Route path="/auth/verify-email" element={withSuspense(<VerifyEmailPage />)} />
+              <Route path="/auth/google/callback" element={withSuspense(<GoogleCallbackPage />)} />
             </Route>
 
             <Route element={<ProtectedRoute roles={['candidate']} />}>

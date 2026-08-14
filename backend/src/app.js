@@ -42,7 +42,8 @@ app.use(
       if (
         allowed.some(u => origin.startsWith(u)) ||
         origin.includes('hostingersite.com') ||
-        origin.includes('jobhive.app')
+        origin.includes('jobhive.app') ||
+        origin.includes('jobworkplace.com')
       ) {
         return callback(null, true);
       }
