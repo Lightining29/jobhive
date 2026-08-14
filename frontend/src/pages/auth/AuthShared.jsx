@@ -9,14 +9,19 @@ export const AuthLayout = ({ title, subtitle, children }) => (
     <div className="relative w-full max-w-md">
       <div className="card p-8 shadow-lift">
         <div className="flex justify-center mb-6">
-          <Link to="/" className="flex items-center gap-2 group">
+          <Link to="/" className="flex items-center gap-2.5 group">
             <span className="relative h-10 w-10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
               <FaHexagonNodes className="h-10 w-10 text-ink drop-shadow-sm" />
               <span className="absolute inset-0 flex items-center justify-center">
                 <span className="h-4 w-4 rounded-full bg-accent shadow-[0_0_12px_rgba(250,204,21,0.5)]" />
               </span>
             </span>
-            <span className="text-2xl font-black text-ink">Job<span className="bg-gradient-to-r from-accent-dark to-accent bg-clip-text text-transparent">Hive</span></span>
+            <div className="flex flex-col leading-tight items-start">
+              <span className="text-xl font-black text-ink">Job Workplace</span>
+              <span className="text-sm font-bold tracking-tight">
+                <span className="text-red-600">Apple</span><span className="text-emerald-600">tree</span> <span className="text-black">infotech</span>
+              </span>
+            </div>
           </Link>
         </div>
         <h1 className="text-2xl font-extrabold text-center">{title}</h1>

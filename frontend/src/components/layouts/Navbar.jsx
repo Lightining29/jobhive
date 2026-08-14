@@ -1,6 +1,5 @@
 import { Link, NavLink } from 'react-router-dom';
-import { FaMagnifyingGlass, FaBell, FaBars, FaXmark } from 'react-icons/fa6';
-import { FaHexagonNodes } from 'react-icons/fa6';
+import { FaMagnifyingGlass, FaBell, FaBars, FaXmark, FaHexagonNodes, FaArrowRightFromBracket, FaBookmark, FaGlobe, FaBriefcase } from 'react-icons/fa6';
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { initials } from '../../utils/format';
@@ -21,13 +20,109 @@ const Navbar = () => {
   const dashboardPath = user?.role === 'admin' ? '/admin/dashboard' : user?.role === 'recruiter' ? '/recruiter/dashboard' : '/candidate/dashboard';
 
   const mobileMenu = (
-    <div className="md:hidden absolute top-full inset-x-0 bg-white shadow-lift border-b border-line px-4 py-4 space-y-2 z-50">
+    <div className="md:hidden absolute top-full inset-x-0 bg-white shadow-lift border-b border-line px-4 py-4 space-y-2 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto">
+      {user ? (
+        <div className="p-3 bg-gradient-to-br from-slate-50 to-primary-50/40 rounded-2xl border border-line mb-3">
+          <div className="flex items-center gap-3 mb-3">
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt=""
+                className="h-11 w-11 rounded-full object-cover border-2 border-accent shrink-0"
+                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+              />
+            ) : null}
+            <span className={`h-11 w-11 rounded-full bg-gradient-to-br from-accent-dark to-ink text-white items-center justify-center text-sm font-bold shrink-0 ${user.avatar ? 'hidden' : 'flex'}`}>
+              {initials(user.name)}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-ink truncate">{user.name}</p>
+              <p className="text-xs text-muted truncate capitalize">{user.role} • {user.email}</p>
+            </div>
+          </div>
+          <Link
+            to={dashboardPath}
+            onClick={() => setOpen(false)}
+            className="btn-primary w-full !py-2.5 text-xs font-bold justify-center shadow-sm"
+          >
+            Enter Dashboard →
+          </Link>
+        </div>
+      ) : null}
+
+      <p className="text-[11px] font-bold text-muted uppercase tracking-wider px-3 pt-1">Navigation</p>
       {NAV_LINKS.map((l) => (
-        <NavLink key={l.to} to={l.to} onClick={() => setOpen(false)} className={({ isActive }) => `block px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${isActive ? 'bg-accent/10 text-ink' : 'text-muted hover:bg-slate-50 hover:text-ink'}`}>
+        <NavLink
+          key={l.to}
+          to={l.to}
+          onClick={() => setOpen(false)}
+          className={({ isActive }) => `block px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${isActive ? 'bg-accent/10 text-ink font-semibold' : 'text-muted hover:bg-slate-50 hover:text-ink'}`}
+        >
           {l.label}
         </NavLink>
       ))}
-      {!user && (
+
+      {user ? (
+        <div className="pt-3 border-t border-line space-y-1">
+          <p className="text-[11px] font-bold text-muted uppercase tracking-wider px-3">Account</p>
+          <Link
+            to={dashboardPath}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-ink hover:bg-accent/10 transition-colors"
+          >
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            Dashboard
+          </Link>
+          <Link
+            to="/candidate/saved-jobs"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors"
+          >
+            <FaBookmark className="h-3.5 w-3.5 text-muted" />
+            Saved Jobs
+          </Link>
+          <Link
+            to="/candidate/portfolio"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors"
+          >
+            <FaGlobe className="h-3.5 w-3.5 text-muted" />
+            AI Portfolio
+          </Link>
+          {user.role === 'recruiter' && (
+            <Link
+              to="/recruiter/post-job"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors"
+            >
+              <FaBriefcase className="h-3.5 w-3.5 text-muted" />
+              Post a Job
+            </Link>
+          )}
+          <Link
+            to="/notifications"
+            onClick={() => setOpen(false)}
+            className="flex items-center justify-between px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors"
+          >
+            <span className="flex items-center gap-2.5">
+              <FaBell className="h-3.5 w-3.5 text-muted" />
+              Notifications
+            </span>
+            {unreadCount > 0 && (
+              <span className="badge badge-accent !px-2 !py-0.5 text-[10px]">
+                {unreadCount}
+              </span>
+            )}
+          </Link>
+          <button
+            onClick={() => { setOpen(false); logout(); }}
+            className="w-full flex items-center gap-2.5 text-left px-3 py-2.5 rounded-xl text-sm text-red-600 font-medium hover:bg-red-50 transition-colors mt-2"
+          >
+            <FaArrowRightFromBracket className="h-3.5 w-3.5" />
+            Logout
+          </button>
+        </div>
+      ) : (
         <div className="flex gap-2 pt-3 border-t border-line">
           <Link to="/auth/login" onClick={() => setOpen(false)} className="btn-outline flex-1">Login</Link>
           <Link to="/auth/register" onClick={() => setOpen(false)} className="btn-primary flex-1">Sign Up</Link>
@@ -47,9 +142,14 @@ const Navbar = () => {
                 <span className="h-4 w-4 rounded-full bg-accent shadow-[0_0_12px_rgba(250,204,21,0.5)]" />
               </span>
             </span>
-            <span className="text-xl font-black tracking-tight text-ink">
-              Job<span className="bg-gradient-to-r from-accent-dark to-accent bg-clip-text text-transparent">Hive</span>
-            </span>
+            <div className="flex flex-col leading-tight">
+              <span className="text-lg sm:text-xl font-black tracking-tight text-ink">
+                Job Workplace
+              </span>
+              <span className="text-xs sm:text-sm font-bold tracking-tight">
+                <span className="text-red-600">Apple</span><span className="text-emerald-600">tree</span> <span className="text-black">infotech</span>
+              </span>
+            </div>
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
@@ -65,11 +165,15 @@ const Navbar = () => {
             ))}
           </nav>
 
+          {/* Desktop Auth / Action area */}
           <div className="hidden md:flex items-center gap-3">
             {user ? (
               <>
                 <Link to="/jobs" className="btn-outline !py-2">
                   <FaMagnifyingGlass className="h-3.5 w-3.5" /> Search
+                </Link>
+                <Link to={dashboardPath} className="btn-primary !py-2 !px-3.5 text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                  Dashboard
                 </Link>
                 <Link to="/notifications" className="relative p-2 rounded-xl text-muted hover:bg-slate-50 hover:text-ink transition-colors">
                   <FaBell className="h-5 w-5" />
@@ -80,7 +184,11 @@ const Navbar = () => {
                   )}
                 </Link>
                 <div className="relative">
-                  <button onClick={() => setProfileOpen((p) => !p)} className="flex items-center gap-2 group">
+                  <button
+                    onClick={() => setProfileOpen((p) => !p)}
+                    className="flex items-center gap-2 p-1 rounded-full hover:bg-slate-100 transition-colors group"
+                    aria-label="User menu"
+                  >
                     {user.avatar ? (
                       <img src={user.avatar} alt="" className="h-9 w-9 rounded-full object-cover border-2 border-accent group-hover:border-accent-dark transition-colors" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
                     ) : null}
@@ -89,22 +197,22 @@ const Navbar = () => {
                     </span>
                   </button>
                   {profileOpen && (
-                    <div className="absolute right-0 top-12 w-56 card p-2 z-50" onMouseLeave={() => setProfileOpen(false)}>
+                    <div className="absolute right-0 top-12 w-56 card p-2 z-50 shadow-lift" onMouseLeave={() => setProfileOpen(false)}>
                       <div className="px-3 py-2 border-b border-line mb-1">
                         <p className="text-sm font-semibold truncate">{user.name}</p>
                         <p className="text-xs text-muted capitalize">{user.role}</p>
                       </div>
-                      <Link to={dashboardPath} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-accent/10 hover:text-ink transition-colors">Dashboard</Link>
-                      <Link to="/candidate/saved-jobs" className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-accent/10 hover:text-ink transition-colors">Saved Jobs</Link>
-                      <Link to="/candidate/portfolio" className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-accent/10 hover:text-ink transition-colors">AI Portfolio</Link>
+                      <Link to={dashboardPath} onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm font-semibold text-ink bg-accent/10 hover:bg-accent/20 transition-colors">Go to Dashboard</Link>
+                      <Link to="/candidate/saved-jobs" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">Saved Jobs</Link>
+                      <Link to="/candidate/portfolio" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">AI Portfolio</Link>
                       {user.role === 'candidate' && (
-                        <Link to="/candidate/deployment" className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-accent/10 hover:text-ink transition-colors">My Portfolio</Link>
+                        <Link to="/candidate/deployment" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">My Portfolio</Link>
                       )}
-                      <Link to="/notifications" className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-accent/10 hover:text-ink transition-colors">Notifications</Link>
+                      <Link to="/notifications" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">Notifications</Link>
                       {user.role === 'recruiter' && (
-                        <Link to="/recruiter/post-job" className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-accent/10 hover:text-ink transition-colors">Post a Job</Link>
+                        <Link to="/recruiter/post-job" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">Post a Job</Link>
                       )}
-                      <button onClick={logout} className="w-full text-left px-3 py-2 rounded-xl text-sm text-red-600 hover:bg-red-50 transition-colors">Logout</button>
+                      <button onClick={() => { setProfileOpen(false); logout(); }} className="w-full text-left px-3 py-2 rounded-xl text-sm text-red-600 hover:bg-red-50 transition-colors mt-1 border-t border-line">Logout</button>
                     </div>
                   )}
                 </div>
@@ -117,9 +225,54 @@ const Navbar = () => {
             )}
           </div>
 
-          <button className="md:hidden p-2 rounded-xl text-ink hover:bg-slate-50 transition-colors" onClick={() => setOpen((o) => !o)} aria-label="Toggle menu">
-            {open ? <FaXmark className="h-6 w-6" /> : <FaBars className="h-6 w-6" />}
-          </button>
+          {/* Mobile Right Controls: Touch-to-Dashboard Avatar + Menu toggle */}
+          <div className="flex md:hidden items-center gap-2">
+            {user ? (
+              <>
+                <Link
+                  to="/notifications"
+                  className="relative p-1.5 rounded-lg text-muted hover:text-ink transition-colors"
+                  aria-label="Notifications"
+                >
+                  <FaBell className="h-4 w-4" />
+                  {unreadCount > 0 && (
+                    <span className="absolute 0 top-0.5 right-0.5 h-2 w-2 rounded-full bg-red-500" />
+                  )}
+                </Link>
+                {/* Touching this directly enters Dashboard on mobile */}
+                <Link
+                  to={dashboardPath}
+                  className="flex items-center gap-1.5 p-1 pr-2.5 rounded-full bg-slate-100 active:bg-slate-200 border border-slate-200 transition-all shadow-xs"
+                  title="Touch to enter Dashboard"
+                >
+                  {user.avatar ? (
+                    <img
+                      src={user.avatar}
+                      alt={user.name}
+                      className="h-7 w-7 rounded-full object-cover border border-accent shrink-0"
+                      onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                    />
+                  ) : null}
+                  <span className={`h-7 w-7 rounded-full bg-gradient-to-br from-accent-dark to-ink text-white items-center justify-center text-xs font-bold shrink-0 ${user.avatar ? 'hidden' : 'flex'}`}>
+                    {initials(user.name)}
+                  </span>
+                  <span className="text-xs font-bold text-ink">Dashboard</span>
+                </Link>
+              </>
+            ) : (
+              <Link to="/auth/login" className="btn-outline !py-1 !px-2.5 text-xs">
+                Login
+              </Link>
+            )}
+
+            <button
+              className="p-2 rounded-xl text-ink hover:bg-slate-50 transition-colors"
+              onClick={() => setOpen((o) => !o)}
+              aria-label="Toggle menu"
+            >
+              {open ? <FaXmark className="h-5 w-5" /> : <FaBars className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
       </div>
       {open && mobileMenu}
@@ -128,3 +281,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
