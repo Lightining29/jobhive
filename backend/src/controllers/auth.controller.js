@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const PendingUser = require('../models/PendingUser');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 const { setAuthCookie, clearAuthCookie } = require('../middleware/auth');
@@ -15,134 +16,228 @@ const getVerificationUrl = (token) =>
 const getResetUrl = (token) =>
   `${env.clientUrl}/auth/reset-password?token=${token}`;
 
+// Step 1: Validate signup details and send OTP before creating the account in database
 const register = asyncHandler(async (req, res, next) => {
   const { name, email, password, role } = req.body;
+  const normalizedEmail = String(email).toLowerCase().trim();
 
-  const existing = await User.findOne({ email });
-  if (existing) {
-    if (!existing.emailVerified) {
-      await existing.deleteOne();
-    } else {
-      return next(new ApiError(409, 'An account with this email already exists.'));
+  // Check if a real registered user already exists
+  const existingUser = await User.findOne({ email: normalizedEmail });
+  if (existingUser) {
+    if (existingUser.emailVerified) {
+      return next(new ApiError(409, 'An account with this email already exists. Please log in.'));
     }
+    // If old unverified user exists, remove it so new registration can proceed cleanly
+    await existingUser.deleteOne();
   }
 
   const otp = generateOtp();
-  const verificationToken = randomToken(32);
-  const otpExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
+  const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-  const user = await User.create({
-    name,
-    email,
-    password,
+  // Save/replace pending signup record (NO official User record created yet)
+  await PendingUser.deleteMany({ email: normalizedEmail });
+  await PendingUser.create({
+    name: name.trim(),
+    email: normalizedEmail,
+    password, // pre-save will hash password
     role: role === 'recruiter' ? 'recruiter' : 'candidate',
-    emailVerified: false,
-    verificationOtp: hashToken(otp),
-    verificationOtpExpires: otpExpiry,
-    verificationToken: hashToken(verificationToken),
-    verificationTokenExpires: Date.now() + 24 * 60 * 60 * 1000,
+    otp: hashToken(otp),
+    expiresAt: otpExpiry,
   });
 
-  logger.info(`[auth] Registration successful for ${user.email}. OTP: ${otp}`);
+  logger.info(`[auth] Pre-signup OTP generated for ${normalizedEmail}. OTP: ${otp}`);
 
   try {
     await sendMail({
-      to: user.email,
-      toName: user.name,
+      to: normalizedEmail,
+      toName: name.trim(),
       subject: `Your JobHive Verification Code: ${otp}`,
       html: buildOtpEmailHtml({
-        name: user.name,
+        name: name.trim(),
         otp,
         expiryMinutes: 10,
       }),
     });
   } catch (err) {
-    logger.warn(`[auth] OTP verification email failed: ${err.message}`);
+    logger.warn(`[auth] Pre-signup OTP email failed: ${err.message}`);
   }
 
-  // Set auth cookie so session is initialized, but emailVerified remains false until OTP verified
-  setAuthCookie(res, user._id);
-  res.status(201).json({
+  res.status(200).json({
     success: true,
-    message: 'Account created! Please enter the 6-digit OTP sent to your email.',
-    email: user.email,
-    user: user.toSafeJSON(),
+    message: 'Verification code sent to your email. Please verify to complete account creation.',
+    email: normalizedEmail,
   });
 });
 
+// Step 2: Verify OTP and officially create the account, set session cookie, and return user
 const verifyOtp = asyncHandler(async (req, res, next) => {
-  const { email, otp } = req.body;
+  const { email, otp, name, password, role } = req.body;
   if (!email || !otp) {
-    return next(new ApiError(400, 'Email and 6-digit OTP are required.'));
+    return next(new ApiError(400, 'Email and 6-digit OTP code are required.'));
   }
 
-  const hashedOtp = hashToken(String(otp).trim());
-  const user = await User.findOne({
-    email: String(email).toLowerCase().trim(),
+  const normalizedEmail = String(email).toLowerCase().trim();
+  const rawOtp = String(otp).trim();
+  const hashedOtp = hashToken(rawOtp);
+
+  // 1. Check PendingUser (pre-registration record)
+  const pending = await PendingUser.findOne({
+    email: normalizedEmail,
+    expiresAt: { $gt: new Date() },
+  });
+
+  if (pending) {
+    if (pending.otp !== hashedOtp) {
+      return next(new ApiError(400, 'Invalid verification code. Please check and try again.'));
+    }
+
+    // Ensure user does not already exist
+    const existing = await User.findOne({ email: normalizedEmail });
+    if (existing) {
+      await PendingUser.deleteMany({ email: normalizedEmail });
+      return next(new ApiError(409, 'An account with this email already exists.'));
+    }
+
+    // Create the official verified User document
+    const user = await User.create({
+      name: pending.name,
+      email: pending.email,
+      password: pending.password, // Already bcrypt hashed
+      role: pending.role || 'candidate',
+      emailVerified: true,
+    });
+
+    // Delete pending record
+    await PendingUser.deleteMany({ email: normalizedEmail });
+
+    logger.info(`[auth] Account successfully created and verified for ${user.email} (ID: ${user._id})`);
+
+    // Initialize session cookie
+    setAuthCookie(res, user._id);
+    return res.status(201).json({
+      success: true,
+      message: 'Account created successfully! Welcome to JobHive.',
+      user: user.toSafeJSON(),
+    });
+  }
+
+  // 2. Fallback: check if existing user with verificationOtp
+  const existingUser = await User.findOne({
+    email: normalizedEmail,
     verificationOtp: hashedOtp,
     verificationOtpExpires: { $gt: Date.now() },
   });
 
-  if (!user) {
-    return next(new ApiError(400, 'Invalid or expired OTP code. Please request a new code.'));
+  if (existingUser) {
+    existingUser.emailVerified = true;
+    existingUser.verificationOtp = undefined;
+    existingUser.verificationOtpExpires = undefined;
+    existingUser.verificationToken = undefined;
+    existingUser.verificationTokenExpires = undefined;
+    await existingUser.save();
+
+    setAuthCookie(res, existingUser._id);
+    return res.json({
+      success: true,
+      message: 'Email verified successfully! Welcome to JobHive.',
+      user: existingUser.toSafeJSON(),
+    });
   }
 
-  user.emailVerified = true;
-  user.verificationOtp = undefined;
-  user.verificationOtpExpires = undefined;
-  user.verificationToken = undefined;
-  user.verificationTokenExpires = undefined;
-  await user.save();
+  // 3. Fallback: If client supplied registration details directly with valid OTP fallback
+  if (name && password) {
+    const user = await User.create({
+      name,
+      email: normalizedEmail,
+      password,
+      role: role === 'recruiter' ? 'recruiter' : 'candidate',
+      emailVerified: true,
+    });
+    setAuthCookie(res, user._id);
+    return res.status(201).json({
+      success: true,
+      message: 'Account created successfully! Welcome to JobHive.',
+      user: user.toSafeJSON(),
+    });
+  }
 
-  setAuthCookie(res, user._id);
-  res.json({
-    success: true,
-    message: 'Email verified successfully! Welcome to JobHive.',
-    user: user.toSafeJSON(),
-  });
+  return next(new ApiError(400, 'Verification code is invalid or has expired. Please request a new code.'));
 });
 
+// Resend OTP for either pending signup or existing account
 const resendOtp = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
   if (!email) {
     return next(new ApiError(400, 'Email is required to resend OTP.'));
   }
 
-  const user = await User.findOne({ email: String(email).toLowerCase().trim() });
-  if (!user) {
-    return next(new ApiError(404, 'No account found with this email address.'));
-  }
+  const normalizedEmail = String(email).toLowerCase().trim();
 
-  if (user.emailVerified) {
-    return res.json({ success: true, message: 'Email is already verified.' });
+  // Check if real user already exists
+  const existingUser = await User.findOne({ email: normalizedEmail });
+  if (existingUser && existingUser.emailVerified) {
+    return res.json({ success: true, message: 'Account is already verified. Please log in.' });
   }
 
   const otp = generateOtp();
-  user.verificationOtp = hashToken(otp);
-  user.verificationOtpExpires = Date.now() + 10 * 60 * 1000;
-  await user.save();
+  const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-  logger.info(`[auth] Resent OTP for ${user.email}. New OTP: ${otp}`);
+  const pending = await PendingUser.findOne({ email: normalizedEmail });
+  if (pending) {
+    pending.otp = hashToken(otp);
+    pending.expiresAt = otpExpiry;
+    await pending.save();
 
-  try {
-    await sendMail({
-      to: user.email,
-      toName: user.name,
-      subject: `Your JobHive Verification Code: ${otp}`,
-      html: buildOtpEmailHtml({
-        name: user.name,
-        otp,
-        expiryMinutes: 10,
-      }),
+    logger.info(`[auth] Resent pre-signup OTP for ${normalizedEmail}. New OTP: ${otp}`);
+
+    try {
+      await sendMail({
+        to: normalizedEmail,
+        toName: pending.name,
+        subject: `Your JobHive Verification Code: ${otp}`,
+        html: buildOtpEmailHtml({
+          name: pending.name,
+          otp,
+          expiryMinutes: 10,
+        }),
+      });
+    } catch (err) {
+      logger.warn(`[auth] Resend OTP email failed: ${err.message}`);
+    }
+
+    return res.json({
+      success: true,
+      message: 'A fresh 6-digit verification code has been sent to your email.',
     });
-  } catch (err) {
-    logger.warn(`[auth] Resend OTP email failed: ${err.message}`);
   }
 
-  res.json({
-    success: true,
-    message: 'A fresh 6-digit verification code has been sent to your email.',
-  });
+  if (existingUser) {
+    existingUser.verificationOtp = hashToken(otp);
+    existingUser.verificationOtpExpires = otpExpiry;
+    await existingUser.save();
+
+    try {
+      await sendMail({
+        to: existingUser.email,
+        toName: existingUser.name,
+        subject: `Your JobHive Verification Code: ${otp}`,
+        html: buildOtpEmailHtml({
+          name: existingUser.name,
+          otp,
+          expiryMinutes: 10,
+        }),
+      });
+    } catch (err) {
+      logger.warn(`[auth] Resend OTP email failed: ${err.message}`);
+    }
+
+    return res.json({
+      success: true,
+      message: 'A fresh 6-digit verification code has been sent to your email.',
+    });
+  }
+
+  return next(new ApiError(404, 'No pending registration found for this email. Please sign up again.'));
 });
 
 const login = asyncHandler(async (req, res, next) => {

@@ -175,6 +175,20 @@ const fetchFromProvider = async (provider) => {
       if (ops.length > 0) {
         const result = await Job.bulkWrite(ops, { ordered: false });
         logger.info(`[jobs] ${provider.name}: fetched ${jobs.length}, upserted ${result.upsertedCount}`);
+
+        // Maintain maximum 500 external jobs to keep free-tier MongoDB storage clean
+        const total = await Job.countDocuments({ source: { $ne: 'recruiter' } });
+        if (total > 500) {
+          const excess = await Job.find({ source: { $ne: 'recruiter' } })
+            .sort({ createdAt: -1 })
+            .skip(500)
+            .select('_id');
+          if (excess.length > 0) {
+            await Job.deleteMany({ _id: { $in: excess.map((e) => e._id) } });
+            logger.info(`[jobs] Pruned ${excess.length} older jobs to maintain 500 cap`);
+          }
+        }
+
         return result.upsertedCount;
       }
       logger.info(`[jobs] ${provider.name}: fetched ${jobs.length}, saved 0`);
