@@ -36,6 +36,18 @@ const COMPANY_META = {
   synthesia: { name: 'Synthesia', domain: 'synthesia.io' },
   runway: { name: 'Runway AI', domain: 'runwayml.com' },
   v0: { name: 'V0 / Vercel AI', domain: 'v0.dev' },
+  huggingface: { name: 'Hugging Face', domain: 'huggingface.co' },
+  cohere: { name: 'Cohere', domain: 'cohere.com' },
+  mistral: { name: 'Mistral AI', domain: 'mistral.ai' },
+  groq: { name: 'Groq', domain: 'groq.com' },
+  pinecone: { name: 'Pinecone', domain: 'pinecone.io' },
+  weaviate: { name: 'Weaviate', domain: 'weaviate.io' },
+  langchain: { name: 'LangChain', domain: 'langchain.com' },
+  llamaindex: { name: 'LlamaIndex', domain: 'llamaindex.ai' },
+  fly: { name: 'Fly.io', domain: 'fly.io' },
+  baseten: { name: 'Baseten', domain: 'baseten.co' },
+  writer: { name: 'Writer AI', domain: 'writer.com' },
+  tavily: { name: 'Tavily AI', domain: 'tavily.com' },
 };
 
 const mapEmployment = (type) => {

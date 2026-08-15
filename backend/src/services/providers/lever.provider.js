@@ -31,6 +31,19 @@ const COMPANY_META = {
   shiprocket: { name: 'Shiprocket', domain: 'shiprocket.in' },
   nagarro: { name: 'Nagarro', domain: 'nagarro.com' },
   chegg: { name: 'Chegg', domain: 'chegg.com' },
+  juspay: { name: 'Juspay', domain: 'juspay.in' },
+  chargebee: { name: 'Chargebee', domain: 'chargebee.com' },
+  freshworks: { name: 'Freshworks', domain: 'freshworks.com' },
+  clevertap: { name: 'CleverTap', domain: 'clevertap.com' },
+  moengage: { name: 'MoEngage', domain: 'moengage.com' },
+  yellowai: { name: 'Yellow.ai', domain: 'yellow.ai' },
+  gupshup: { name: 'Gupshup', domain: 'gupshup.io' },
+  darwinbox: { name: 'Darwinbox', domain: 'darwinbox.com' },
+  whatfix: { name: 'Whatfix', domain: 'whatfix.com' },
+  wingify: { name: 'Wingify (VWO)', domain: 'wingify.com' },
+  leadsquared: { name: 'LeadSquared', domain: 'leadsquared.com' },
+  signeasy: { name: 'SignEasy', domain: 'signeasy.com' },
+  exotel: { name: 'Exotel', domain: 'exotel.com' },
 };
 
 const mapWorkMode = (workplaceType, categories = {}) => {
