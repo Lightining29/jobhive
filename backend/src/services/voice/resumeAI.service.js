@@ -105,12 +105,19 @@ async function buildResume(user) {
   const profileBlock = buildProfileBlock(user);
   const userMessage  = `Generate a COMPREHENSIVE and DETAILED professional resume from this profile. Make every section as rich and content-heavy as possible.\n\n${profileBlock}\n\nReturn JSON only. Be thorough — the candidate needs a strong, impressive resume.`;
 
-  const parsed = await generateJSON(BUILD_SYSTEM_PROMPT, userMessage, 6000);
-  if (!parsed) {
-    logger.warn('[resumeAI] all providers failed for build — using fallback');
-    return buildFallbackResume(user);
+  try {
+    const aiPromise = generateJSON(BUILD_SYSTEM_PROMPT, userMessage, 2500);
+    const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 2000));
+    const parsed = await Promise.race([aiPromise, timeoutPromise]);
+    if (parsed) {
+      return sanitiseResumeOutput(parsed, user);
+    }
+  } catch (err) {
+    logger.warn(`[resumeAI] AI build error: ${err.message}`);
   }
-  return sanitiseResumeOutput(parsed, user);
+
+  logger.info('[resumeAI] instant offline high-speed engine generating resume');
+  return buildFallbackResume(user);
 }
 
 // ── ATS Scorer ────────────────────────────────────────────────────────────────
@@ -152,12 +159,19 @@ async function scoreATS(user, jobDescription) {
   const jdBlock      = jobDescription.trim().slice(0, 3000);
   const userMessage  = `CANDIDATE PROFILE:\n${profileBlock}\n\nJOB DESCRIPTION:\n${jdBlock}\n\nReturn ATS score JSON only.`;
 
-  const parsed = await generateJSON(ATS_SYSTEM_PROMPT, userMessage, 2000);
-  if (!parsed) {
-    logger.warn('[resumeAI] all providers failed for ATS — using algorithmic fallback');
-    return algorithmicATSScore(user, jobDescription);
+  try {
+    const aiPromise = generateJSON(ATS_SYSTEM_PROMPT, userMessage, 2500);
+    const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 2000));
+    const parsed = await Promise.race([aiPromise, timeoutPromise]);
+    if (parsed) {
+      return sanitiseATSOutput(parsed);
+    }
+  } catch (err) {
+    logger.warn(`[resumeAI] AI ATS error: ${err.message}`);
   }
-  return sanitiseATSOutput(parsed);
+
+  logger.info('[resumeAI] using instant algorithmic ATS scoring');
+  return algorithmicATSScore(user, jobDescription);
 }
 
 // ── Profile → text block ─────────────────────────────────────────────────────

@@ -33,7 +33,7 @@ function fetchImageAsBase64(url) {
     if (!/^https?:\/\//i.test(url)) return resolve(null);
 
     const transport = url.startsWith('https') ? https : http;
-    const req = transport.get(url, { timeout: 8000 }, (res) => {
+    const req = transport.get(url, { timeout: 1500 }, (res) => {
       if (res.statusCode !== 200) return resolve(null);
       const chunks = [];
       res.on('data', c => chunks.push(c));
