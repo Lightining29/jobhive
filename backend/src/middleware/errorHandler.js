@@ -26,7 +26,8 @@ const errorHandler = (err, req, res, next) => {
 
   if (!(error instanceof ApiError)) {
     logger.error('Unhandled error', { message: error.message, stack: error.stack });
-    error = new ApiError(500, 'Internal server error');
+    const message = error.message || 'An unexpected error occurred. Please try again.';
+    error = new ApiError(500, message);
   }
 
   if (error.statusCode >= 500) logger.error(error.message);
