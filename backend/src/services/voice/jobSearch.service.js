@@ -17,7 +17,7 @@ async function searchJobs(params, user = null) {
   const { page, limit, skip } = paginate({ page: params.page || 1, limit: params.limit || 10 });
 
   const baseQuery = Job.find(filter);
-  if (params.search) {
+  if (filter.$text) {
     baseQuery.select({ score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
   } else {
     baseQuery.sort(sort);

@@ -161,7 +161,7 @@ const listJobs = asyncHandler(async (req, res) => {
   const sort = sortOptions(req.query.sort);
 
   const baseQuery = Job.find(filter);
-  if (req.query.search) baseQuery.select({ score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
+  if (filter.$text) baseQuery.select({ score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
   else baseQuery.sort(sort);
 
   const [jobs, total] = await Promise.all([
@@ -442,7 +442,7 @@ const semanticSearch = asyncHandler(async (req, res) => {
   const sort   = sortOptions(parsed.sort);
 
   const baseQuery = Job.find(filter);
-  if (parsed.search) baseQuery.select({ score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
+  if (filter.$text) baseQuery.select({ score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
   else baseQuery.sort(sort);
 
   const [jobs, total] = await Promise.all([

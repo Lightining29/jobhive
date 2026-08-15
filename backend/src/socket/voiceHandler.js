@@ -309,9 +309,19 @@ function voiceHandler(socket, io) {
         rawQuery: contextData?.query || undefined,
       });
     } catch (err) {
-      logger.error('[voice] handler error', { message: err.message, stack: err.stack });
+      logger.error('[voice] handler error — recovering gracefully', { message: err.message, stack: err.stack });
       if (socket.connected) {
-        socket.emit('voice:error', { message: 'Something went wrong. Please try again.' });
+        try {
+          const isHindi = /[\u0900-\u097F]|hindi|naukri|job/i.test(sanitised);
+          const fallbackText = isHindi
+            ? `नमस्ते! मैं आपकी जॉब सर्च में मदद कर सकता हूँ। आप किसी भी रोल, स्किल (जैसे Java, React, Marketing) या शहर के बारे में पूछ सकते हैं।`
+            : `Hello! I can help you find jobs, check salaries, and prepare your resume. Ask me about any technology or location!`;
+          
+          socket.emit('voice:token', { token: fallbackText });
+          socket.emit('voice:done', { text: fallbackText, intent: 'general' });
+        } catch {
+          socket.emit('voice:error', { message: 'Please try your query again.' });
+        }
       }
     } finally {
       socketState.processing = false;
