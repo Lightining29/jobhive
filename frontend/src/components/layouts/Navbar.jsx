@@ -1,5 +1,5 @@
 import { Link, NavLink } from 'react-router-dom';
-import { FaMagnifyingGlass, FaBell, FaBars, FaXmark, FaHexagonNodes, FaArrowRightFromBracket, FaBookmark, FaGlobe, FaBriefcase } from 'react-icons/fa6';
+import { FaMagnifyingGlass, FaBell, FaBars, FaXmark, FaHexagonNodes, FaArrowRightFromBracket, FaBookmark, FaGlobe, FaBriefcase, FaShieldHalved } from 'react-icons/fa6';
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { initials } from '../../utils/format';
@@ -172,9 +172,21 @@ const Navbar = () => {
                 <Link to="/jobs" className="btn-outline !py-2">
                   <FaMagnifyingGlass className="h-3.5 w-3.5" /> Search
                 </Link>
-                <Link to={dashboardPath} className="btn-primary !py-2 !px-3.5 text-xs font-semibold flex items-center gap-1.5 shadow-sm">
-                  Dashboard
-                </Link>
+
+                {user.role === 'admin' ? (
+                  <Link
+                    to="/admin/dashboard"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-extrabold text-xs shadow-lift border border-amber-400/50 transition-all hover:scale-105"
+                  >
+                    <FaShieldHalved className="h-3.5 w-3.5 text-slate-900" />
+                    Admin Panel
+                  </Link>
+                ) : (
+                  <Link to={dashboardPath} className="btn-primary !py-2 !px-3.5 text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+                    Dashboard
+                  </Link>
+                )}
+
                 <Link to="/notifications" className="relative p-2 rounded-xl text-muted hover:bg-slate-50 hover:text-ink transition-colors">
                   <FaBell className="h-5 w-5" />
                   {unreadCount > 0 && (
@@ -197,22 +209,40 @@ const Navbar = () => {
                     </span>
                   </button>
                   {profileOpen && (
-                    <div className="absolute right-0 top-12 w-56 card p-2 z-50 shadow-lift" onMouseLeave={() => setProfileOpen(false)}>
+                    <div className="absolute right-0 top-12 w-60 card p-2 z-50 shadow-lift" onMouseLeave={() => setProfileOpen(false)}>
                       <div className="px-3 py-2 border-b border-line mb-1">
-                        <p className="text-sm font-semibold truncate">{user.name}</p>
-                        <p className="text-xs text-muted capitalize">{user.role}</p>
+                        <p className="text-sm font-bold truncate text-ink">{user.name}</p>
+                        <p className="text-xs text-muted capitalize font-medium">{user.role} Account</p>
                       </div>
-                      <Link to={dashboardPath} onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm font-semibold text-ink bg-accent/10 hover:bg-accent/20 transition-colors">Go to Dashboard</Link>
-                      <Link to="/candidate/saved-jobs" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">Saved Jobs</Link>
-                      <Link to="/candidate/portfolio" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">AI Portfolio</Link>
-                      {user.role === 'candidate' && (
-                        <Link to="/candidate/deployment" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">My Portfolio</Link>
+
+                      {user.role === 'admin' ? (
+                        <>
+                          <Link to="/admin/dashboard" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-900 bg-amber-400/20 hover:bg-amber-400/30 transition-colors mb-1">
+                            <FaShieldHalved className="h-3.5 w-3.5 text-amber-600" />
+                            Admin Dashboard
+                          </Link>
+                          <Link to="/admin/services" onClick={() => setProfileOpen(false)} className="block px-3 py-1.5 rounded-xl text-xs text-muted hover:bg-slate-50 hover:text-ink transition-colors">Services & Pricing</Link>
+                          <Link to="/admin/plans" onClick={() => setProfileOpen(false)} className="block px-3 py-1.5 rounded-xl text-xs text-muted hover:bg-slate-50 hover:text-ink transition-colors">Plans & Free Trials</Link>
+                          <Link to="/admin/users" onClick={() => setProfileOpen(false)} className="block px-3 py-1.5 rounded-xl text-xs text-muted hover:bg-slate-50 hover:text-ink transition-colors">Users & Credits</Link>
+                          <Link to="/admin/payments" onClick={() => setProfileOpen(false)} className="block px-3 py-1.5 rounded-xl text-xs text-muted hover:bg-slate-50 hover:text-ink transition-colors">Billing & Payments</Link>
+                          <Link to="/admin/settings" onClick={() => setProfileOpen(false)} className="block px-3 py-1.5 rounded-xl text-xs text-muted hover:bg-slate-50 hover:text-ink transition-colors">Platform Settings</Link>
+                        </>
+                      ) : (
+                        <>
+                          <Link to={dashboardPath} onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm font-semibold text-ink bg-accent/10 hover:bg-accent/20 transition-colors">Go to Dashboard</Link>
+                          <Link to="/candidate/saved-jobs" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">Saved Jobs</Link>
+                          <Link to="/candidate/portfolio" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">AI Portfolio</Link>
+                          {user.role === 'candidate' && (
+                            <Link to="/candidate/deployment" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">My Portfolio</Link>
+                          )}
+                          {user.role === 'recruiter' && (
+                            <Link to="/recruiter/post-job" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">Post a Job</Link>
+                          )}
+                        </>
                       )}
+
                       <Link to="/notifications" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">Notifications</Link>
-                      {user.role === 'recruiter' && (
-                        <Link to="/recruiter/post-job" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">Post a Job</Link>
-                      )}
-                      <button onClick={() => { setProfileOpen(false); logout(); }} className="w-full text-left px-3 py-2 rounded-xl text-sm text-red-600 hover:bg-red-50 transition-colors mt-1 border-t border-line">Logout</button>
+                      <button onClick={() => { setProfileOpen(false); logout(); }} className="w-full text-left px-3 py-2 rounded-xl text-sm text-red-600 hover:bg-red-50 transition-colors mt-1 border-t border-line font-medium">Logout</button>
                     </div>
                   )}
                 </div>
