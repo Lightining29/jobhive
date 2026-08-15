@@ -44,8 +44,41 @@ const inferExperienceRange = (job, level) => {
   return map[level] || { min: 0, max: 5 };
 };
 
+const INDIAN_METROS = {
+  noida: { city: 'Noida', state: 'Uttar Pradesh', country: 'India' },
+  'greater noida': { city: 'Greater Noida', state: 'Uttar Pradesh', country: 'India' },
+  delhi: { city: 'Delhi', state: 'Delhi', country: 'India' },
+  'new delhi': { city: 'New Delhi', state: 'Delhi', country: 'India' },
+  gurgaon: { city: 'Gurgaon', state: 'Haryana', country: 'India' },
+  gurugram: { city: 'Gurugram', state: 'Haryana', country: 'India' },
+  ghaziabad: { city: 'Ghaziabad', state: 'Uttar Pradesh', country: 'India' },
+  faridabad: { city: 'Faridabad', state: 'Haryana', country: 'India' },
+  ncr: { city: 'Delhi NCR', state: 'Delhi NCR', country: 'India' },
+  'delhi ncr': { city: 'Delhi NCR', state: 'Delhi NCR', country: 'India' },
+  bangalore: { city: 'Bangalore', state: 'Karnataka', country: 'India' },
+  bengaluru: { city: 'Bengaluru', state: 'Karnataka', country: 'India' },
+  hyderabad: { city: 'Hyderabad', state: 'Telangana', country: 'India' },
+  pune: { city: 'Pune', state: 'Maharashtra', country: 'India' },
+  mumbai: { city: 'Mumbai', state: 'Maharashtra', country: 'India' },
+  chennai: { city: 'Chennai', state: 'Tamil Nadu', country: 'India' },
+  kolkata: { city: 'Kolkata', state: 'West Bengal', country: 'India' },
+};
+
 const splitLocation = (job) => {
   const location = clean(job.location);
+  const locLower = location.toLowerCase();
+
+  for (const [key, data] of Object.entries(INDIAN_METROS)) {
+    if (new RegExp(`\\b${key}\\b`, 'i').test(locLower)) {
+      return {
+        location: location || `${data.city}, ${data.country}`,
+        city: data.city,
+        state: data.state,
+        country: data.country,
+      };
+    }
+  }
+
   const parts = location.split(',').map((p) => clean(p)).filter(Boolean);
   let city = clean(job.city) || parts[0] || '';
   let country = clean(job.country) || (parts.length > 1 ? parts[parts.length - 1] : '');

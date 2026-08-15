@@ -26,6 +26,11 @@ const COMPANY_META = {
   hashicorp: { name: 'HashiCorp', domain: 'hashicorp.com' },
   palantir: { name: 'Palantir', domain: 'palantir.com' },
   unity: { name: 'Unity', domain: 'unity.com' },
+  inmobi: { name: 'InMobi', domain: 'inmobi.com' },
+  cars24: { name: 'Cars24', domain: 'cars24.com' },
+  shiprocket: { name: 'Shiprocket', domain: 'shiprocket.in' },
+  nagarro: { name: 'Nagarro', domain: 'nagarro.com' },
+  chegg: { name: 'Chegg', domain: 'chegg.com' },
 };
 
 const mapWorkMode = (workplaceType, categories = {}) => {
