@@ -108,12 +108,19 @@ const SidebarFilters = ({ filters, onChange, onClear, counts }) => {
       <FilterSection title="Job Source">
         <select value={filters.source || ''} onChange={(e) => set('source', e.target.value)} className="input !py-2">
           <option value="">All sources</option>
-          <option value="recruiter">Recruiter</option>
-          <option value="jooble">Jooble</option>
+          <option value="greenhouse">Greenhouse Career Pages</option>
+          <option value="ashby">Ashby Career Pages</option>
+          <option value="lever">Lever Career Pages</option>
+          <option value="amazon">Amazon Careers</option>
+          <option value="internshala">Internshala</option>
+          <option value="himalayas">Himalayas</option>
+          <option value="jobicy">Jobicy</option>
+          <option value="recruiter">Recruiter Direct</option>
           <option value="adzuna">Adzuna</option>
           <option value="arbeitnow">Arbeitnow</option>
           <option value="remotive">Remotive</option>
           <option value="muse">The Muse</option>
+          <option value="jooble">Jooble</option>
         </select>
       </FilterSection>
 

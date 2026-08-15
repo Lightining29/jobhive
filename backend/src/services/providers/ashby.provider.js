@@ -22,6 +22,20 @@ const COMPANY_META = {
   render: { name: 'Render', domain: 'render.com' },
   tailwind: { name: 'Tailwind Labs', domain: 'tailwindcss.com' },
   mui: { name: 'MUI', domain: 'mui.com' },
+  openai: { name: 'OpenAI', domain: 'openai.com' },
+  anthropic: { name: 'Anthropic', domain: 'anthropic.com' },
+  perplexity: { name: 'Perplexity AI', domain: 'perplexity.ai' },
+  cursor: { name: 'Cursor / Anysphere', domain: 'cursor.com' },
+  posthog: { name: 'PostHog', domain: 'posthog.com' },
+  elevenlabs: { name: 'ElevenLabs', domain: 'elevenlabs.io' },
+  together: { name: 'Together AI', domain: 'together.ai' },
+  resend: { name: 'Resend', domain: 'resend.com' },
+  vapi: { name: 'Vapi AI', domain: 'vapi.ai' },
+  retool: { name: 'Retool', domain: 'retool.com' },
+  loom: { name: 'Loom', domain: 'loom.com' },
+  synthesia: { name: 'Synthesia', domain: 'synthesia.io' },
+  runway: { name: 'Runway AI', domain: 'runwayml.com' },
+  v0: { name: 'V0 / Vercel AI', domain: 'v0.dev' },
 };
 
 const mapEmployment = (type) => {
@@ -39,7 +53,7 @@ class AshbyProvider extends JobProvider {
   }
 
   isEnabled() {
-    return this.config.enabled;
+    return this.config?.enabled !== false;
   }
 
   async fetch() {
@@ -47,7 +61,8 @@ class AshbyProvider extends JobProvider {
     const boards = Array.isArray(this.config.companies) && this.config.companies.length
       ? this.config.companies
       : Object.keys(COMPANY_META);
-    const BATCH = 10;
+
+    const BATCH = 8;
     const all = [];
     for (let i = 0; i < boards.length; i += BATCH) {
       const batch = boards.slice(i, i + BATCH);
@@ -56,7 +71,7 @@ class AshbyProvider extends JobProvider {
           const slug = clean(board);
           if (!slug) return [];
           const url = `https://api.ashbyhq.com/posting-api/job-board/${slug}?includeCompensation=true`;
-          const res = await fetch(url, { signal: AbortSignal.timeout(25000), headers: { 'User-Agent': 'Mozilla/5.0' } });
+          const res = await fetch(url, { signal: AbortSignal.timeout(20000), headers: { 'User-Agent': 'Mozilla/5.0' } });
           if (res.status === 429) throw new ProviderError(`ashby:${slug} rate limited`, { retryable: true, status: 429 });
           if (!res.ok) return [];
           const data = await res.json();
@@ -73,7 +88,7 @@ class AshbyProvider extends JobProvider {
   }
 
   normalize(raw, board) {
-    const meta = COMPANY_META[board] || { name: board, domain: '' };
+    const meta = COMPANY_META[board] || { name: board.charAt(0).toUpperCase() + board.slice(1), domain: `${board}.com` };
     const title = clean(raw.title);
     const description = stripHtml(clean(raw.descriptionHtml) || clean(raw.descriptionPlain));
     const { category, subCategory } = classifyJob(title, description);
@@ -85,7 +100,7 @@ class AshbyProvider extends JobProvider {
     const currency = clean(raw.compensation && raw.compensation.currency) || 'USD';
 
     return {
-      jobId: `${board}:${clean(raw.id)}`,
+      jobId: `ashby:${board}:${clean(raw.id)}`,
       title,
       description,
       company: meta.name,

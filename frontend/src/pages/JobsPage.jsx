@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FaMagnifyingGlass, FaArrowTrendUp } from 'react-icons/fa6';
+import { FaMagnifyingGlass, FaArrowTrendUp, FaRotate } from 'react-icons/fa6';
 import { jobService } from '../services';
 import JobCard from '../components/jobs/JobCard';
 import SidebarFilters from '../components/jobs/SidebarFilters';
@@ -41,6 +41,7 @@ const JobsPage = () => {
 
   const [jobs,    setJobs]    = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [total,   setTotal]   = useState(0);
   const [pages,   setPages]   = useState(1);
   const [page,    setPage]    = useState(initialPage);
@@ -57,6 +58,22 @@ const JobsPage = () => {
     source:         '',
     postedWithinDays:'',
   });
+
+  // Sync state if pathname or search params change externally (e.g. clicking top nav links)
+  useEffect(() => {
+    const nextCategory = preset.category || params.get('category') || '';
+    const nextWorkMode = preset.workMode || params.get('workMode') || '';
+    const nextSearch = params.get('search') || '';
+    const nextExp = params.get('experience') || '';
+
+    setFilters((prev) => ({
+      ...prev,
+      category: nextCategory,
+      workModes: nextWorkMode ? [nextWorkMode] : prev.workModes,
+      search: nextSearch,
+      experienceLevel: nextExp,
+    }));
+  }, [location.pathname, params]);
 
   const debouncedSearch = useDebounce(filters.search, 450);
 
@@ -153,17 +170,42 @@ const JobsPage = () => {
     return debouncedSearch ? `Results for "${debouncedSearch}"` : 'Browse Jobs';
   }, [filters, debouncedSearch]);
 
+  const handleRefreshJobs = async () => {
+    setRefreshing(true);
+    const toastId = toast.loading('Refreshing and fetching latest career jobs...');
+    try {
+      const { data } = await jobService.refresh();
+      toast.success(data?.message || 'Jobs refreshed successfully!', { id: toastId });
+      fetchJobs(1);
+    } catch (err) {
+      toast.error(err.message || 'Failed to refresh jobs', { id: toastId });
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
       {/* ── Page heading ──────────────────────────────────────────────────── */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-extrabold">{heading}</h1>
-        {!semanticActive && (
-          <p className="text-muted mt-1">
-            {loading ? 'Searching...' : <><span className="font-semibold text-ink">{total.toLocaleString()}</span> jobs found</>}
-          </p>
-        )}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-3xl font-extrabold">{heading}</h1>
+          {!semanticActive && (
+            <p className="text-muted mt-1">
+              {loading ? 'Searching...' : <><span className="font-semibold text-ink">{total.toLocaleString()}</span> jobs found</>}
+            </p>
+          )}
+        </div>
+        <button
+          onClick={handleRefreshJobs}
+          disabled={refreshing}
+          className="btn-outline !py-2.5 !px-4 text-xs font-semibold gap-2 border-line hover:border-primary-500 hover:text-primary-600 transition-all rounded-xl shadow-sm"
+          title="Fetch latest job postings from company career pages and job boards"
+        >
+          <FaRotate className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin text-primary' : 'text-muted'}`} />
+          {refreshing ? 'Refreshing Jobs...' : 'Refresh Latest Jobs'}
+        </button>
       </div>
 
       {/* ── AI Semantic Search ────────────────────────────────────────────── */}

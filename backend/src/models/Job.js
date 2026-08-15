@@ -5,7 +5,7 @@ const jobSchema = new mongoose.Schema(
     jobId: { type: String, required: true, index: true, unique: true },
     source: {
       type: String,
-      enum: ['recruiter', 'jooble', 'adzuna', 'arbeitnow', 'remotive', 'muse', 'himalayas', 'jobicy', 'greenhouse', 'amazon', 'ashby', 'internshala'],
+      enum: ['recruiter', 'jooble', 'adzuna', 'arbeitnow', 'remotive', 'muse', 'himalayas', 'jobicy', 'greenhouse', 'amazon', 'ashby', 'lever', 'internshala'],
       required: true,
       index: true,
     },

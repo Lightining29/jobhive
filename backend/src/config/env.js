@@ -77,6 +77,12 @@ module.exports = {
         ? process.env.ASHBY_COMPANIES.split(',').map((s) => s.trim()).filter(Boolean)
         : [],
     },
+    lever: {
+      enabled: process.env.LEVER_ENABLED !== 'false',
+      companies: process.env.LEVER_COMPANIES
+        ? process.env.LEVER_COMPANIES.split(',').map((s) => s.trim()).filter(Boolean)
+        : [],
+    },
     internshala: { enabled: process.env.INTERNSHALA_ENABLED === 'true' },
   },
 };

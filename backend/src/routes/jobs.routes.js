@@ -19,6 +19,7 @@ router.get('/stats', jobs.getStats);
 router.get('/home', optionalProtect, jobs.homeFeed);
 router.get('/recommendations', protect, jobs.getRecommendations);
 router.post('/semantic-search', optionalProtect, jobs.semanticSearch);
+router.post('/refresh', jobs.refreshJobs);
 
 router.get('/my-applications', protect, jobs.myApplications);
 

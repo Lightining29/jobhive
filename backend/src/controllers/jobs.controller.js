@@ -9,6 +9,7 @@ const { paginate, buildPagination, parseSalary, parseArray, parseBool, toObjectI
 const { computeMatchScore } = require('../services/aiRecommendation.service');
 const { formatCurrency } = require('../utils/helpers');
 const { parseNaturalQuery } = require('../services/semanticSearch.service');
+const { fetchAllJobs, cleanupExpiredJobs } = require('../services/jobIngestion.service');
 
 const baseJobFilter = () => ({
   isActive: true,
@@ -35,15 +36,46 @@ const applyIndiaScope = (filter, query) => {
 const buildFilters = (query) => {
   const filter = baseJobFilter();
   const search = (query.search || '').trim();
+
   if (search) {
     const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    filter.$text = { $search: escaped };
+    const words = search.split(/\s+/).filter(Boolean);
+
+    // If search is a specific technology keyword like 'java', 'python', 'react', 'node', etc.
+    if (words.length <= 2) {
+      filter.$and = [
+        ...(filter.$and || []),
+        {
+          $or: [
+            { jobTitle: { $regex: new RegExp(`\\b${escaped}\\b`, 'i') } },
+            { requiredSkills: { $in: [search.toLowerCase()] } },
+            { companyName: { $regex: new RegExp(escaped, 'i') } },
+          ],
+        },
+      ];
+    } else {
+      filter.$text = { $search: escaped };
+    }
   }
+
   if (query.company) filter.companyName = { $regex: new RegExp(query.company, 'i') };
+
   if (query.skills) {
-    const skills = parseArray(query.skills);
-    if (skills && skills.length) filter.requiredSkills = { $in: skills.map((s) => s.toLowerCase()) };
+    const skills = parseArray(query.skills).map((s) => s.toLowerCase().trim()).filter(Boolean);
+    if (skills.length) {
+      const skillMatches = skills.map((sk) => {
+        const escaped = sk.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return {
+          $or: [
+            { requiredSkills: sk },
+            { jobTitle: { $regex: new RegExp(`\\b${escaped}\\b`, 'i') } },
+          ],
+        };
+      });
+      filter.$and = [...(filter.$and || []), { $or: skillMatches }];
+    }
   }
+
   if (query.category) filter.category = query.category;
   if (query.subCategory) filter.subCategory = query.subCategory;
   if (query.workMode) filter.workMode = query.workMode;
@@ -422,6 +454,16 @@ const semanticSearch = asyncHandler(async (req, res) => {
   });
 });
 
+const refreshJobs = asyncHandler(async (req, res) => {
+  const results = await fetchAllJobs();
+  const totalSaved = results.reduce((acc, r) => acc + (r.saved || 0), 0);
+  res.json({
+    success: true,
+    message: `Job refresh complete. Saved/updated ${totalSaved} jobs across providers.`,
+    results,
+  });
+});
+
 module.exports = {
   listJobs,
   getJob,
@@ -432,6 +474,7 @@ module.exports = {
   myApplications,
   reportJob,
   semanticSearch,
+  refreshJobs,
   buildFilters,
   sortOptions,
   baseJobFilter,

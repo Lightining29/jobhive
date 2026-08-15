@@ -21,6 +21,7 @@ const jobService = {
   myApplications: (params) => api.get('/jobs/my-applications', { params }),
   report: (id, data) => api.post(`/jobs/${id}/report`, data),
   semanticSearch: (query, page = 1) => api.post('/jobs/semantic-search', { query, page }),
+  refresh: () => api.post('/jobs/refresh'),
 };
 
 const candidateService = {

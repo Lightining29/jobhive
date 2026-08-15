@@ -8,24 +8,26 @@ const JobicyProvider = require('./jobicy.provider');
 const GreenhouseProvider = require('./greenhouse.provider');
 const AmazonProvider = require('./amazon.provider');
 const AshbyProvider = require('./ashby.provider');
+const LeverProvider = require('./lever.provider');
 const InternshalaProvider = require('./internshala.provider');
 
 const getProviders = () => {
   const providers = [
-    new JoobleProvider(),
-    new AdzunaProvider(),
+    new GreenhouseProvider(),
+    new AshbyProvider(),
+    new LeverProvider(),
+    new AmazonProvider(),
+    new HimalayasProvider(),
+    new JobicyProvider(),
+    new InternshalaProvider(),
     new ArbeitnowProvider(),
     new RemotiveProvider(),
     new MuseProvider(),
-    new HimalayasProvider(),
-    new JobicyProvider(),
-    new GreenhouseProvider(),
-    new AmazonProvider(),
-    new AshbyProvider(),
-    new InternshalaProvider(),
+    new JoobleProvider(),
+    new AdzunaProvider(),
   ];
-  const adzuna = new AdzunaProvider('in');
-  if (adzuna.isEnabled()) providers.splice(1, 0, adzuna);
+  const adzunaIn = new AdzunaProvider('in');
+  if (adzunaIn.isEnabled()) providers.splice(providers.length - 1, 0, adzunaIn);
   return providers;
 };
 

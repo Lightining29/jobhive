@@ -363,15 +363,24 @@ function extractEntities(text) {
     }
   }
 
-  const detectedTech = CONTEXT_KEYWORDS.techStack.filter((tech) => lower.includes(tech));
+  const detectedTech = CONTEXT_KEYWORDS.techStack.filter((tech) => {
+    const escaped = tech.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`(^|[^a-z0-9+#.])${escaped}($|[^a-z0-9+#.])`, 'i').test(lower);
+  });
   if (detectedTech.length) {
     entities.skills = detectedTech;
   }
 
-  const detectedJobTitles = CONTEXT_KEYWORDS.jobTitles.filter((t) => lower.includes(t));
+  const detectedJobTitles = CONTEXT_KEYWORDS.jobTitles.filter((t) => {
+    const escaped = t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`\\b${escaped}\\b`, 'i').test(lower);
+  });
   if (detectedJobTitles.length) {
     entities.jobTitles = detectedJobTitles;
     entities.search = detectedJobTitles[0];
+  } else if (detectedTech.length === 1) {
+    // If exact single technology like "java" was mentioned, use it for targeted search
+    entities.search = detectedTech[0];
   }
 
   const detectedCompany = CONTEXT_KEYWORDS.commonCompanies.find((c) => lower.includes(c));

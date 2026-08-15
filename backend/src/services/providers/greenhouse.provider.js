@@ -23,7 +23,7 @@ const COMPANY_META = {
   airtable: { name: 'Airtable', domain: 'airtable.com' },
   squarespace: { name: 'Squarespace', domain: 'squarespace.com' },
   spotify: { name: 'Spotify', domain: 'spotify.com' },
-  square: { name: 'Square', domain: 'squareup.com' },
+  square: { name: 'Block / Square', domain: 'squareup.com' },
   tcs: { name: 'TCS', domain: 'tcs.com' },
   spacex: { name: 'SpaceX', domain: 'spacex.com' },
   phonepe: { name: 'PhonePe', domain: 'phonepe.com' },
@@ -41,6 +41,22 @@ const COMPANY_META = {
   newrelic: { name: 'New Relic', domain: 'newrelic.com' },
   smartsheet: { name: 'SmartSheet', domain: 'smartsheet.com' },
   asana: { name: 'Asana', domain: 'asana.com' },
+  canva: { name: 'Canva', domain: 'canva.com' },
+  doordash: { name: 'DoorDash', domain: 'doordash.com' },
+  affirm: { name: 'Affirm', domain: 'affirm.com' },
+  snowflake: { name: 'Snowflake', domain: 'snowflake.com' },
+  scaleai: { name: 'Scale AI', domain: 'scale.com' },
+  rippling: { name: 'Rippling', domain: 'rippling.com' },
+  hubspot: { name: 'HubSpot', domain: 'hubspot.com' },
+  gusto: { name: 'Gusto', domain: 'gusto.com' },
+  github: { name: 'GitHub', domain: 'github.com' },
+  discord: { name: 'Discord', domain: 'discord.com' },
+  uber: { name: 'Uber', domain: 'uber.com' },
+  robinhood: { name: 'Robinhood', domain: 'robinhood.com' },
+  plaid: { name: 'Plaid', domain: 'plaid.com' },
+  grammarly: { name: 'Grammarly', domain: 'grammarly.com' },
+  lucid: { name: 'Lucid Software', domain: 'lucid.co' },
+  dbtlabs: { name: 'dbt Labs', domain: 'getdbt.com' },
 };
 
 const inferWorkMode = (location, office) => {
@@ -56,7 +72,7 @@ class GreenhouseProvider extends JobProvider {
   }
 
   isEnabled() {
-    return this.config.enabled;
+    return this.config?.enabled !== false;
   }
 
   async fetch() {
@@ -64,7 +80,8 @@ class GreenhouseProvider extends JobProvider {
     const boards = Array.isArray(this.config.companies) && this.config.companies.length
       ? this.config.companies
       : Object.keys(COMPANY_META);
-    const BATCH = 10;
+
+    const BATCH = 8;
     const all = [];
     for (let i = 0; i < boards.length; i += BATCH) {
       const batch = boards.slice(i, i + BATCH);
@@ -73,7 +90,7 @@ class GreenhouseProvider extends JobProvider {
           const slug = clean(board);
           if (!slug) return [];
           const url = `https://boards-api.greenhouse.io/v1/boards/${slug}/jobs?content=true`;
-          const res = await fetch(url, { signal: AbortSignal.timeout(25000) });
+          const res = await fetch(url, { signal: AbortSignal.timeout(20000) });
           if (res.status === 429) {
             throw new ProviderError(`greenhouse:${slug} rate limited`, { retryable: true, status: 429 });
           }
@@ -95,7 +112,7 @@ class GreenhouseProvider extends JobProvider {
   }
 
   normalize(raw, board) {
-    const meta = COMPANY_META[board] || { name: board, domain: '' };
+    const meta = COMPANY_META[board] || { name: board.charAt(0).toUpperCase() + board.slice(1), domain: `${board}.com` };
     const title = clean(raw.title);
     const description = stripHtml(clean(raw.content));
     const { category, subCategory } = classifyJob(title, description);
@@ -104,7 +121,7 @@ class GreenhouseProvider extends JobProvider {
     const department = clean(raw.departments && raw.departments[0] && raw.departments[0].name);
 
     return {
-      jobId: `${board}:${clean(raw.id)}`,
+      jobId: `greenhouse:${board}:${clean(raw.id)}`,
       title,
       description,
       company: meta.name,
@@ -118,7 +135,7 @@ class GreenhouseProvider extends JobProvider {
       salaryMax: 0,
       salary: 0,
       currency: 'USD',
-      postedDate: raw.first_published ? new Date(raw.first_published) : new Date(raw.updated_at),
+      postedDate: raw.first_published ? new Date(raw.first_published) : new Date(raw.updated_at || Date.now()),
       category,
       subCategory: department || subCategory,
       requiredSkills: extractSkills(title, description).slice(0, 15),
