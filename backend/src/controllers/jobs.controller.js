@@ -166,15 +166,58 @@ const listJobs = asyncHandler(async (req, res) => {
   if (filter.$text) baseQuery.select({ score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
   else baseQuery.sort(sort);
 
-  const [jobs, total] = await Promise.all([
+  const nonTechExclusion = /\b(marketing|marketer|translator|translation|interpreter|localization|linguist|language specialist|business executive|business development|account executive|sales executive|sales representative|sales rep|sales manager|client executive|executive assistant|operations executive|relationship manager|recruiter|recruitment|talent acquisition|human resource|hr executive|hr manager|people operations|copywriter|content writer|content creator|journalist|editor|accountant|accounting|financial analyst|auditor|tax specialist|bookkeeper|legal counsel|paralegal|lawyer|customer support|customer service|customer success|telecaller|call center|receptionist|store manager|nurse|chef)\b/i;
+
+  const baseFilter = baseJobFilter();
+  const indiaFilter = indiaScopeFilter();
+
+  const [
+    jobs,
+    total,
+    technicalCount,
+    nonTechnicalCount,
+    remoteCount,
+    hybridCount,
+    onsiteCount,
+    fullTimeCount,
+    partTimeCount,
+    contractCount,
+    internshipCount,
+  ] = await Promise.all([
     baseQuery.skip(skip).limit(limit).lean(),
     Job.countDocuments(filter),
+    Job.countDocuments({
+      ...baseFilter,
+      $and: [indiaFilter, { category: 'technical', jobTitle: { $not: nonTechExclusion } }],
+    }),
+    Job.countDocuments({
+      ...baseFilter,
+      $and: [indiaFilter, { category: 'non-technical' }],
+    }),
+    Job.countDocuments({ ...baseFilter, $and: [indiaFilter], workMode: 'remote' }),
+    Job.countDocuments({ ...baseFilter, $and: [indiaFilter], workMode: 'hybrid' }),
+    Job.countDocuments({ ...baseFilter, $and: [indiaFilter], workMode: 'onsite' }),
+    Job.countDocuments({ ...baseFilter, $and: [indiaFilter], employmentType: 'full-time' }),
+    Job.countDocuments({ ...baseFilter, $and: [indiaFilter], employmentType: 'part-time' }),
+    Job.countDocuments({ ...baseFilter, $and: [indiaFilter], employmentType: 'contract' }),
+    Job.countDocuments({ ...baseFilter, $and: [indiaFilter], employmentType: 'internship' }),
   ]);
 
   res.json({
     success: true,
     jobs,
     pagination: buildPagination(page, limit, total),
+    counts: {
+      technical: technicalCount,
+      'non-technical': nonTechnicalCount,
+      remote: remoteCount,
+      hybrid: hybridCount,
+      onsite: onsiteCount,
+      'full-time': fullTimeCount,
+      'part-time': partTimeCount,
+      contract: contractCount,
+      internship: internshipCount,
+    },
   });
 });
 

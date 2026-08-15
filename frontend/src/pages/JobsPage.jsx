@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { FaMagnifyingGlass, FaArrowTrendUp, FaRotate } from 'react-icons/fa6';
 import { jobService } from '../services';
@@ -31,6 +31,7 @@ const PRESET_PATHS = {
 const JobsPage = () => {
   const [params, setParams] = useSearchParams();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const preset       = PRESET_PATHS[location.pathname] || {};
   const searchQuery  = params.get('search') || '';
@@ -47,6 +48,7 @@ const JobsPage = () => {
   const [page,    setPage]    = useState(initialPage);
   const [sort,    setSort]    = useState('newest');
   const [semanticActive, setSemanticActive] = useState(false);
+  const [counts,  setCounts]  = useState({ technical: 0, 'non-technical': 0, remote: 0, hybrid: 0, onsite: 0 });
 
   const [filters, setFilters] = useState({
     search:         searchQuery,
@@ -66,14 +68,24 @@ const JobsPage = () => {
     const nextSearch = params.get('search') || '';
     const nextExp = params.get('experience') || '';
 
-    setFilters((prev) => ({
-      ...prev,
-      category: nextCategory,
-      workModes: nextWorkMode ? [nextWorkMode] : prev.workModes,
-      search: nextSearch,
-      experienceLevel: nextExp,
-    }));
-  }, [location.pathname, params]);
+    setFilters((prev) => {
+      if (
+        prev.category === nextCategory &&
+        prev.search === nextSearch &&
+        prev.experienceLevel === nextExp &&
+        (prev.workModes?.[0] || '') === nextWorkMode
+      ) {
+        return prev;
+      }
+      return {
+        ...prev,
+        category: nextCategory,
+        workModes: nextWorkMode ? [nextWorkMode] : prev.workModes,
+        search: nextSearch,
+        experienceLevel: nextExp,
+      };
+    });
+  }, [location.pathname]);
 
   const debouncedSearch = useDebounce(filters.search, 450);
 
@@ -110,13 +122,9 @@ const JobsPage = () => {
       setTotal(pageInfo.total || 0);
       setPages(pageInfo.pages || 1);
       setPage(pageInfo.page || 1);
-      setParams((prev) => {
-        const sp = new URLSearchParams(prev);
-        if (pageInfo.page) {
-          sp.set('page', String(pageInfo.page));
-        }
-        return sp;
-      }, { replace: true });
+      if (data?.counts) {
+        setCounts(data.counts);
+      }
     } catch (err) {
       setJobs([]);
       setTotal(0);
@@ -141,22 +149,33 @@ const JobsPage = () => {
 
   const handleFilterChange = (next) => {
     setFilters(next);
-    // Use setTimeout so filtersRef.current is updated before fetchJobs reads it
-    setTimeout(() => fetchJobs(1), 0);
+    filtersRef.current = next;
+
     const sp = new URLSearchParams();
     if (next.search)          sp.set('search',   next.search);
     if (next.category)        sp.set('category', next.category);
     if (next.workModes?.[0])  sp.set('workMode', next.workModes[0]);
     if (next.experienceLevel) sp.set('experience', next.experienceLevel);
     sp.set('page', '1');
-    setParams(sp, { replace: true });
+
+    if (PRESET_PATHS[location.pathname]) {
+      navigate(`/jobs?${sp.toString()}`, { replace: true });
+    } else {
+      setParams(sp, { replace: true });
+    }
+    fetchJobs(1);
   };
 
   const clearFilters = () => {
     const empty = { search:'', category:'', workModes:[], employmentTypes:[], experienceLevel:'', salaryMin:'', source:'', postedWithinDays:'' };
     setFilters(empty);
-    setTimeout(() => fetchJobs(1), 0);
-    setParams({}, { replace: true });
+    filtersRef.current = empty;
+    if (PRESET_PATHS[location.pathname]) {
+      navigate('/jobs', { replace: true });
+    } else {
+      setParams({}, { replace: true });
+    }
+    fetchJobs(1);
   };
 
   const onSearchSubmit = (e) => { e.preventDefault(); fetchJobs(1); };
@@ -235,7 +254,7 @@ const JobsPage = () => {
                 filters={filters}
                 onChange={handleFilterChange}
                 onClear={clearFilters}
-                counts={{ technical: 0, 'non-technical': 0 }}
+                counts={counts}
               />
             </div>
 
@@ -317,7 +336,7 @@ const JobsPage = () => {
                   filters={filters}
                   onChange={handleFilterChange}
                   onClear={clearFilters}
-                  counts={{}}
+                  counts={counts}
                 />
               </div>
             </details>
