@@ -14,7 +14,6 @@ const { fetchAllJobs, cleanupExpiredJobs } = require('../services/jobIngestion.s
 const baseJobFilter = () => ({
   isActive: true,
   isExpired: false,
-  postedDate: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
 });
 
 const indiaScopeFilter = () => ({
@@ -28,35 +27,52 @@ const indiaScopeFilter = () => ({
 const applyIndiaScope = (filter, query) => {
   if (query.country) {
     filter.country = new RegExp(query.country, 'i');
-  } else if (query.scope !== 'global') {
+  } else if (query.scope === 'india') {
     filter.$and = [...(filter.$and || []), indiaScopeFilter()];
   }
 };
 
 const buildFilters = (query) => {
   const filter = baseJobFilter();
-  const search = (query.search || '').trim();
+  const search = (query.search || query.q || '').trim();
+
+  if (query.postedWithinDays) {
+    const days = parseInt(query.postedWithinDays, 10);
+    if (!isNaN(days) && days > 0) {
+      filter.postedDate = { $gte: new Date(Date.now() - days * 24 * 60 * 60 * 1000) };
+    }
+  }
 
   if (search) {
     const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const words = search.split(/\s+/).filter(Boolean);
+    const words = search.split(/\s+/).filter((w) => w.length > 1);
 
-    // If search is a specific technology keyword like 'java', 'python', 'react', 'node', etc.
-    if (words.length <= 2) {
-      filter.$and = [
-        ...(filter.$and || []),
-        {
-          $or: [
-            { jobTitle: { $regex: new RegExp(escaped, 'i') } },
-            { headline: { $regex: new RegExp(escaped, 'i') } },
-            { requiredSkills: { $in: [search.toLowerCase()] } },
-            { companyName: { $regex: new RegExp(escaped, 'i') } },
-          ],
-        },
-      ];
-    } else {
-      filter.$text = { $search: escaped };
-    }
+    // Build comprehensive search across headline, jobTitle, skills, company, and description
+    const wordConditions = words.map((w) => {
+      const escWord = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return {
+        $or: [
+          { headline: { $regex: escWord, $options: 'i' } },
+          { jobTitle: { $regex: escWord, $options: 'i' } },
+          { requiredSkills: { $regex: escWord, $options: 'i' } },
+          { companyName: { $regex: escWord, $options: 'i' } },
+          { description: { $regex: escWord, $options: 'i' } },
+        ],
+      };
+    });
+
+    filter.$and = [
+      ...(filter.$and || []),
+      {
+        $or: [
+          { headline: { $regex: escaped, $options: 'i' } },
+          { jobTitle: { $regex: escaped, $options: 'i' } },
+          { requiredSkills: { $in: [search.toLowerCase()] } },
+          { companyName: { $regex: escaped, $options: 'i' } },
+          ...(wordConditions.length > 0 ? [{ $and: wordConditions }] : []),
+        ],
+      },
+    ];
   }
 
   if (query.company) filter.companyName = { $regex: new RegExp(query.company, 'i') };

@@ -59,7 +59,44 @@ async function searchJobs(params, user = null) {
 
   let isBroadened = false;
 
-  // If 0 results found for a specific city/location, broaden search across Remote + All India
+  // If 0 results found, try searching by individual headline/title/skill terms across all locations
+  if (total === 0) {
+    const rawSearch = (params.search || params.q || '').trim();
+    const searchTerms = rawSearch.split(/\s+/).filter((w) => w.length > 1);
+
+    if (searchTerms.length > 0) {
+      const termFilters = searchTerms.map((t) => {
+        const esc = t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return {
+          $or: [
+            { headline: { $regex: esc, $options: 'i' } },
+            { jobTitle: { $regex: esc, $options: 'i' } },
+            { requiredSkills: { $regex: esc, $options: 'i' } },
+            { companyName: { $regex: esc, $options: 'i' } },
+          ],
+        };
+      });
+
+      const headlineFilter = {
+        isActive: true,
+        isExpired: false,
+        $or: termFilters,
+      };
+
+      const [hJobs, hTotal] = await Promise.all([
+        Job.find(headlineFilter).sort({ postedDate: -1, createdAt: -1 }).limit(limit * 2).lean(),
+        Job.countDocuments(headlineFilter),
+      ]);
+
+      if (hTotal > 0) {
+        jobs = hJobs;
+        total = hTotal;
+        isBroadened = true;
+      }
+    }
+  }
+
+  // If 0 results found for a specific city/location, broaden search across Remote + All locations
   if (total === 0 && (params.city || params.location)) {
     const broadenedParams = { ...params, city: undefined, location: undefined, state: undefined };
     const broadenedFilter = buildFilters(broadenedParams);
@@ -82,14 +119,13 @@ async function searchJobs(params, user = null) {
     }
   }
 
-  // If still 0 results, fall back to top software career page roles
+  // If still 0 results, fall back to top active available roles
   if (total === 0) {
     const fallbackJobs = await Job.find({
       isActive: true,
-      category: 'technical',
-      source: { $in: CAREER_PAGE_SOURCES },
+      isExpired: false,
     })
-      .sort({ postedDate: -1 })
+      .sort({ postedDate: -1, createdAt: -1 })
       .limit(limit)
       .lean();
 

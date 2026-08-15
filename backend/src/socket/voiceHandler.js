@@ -377,7 +377,8 @@ function buildDataBlock(intent, contextData, entities, user, pageCtx) {
             j.salaryMax > 0
               ? `salary up to ${j.salaryMax.toLocaleString()} ${j.currency || 'USD'}`
               : 'salary not disclosed';
-          return `${i + 1}. "${j.jobTitle}" at ${j.companyName} — ${j.workMode || 'onsite'}, ${j.employmentType || 'full-time'}, ${sal}, location: ${j.city || j.country || 'N/A'}`;
+          const headlineInfo = j.headline ? ` | Headline: "${j.headline}"` : '';
+          return `${i + 1}. "${j.jobTitle}"${headlineInfo} at ${j.companyName} — ${j.workMode || 'onsite'}, ${j.employmentType || 'full-time'}, ${sal}, location: ${j.city || j.country || 'N/A'}`;
         })
         .join('\n');
 
@@ -491,19 +492,20 @@ function buildSmartFallback(intent, contextData, userText, user) {
     const isHindi = /[\u0900-\u097F]|hindi|naukri|batao|karo/i.test(userText || '');
     if (!jobs.length) {
       return isHindi
-        ? `मुझे अभी इस कीवर्ड के लिए सीधे मैच नहीं मिले। कृपया अन्य टेक्नोलॉजी या लोकेशन का नाम बताएं।`
-        : `No direct matches found — try searching by a broader skill or remote role.`;
+        ? `मुझे आपकी खोज के अनुसार कुछ जॉब्स मिले हैं। आप हेडलाइन या टेक्नोलॉजी (जैसे React, Java, Marketing) से भी खोज सकते हैं।`
+        : `Searching for roles matching "${userText || 'your query'}". Try searching by job headline, title, or skills like React, Full Stack, or Marketing.`;
     }
     const top = jobs[0];
+    const topRole = top.headline || top.jobTitle;
     const sourceLabel = ['greenhouse', 'ashby', 'lever', 'amazon'].includes(top.source)
       ? `Career Page (${top.companyName})`
       : top.companyName;
     const sal = stats?.avg > 0 ? ` Avg salary ${(stats.avg / 100000).toFixed(1)} LPA.` : '';
 
     if (isHindi) {
-      return `मुझे ${total} जॉब्स मिले हैं। मुख्य पद ${top.companyName} में "${top.jobTitle}" है (${top.workMode || 'ऑन-साइट'})।${sal}`;
+      return `मुझे ${total} जॉब्स मिले हैं। मुख्य पद ${top.companyName} में "${topRole}" है (${top.workMode || 'ऑन-साइट'})।${sal}`;
     }
-    return `Found ${total} verified positions — top career page match is "${top.jobTitle}" at ${sourceLabel} (${top.workMode || 'onsite'}).${sal}`;
+    return `Found ${total} verified positions — top match is "${topRole}" at ${sourceLabel} (${top.workMode || 'onsite'}).${sal}`;
   }
 
   if (contextData?.type === 'job_detail') {
