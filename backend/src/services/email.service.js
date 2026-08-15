@@ -62,34 +62,45 @@ const sendBrevoMail = async ({ to, toName, subject, text, html }) => {
 };
 
 const sendMail = async ({ to, toName, subject, text, html }) => {
+  let brevoError = null;
+
   // 1. Try Brevo REST API first if API key is provided
   if (env.brevo?.apiKey && env.brevo.apiKey.trim().length > 0) {
     try {
       const result = await sendBrevoMail({ to, toName, subject, text, html });
       if (result) return result;
     } catch (err) {
-      logger.error(`[mail][brevo] Failed: ${err.message}`);
-      throw err;
+      brevoError = err.message;
+      logger.warn(`[mail][brevo] API call failed: ${err.message}. Checking fallback transports...`);
     }
   }
 
-  // 2. Try SMTP if configured and not in dev mode
+  // 2. Try SMTP if configured (or as fallback if Brevo REST API failed)
   const t = getTransporter();
   if (t && !env.smtp.dev) {
     try {
       await t.sendMail({
-        from: env.smtp.from,
+        from: env.brevo?.senderEmail || env.smtp.from,
         to,
         subject,
         text,
         html,
       });
-      logger.info(`[mail][smtp] Sent to ${to} (${subject})`);
+      logger.info(`[mail][smtp] Sent to ${to} (${subject}) via SMTP fallback`);
       return { sent: true, provider: 'smtp', to, subject };
     } catch (err) {
-      logger.error(`[mail][smtp] Failed: ${err.message}`);
-      throw new Error(`SMTP Error: ${err.message}`);
+      logger.error(`[mail][smtp] SMTP fallback failed: ${err.message}`);
     }
+  }
+
+  // If Brevo failed and no fallback succeeded, throw a clear actionable error
+  if (brevoError) {
+    if (brevoError.includes('unrecognised IP address') || brevoError.includes('authorised_ips')) {
+      throw new Error(
+        `Brevo IP Security Block: Your hosting IP needs to be authorized in Brevo. Please visit https://app.brevo.com/security/authorised_ips and add your IP or disable IP restrictions.`
+      );
+    }
+    throw new Error(brevoError);
   }
 
   // 3. Fallback dev logger (local development mode)
