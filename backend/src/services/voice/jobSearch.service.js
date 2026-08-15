@@ -10,34 +10,106 @@ const {
 } = require('../../controllers/jobs.controller');
 const { paginate } = require('../../utils/query');
 
+const CAREER_PAGE_SOURCES = ['greenhouse', 'ashby', 'lever', 'amazon', 'recruiter'];
+
+function rankAndPrioritizeJobs(jobs, user = null) {
+  return jobs
+    .map((job) => {
+      let priorityScore = 0;
+      // 1. Direct Career Page jobs (Greenhouse, Ashby, Lever, Amazon, Recruiter) get highest priority
+      if (CAREER_PAGE_SOURCES.includes(job.source)) {
+        priorityScore += 100;
+      }
+      // 2. Software & Technical roles get top priority
+      if (
+        job.category === 'technical' ||
+        /(developer|engineer|software|fullstack|frontend|backend|java|python|react|node|cloud|devops|architect|qa|sdet)/i.test(
+          job.jobTitle || ''
+        )
+      ) {
+        priorityScore += 60;
+      }
+      // 3. Featured / verified bonus
+      if (job.isFeatured) priorityScore += 40;
+      if (job.isVerified) priorityScore += 20;
+
+      const match = user ? computeMatchScore(user, job) : 0;
+      return { ...job, match, _priorityScore: priorityScore + (match || 0) };
+    })
+    .sort((a, b) => b._priorityScore - a._priorityScore);
+}
+
 async function searchJobs(params, user = null) {
-  const filter = buildFilters(params);
+  let filter = buildFilters(params);
   const sort = sortOptions(params.sort);
 
   const { page, limit, skip } = paginate({ page: params.page || 1, limit: params.limit || 10 });
 
-  const baseQuery = Job.find(filter);
+  let baseQuery = Job.find(filter);
   if (filter.$text) {
     baseQuery.select({ score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
   } else {
     baseQuery.sort(sort);
   }
 
-  const [jobs, total] = await Promise.all([
-    baseQuery.skip(skip).limit(limit).lean(),
+  let [jobs, total] = await Promise.all([
+    baseQuery.skip(skip).limit(limit * 2).lean(),
     Job.countDocuments(filter),
   ]);
 
-  const scored = user
-    ? jobs.map((job) => ({ ...job, match: computeMatchScore(user, job) }))
-    : jobs;
+  let isBroadened = false;
+
+  // If 0 results found for a specific city/location, broaden search across Remote + All India
+  if (total === 0 && (params.city || params.location)) {
+    const broadenedParams = { ...params, city: undefined, location: undefined, state: undefined };
+    const broadenedFilter = buildFilters(broadenedParams);
+    const broadenedQuery = Job.find(broadenedFilter);
+    if (broadenedFilter.$text) {
+      broadenedQuery.select({ score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
+    } else {
+      broadenedQuery.sort(sort);
+    }
+
+    const [bJobs, bTotal] = await Promise.all([
+      broadenedQuery.skip(skip).limit(limit * 2).lean(),
+      Job.countDocuments(broadenedFilter),
+    ]);
+
+    if (bTotal > 0) {
+      jobs = bJobs;
+      total = bTotal;
+      isBroadened = true;
+    }
+  }
+
+  // If still 0 results, fall back to top software career page roles
+  if (total === 0) {
+    const fallbackJobs = await Job.find({
+      isActive: true,
+      category: 'technical',
+      source: { $in: CAREER_PAGE_SOURCES },
+    })
+      .sort({ postedDate: -1 })
+      .limit(limit)
+      .lean();
+
+    if (fallbackJobs.length > 0) {
+      jobs = fallbackJobs;
+      total = fallbackJobs.length;
+      isBroadened = true;
+    }
+  }
+
+  // Rank Career Pages first, then APIs, prioritizing Software roles
+  const ranked = rankAndPrioritizeJobs(jobs, user).slice(0, limit);
 
   return {
-    jobs: scored,
+    jobs: ranked,
     total,
     page,
     limit,
     totalPages: Math.ceil(total / limit),
+    isBroadened,
   };
 }
 

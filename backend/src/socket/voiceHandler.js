@@ -487,11 +487,23 @@ function buildSmartFallback(intent, contextData, userText, user) {
   const name = user?.name ? ` ${user.name.split(' ')[0]}` : '';
 
   if (contextData?.type === 'jobs' || contextData?.type === 'recommendations') {
-    const { jobs = [], total = 0, stats } = contextData;
-    if (!jobs.length) return `No matching jobs found — try different keywords or location.`;
+    const { jobs = [], total = 0, stats, isBroadened } = contextData;
+    const isHindi = /[\u0900-\u097F]|hindi|naukri|batao|karo/i.test(userText || '');
+    if (!jobs.length) {
+      return isHindi
+        ? `मुझे अभी इस कीवर्ड के लिए सीधे मैच नहीं मिले। कृपया अन्य टेक्नोलॉजी या लोकेशन का नाम बताएं।`
+        : `No direct matches found — try searching by a broader skill or remote role.`;
+    }
     const top = jobs[0];
+    const sourceLabel = ['greenhouse', 'ashby', 'lever', 'amazon'].includes(top.source)
+      ? `Career Page (${top.companyName})`
+      : top.companyName;
     const sal = stats?.avg > 0 ? ` Avg salary ${(stats.avg / 100000).toFixed(1)} LPA.` : '';
-    return `Found ${total} jobs — top match is ${top.jobTitle} at ${top.companyName} (${top.workMode || 'onsite'}).${sal}`;
+
+    if (isHindi) {
+      return `मुझे ${total} जॉब्स मिले हैं। मुख्य पद ${top.companyName} में "${top.jobTitle}" है (${top.workMode || 'ऑन-साइट'})।${sal}`;
+    }
+    return `Found ${total} verified positions — top career page match is "${top.jobTitle}" at ${sourceLabel} (${top.workMode || 'onsite'}).${sal}`;
   }
 
   if (contextData?.type === 'job_detail') {
