@@ -15,6 +15,7 @@ const jobSchema = new mongoose.Schema(
     companyWebsite: { type: String, default: '' },
 
     jobTitle: { type: String, required: true, trim: true, index: true },
+    headline: { type: String, trim: true, default: '' },
     description: { type: String, default: '' },
 
     requiredSkills: [{ type: String, trim: true, lowercase: true }],
@@ -83,7 +84,7 @@ const jobSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-jobSchema.index({ jobTitle: 'text', description: 'text', requiredSkills: 'text', companyName: 'text' });
+jobSchema.index({ jobTitle: 'text', headline: 'text', description: 'text', requiredSkills: 'text', companyName: 'text' });
 jobSchema.index({ isActive: 1, isExpired: 1, postedDate: -1 });
 jobSchema.index({ category: 1, isActive: 1, postedDate: -1 });
 jobSchema.index({ requiredSkills: 1, isActive: 1, postedDate: -1 });

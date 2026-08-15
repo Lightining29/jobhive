@@ -13,6 +13,10 @@ const startCronJobs = () => {
         { jobTitle: { $regex: nonTechRegex }, category: { $ne: 'non-technical' } },
         { $set: { category: 'non-technical' } }
       );
+      await Job.updateMany(
+        { $or: [{ headline: { $exists: false } }, { headline: '' }, { headline: null }] },
+        [{ $set: { headline: '$jobTitle' } }]
+      );
       const results = await fetchAllJobs();
       logger.info('[cron] startup job fetch finished', results);
     } catch (err) {

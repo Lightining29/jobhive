@@ -87,6 +87,7 @@ const buildJobDoc = (providerName, normalized) => {
     companyLogo: clean(normalized.logo) || '',
     companyWebsite: clean(normalized.companyWebsite) || '',
     jobTitle: clean(normalized.title).slice(0, 150),
+    headline: clean(normalized.headline || normalized.title).slice(0, 200),
     description: clean(normalized.description).slice(0, 20000),
     requiredSkills: Array.from(new Set((normalized.requiredSkills || []).map((s) => clean(s).toLowerCase()).filter(Boolean))).slice(0, 15),
     category: normalized.category || 'technical',

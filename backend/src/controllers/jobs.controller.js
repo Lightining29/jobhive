@@ -47,7 +47,8 @@ const buildFilters = (query) => {
         ...(filter.$and || []),
         {
           $or: [
-            { jobTitle: { $regex: new RegExp(`\\b${escaped}\\b`, 'i') } },
+            { jobTitle: { $regex: new RegExp(escaped, 'i') } },
+            { headline: { $regex: new RegExp(escaped, 'i') } },
             { requiredSkills: { $in: [search.toLowerCase()] } },
             { companyName: { $regex: new RegExp(escaped, 'i') } },
           ],
@@ -68,7 +69,8 @@ const buildFilters = (query) => {
         return {
           $or: [
             { requiredSkills: sk },
-            { jobTitle: { $regex: new RegExp(`\\b${escaped}\\b`, 'i') } },
+            { jobTitle: { $regex: new RegExp(escaped, 'i') } },
+            { headline: { $regex: new RegExp(escaped, 'i') } },
           ],
         };
       });
