@@ -111,17 +111,22 @@ app.use('/api/voice',  apiLimiter, require('./routes/voice.routes'));
 app.use('/api/resume',             require('./routes/resumeAnalyzer.routes'));
 app.use('/api/news',      require('./routes/careerNews.routes'));
 app.use('/api/portfolio',    require('./routes/portfolio.routes'));
-// ── Serve Published User Portfolios at /p/:slug ──
+// ── Serve Published User Portfolios Live Forever at /p/:slug & /portfolio/:slug ──
 const deploymentService = require('./services/deployment.service');
-app.use('/p/:slug', (req, res, next) => {
+
+const serveLivePortfolio = (req, res, next) => {
   const { slug } = req.params;
   const currentDir = path.join(deploymentService.DEPLOYMENTS_DIR, slug, 'current');
   if (fs.existsSync(currentDir)) {
     deploymentService.incrementViews(slug).catch(() => {});
+    res.setHeader('Cache-Control', 'public, max-age=300'); // Cache for 5 mins for ultra-fast loading
     return express.static(currentDir)(req, res, next);
   }
   next();
-});
+};
+
+app.use('/p/:slug', serveLivePortfolio);
+app.use('/portfolio/:slug', serveLivePortfolio);
 
 const fs = require('fs');
 
@@ -130,7 +135,12 @@ const frontendDist = path.join(__dirname, '../../frontend/dist');
 if (fs.existsSync(frontendDist)) {
   app.use(express.static(frontendDist));
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/p/') || req.path.startsWith('/uploads')) {
+    if (
+      req.path.startsWith('/api') ||
+      req.path.startsWith('/p/') ||
+      req.path.startsWith('/portfolio/') ||
+      req.path.startsWith('/uploads')
+    ) {
       return next();
     }
     res.sendFile(path.join(frontendDist, 'index.html'));

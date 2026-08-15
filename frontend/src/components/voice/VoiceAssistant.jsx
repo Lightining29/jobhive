@@ -19,17 +19,18 @@ import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
 import { useKokoroTTS } from '../../hooks/useKokoroTTS';
 import { useLocalStorage } from '../../hooks/index';
 import AIAvatar from './AIAvatar';
+import Canvas3DBot from './Canvas3DBot';
 import MicButton from './MicButton';
 import VoiceWave from './VoiceWave';
 import ConversationPanel from './ConversationPanel';
 import VoiceSettings from './VoiceSettings';
 
 const DEFAULT_SETTINGS = {
-  autoSpeak: false,
+  autoSpeak: true,
   rate: 1.0,
   volume: 1.0,
-  lang: 'en-US',
-  kokoroVoice: 'en-US-Journey-F',
+  lang: 'hi-IN',
+  kokoroVoice: 'hi-IN-Neural2-A',
   ttsFormat: 'mp3',
 };
 
@@ -139,10 +140,10 @@ export default function VoiceAssistant({ onClose, pageContext }) {
     >
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-line/60 bg-white/60">
-        <AIAvatar mode={aiMode} size="md" />
+        <Canvas3DBot mode={aiMode} size={46} interactive={true} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="text-sm font-bold text-ink">JobHive AI</p>
+            <p className="text-sm font-bold text-ink">Job Workplace AI (3D Bot)</p>
             <span
               className={`h-1.5 w-1.5 rounded-full ${connected ? 'bg-emerald-400' : 'bg-slate-300'}`}
               title={connected ? 'Connected' : 'Disconnected'}
@@ -152,11 +153,11 @@ export default function VoiceAssistant({ onClose, pageContext }) {
             <VoiceWave mode={aiMode} size="sm" />
             <p className="text-[10px] text-muted capitalize">
               {ttsLoading
-                ? 'generating audio…'
+                ? 'generating Hindi voice…'
                 : isSpeaking
-                ? usingFallback ? 'speaking (browser)' : 'speaking (kokoro)'
+                ? 'Speaking...'
                 : aiMode === 'idle'
-                ? connected ? 'ready' : 'connecting…'
+                ? connected ? 'Ready • हिंदी & English' : 'connecting…'
                 : aiMode}
             </p>
           </div>

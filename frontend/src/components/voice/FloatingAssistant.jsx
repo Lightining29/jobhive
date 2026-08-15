@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { FaHexagonNodes, FaXmark } from 'react-icons/fa6';
 import VoiceAssistant from './VoiceAssistant';
+import Canvas3DBot from './Canvas3DBot';
 
 function derivePageContext(pathname) {
   // Extract job ID directly from pathname: /jobs/:id
@@ -40,28 +41,17 @@ export default function FloatingAssistant() {
     setIsOpen(false);
   }, []);
 
-  // Keyboard shortcut: Ctrl+Shift+A (or Cmd+Shift+A on Mac)
+  // Global keyboard shortcut: Ctrl+Shift+A (or Cmd+Shift+A on Mac)
   useEffect(() => {
-    const handler = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
+    function onKeyDown(e) {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'a') {
         e.preventDefault();
-        setIsOpen((o) => !o);
-        if (!isOpen) setHasNewMessage(false);
+        setIsOpen((prev) => !prev);
       }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [isOpen]);
-
-  // Close on Escape
-  useEffect(() => {
-    if (!isOpen) return;
-    const handler = (e) => {
-      if (e.key === 'Escape') setIsOpen(false);
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [isOpen]);
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   return (
     <>
@@ -90,32 +80,44 @@ export default function FloatingAssistant() {
           )}
         </AnimatePresence>
 
-        {/* Floating trigger button */}
+        {/* Floating trigger button with 3D Animated Bot */}
         <AnimatePresence mode="wait">
           {!isOpen ? (
-            <motion.button
+            <motion.div
               key="open"
-              onClick={handleOpen}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.94 }}
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-              className="relative h-14 w-14 rounded-full bg-gradient-to-br from-primary-600 to-violet-700 text-white shadow-lift flex items-center justify-center hover:shadow-glow transition-shadow"
-              aria-label="Open AI Voice Assistant (Ctrl+Shift+A)"
-              title="JobHive AI Assistant (Ctrl+Shift+A)"
+              className="relative flex items-center"
             >
-              {/* Subtle pulse ring */}
-              <span className="absolute inset-0 rounded-full bg-primary-500 opacity-0 animate-ping" style={{ animationDuration: '3s' }} />
+              {/* Hindi / English Speech bubble teaser */}
+              <motion.div
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.8 }}
+                onClick={handleOpen}
+                className="hidden sm:flex items-center gap-1.5 mr-3 px-3 py-1.5 bg-surface text-ink text-xs font-semibold rounded-2xl shadow-lift border border-line cursor-pointer hover:border-primary-500/50 transition-all select-none"
+              >
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Job Assistant AI • पूछें कुछ भी!</span>
+              </motion.div>
 
-              <FaHexagonNodes className="h-6 w-6 relative z-10" />
+              <button
+                onClick={handleOpen}
+                className="relative h-16 w-16 rounded-full bg-gradient-to-br from-slate-900 via-primary-950 to-slate-900 text-white shadow-lift border-2 border-primary-500/40 flex items-center justify-center hover:border-primary-400 hover:shadow-glow transition-all group overflow-hidden"
+                aria-label="Open 3D AI Voice Assistant (Ctrl+Shift+A)"
+                title="Job Workplace 3D AI Assistant (Ctrl+Shift+A)"
+              >
+                {/* 3D Bot Character */}
+                <Canvas3DBot mode="idle" size={54} interactive={true} />
 
-              {/* New message indicator */}
-              {hasNewMessage && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-accent border-2 border-white" />
-              )}
-            </motion.button>
+                {/* New message / active indicator */}
+                {hasNewMessage && (
+                  <span className="absolute top-1 right-1 h-3.5 w-3.5 rounded-full bg-accent border-2 border-slate-900" />
+                )}
+              </button>
+            </motion.div>
           ) : (
             <motion.button
               key="close"

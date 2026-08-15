@@ -14,12 +14,12 @@ const startCronJobs = () => {
     }
   })();
 
-  // Then every 30 minutes
-  cron.schedule('*/30 * * * *', async () => {
-    logger.info('[cron] scheduled job fetch started');
+  // Fetch every 5 minutes for high-concurrency rapid updates (10,000+ users)
+  cron.schedule('*/5 * * * *', async () => {
+    logger.info('[cron] scheduled 5-minute job fetch started');
     try {
       const results = await fetchAllJobs();
-      logger.info('[cron] scheduled job fetch finished', results);
+      logger.info('[cron] scheduled 5-minute job fetch finished', results);
     } catch (err) {
       logger.error('[cron] scheduled job fetch error', { message: err.message });
     }

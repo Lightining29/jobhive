@@ -13,45 +13,59 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
 const GEMINI_VOICES = [
-  { id: 'en-US-Journey-F', label: 'Journey Female (Gemini Neural — Most Natural)', lang: 'en-US' },
-  { id: 'en-US-Journey-D', label: 'Journey Male (Gemini Neural)', lang: 'en-US' },
+  { id: 'hi-IN-Neural2-A', label: 'Google हिन्दी Female (Neural2 — Most Natural)', lang: 'hi-IN' },
+  { id: 'hi-IN-Neural2-B', label: 'Google हिन्दी Male (Neural2)', lang: 'hi-IN' },
+  { id: 'hi-IN-Wavenet-A', label: 'Google हिन्दी Studio (Wavenet)', lang: 'hi-IN' },
+  { id: 'en-US-Journey-F', label: 'Journey Female (Gemini Neural — English)', lang: 'en-US' },
+  { id: 'en-US-Journey-D', label: 'Journey Male (Gemini Neural — English)', lang: 'en-US' },
   { id: 'en-US-Neural2-F', label: 'Neural2 Female (Gemini High Quality)', lang: 'en-US' },
-  { id: 'en-US-Neural2-D', label: 'Neural2 Male (Gemini High Quality)', lang: 'en-US' },
-  { id: 'en-US-Studio-O',  label: 'Studio Female (Gemini Professional)', lang: 'en-US' },
 ];
 
-const DEFAULT_VOICE = 'en-US-Journey-F';  // Most natural-sounding Gemini Neural voice
+const DEFAULT_VOICE = 'hi-IN-Neural2-A';  // Most natural-sounding Google Gemini Hindi Neural voice
 const DEFAULT_SPEED = 1.0;
 
 // ── Browser TTS fallback ─────────────────────────────────────────────────────
 const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
 
-function browserSpeak(text, { rate = 1.0, volume = 1.0, lang = 'en-US', onStart, onEnd } = {}) {
+function browserSpeak(text, { rate = 1.0, volume = 1.0, lang = 'hi-IN', onStart, onEnd } = {}) {
   if (!synth) return;
   synth.cancel();
   const cleaned = text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\n+/g, ' ').trim();
+  const isHindiText = /[\u0900-\u097F]/.test(cleaned);
 
   function doSpeak() {
     const utt = new SpeechSynthesisUtterance(cleaned);
     utt.rate = rate;
     utt.volume = volume;
-    utt.lang = lang;
+    utt.lang = isHindiText ? 'hi-IN' : lang;
 
     const voices = synth.getVoices();
-    const femaleKeywords = ['female', 'woman', 'girl', 'zira', 'samantha', 'victoria',
-      'karen', 'moira', 'tessa', 'fiona', 'allison', 'ava', 'susan', 'emma',
-      'lisa', 'sarah', 'aria', 'jenny', 'sonia', 'natasha', 'veena', 'raveena'];
+    let chosenVoice;
 
-    const female =
-      voices.find((v) => v.lang === lang      && femaleKeywords.some((k) => v.name.toLowerCase().includes(k))) ||
-      voices.find((v) => v.lang === 'en-US'   && femaleKeywords.some((k) => v.name.toLowerCase().includes(k))) ||
-      voices.find((v) => v.lang.startsWith('en') && femaleKeywords.some((k) => v.name.toLowerCase().includes(k))) ||
-      voices.find((v) => ['Microsoft Zira', 'Samantha', 'Karen', 'Moira', 'Tessa',
-        'Microsoft Jenny', 'Aria'].some((n) => v.name.includes(n))) ||
-      voices.find((v) => v.lang.startsWith('en')) ||
-      voices[0];
+    if (isHindiText || lang.startsWith('hi')) {
+      // Find best natural Hindi voice
+      chosenVoice =
+        voices.find((v) => v.lang === 'hi-IN' && (v.name.includes('Google') || v.name.includes('Neural') || v.name.includes('Swara') || v.name.includes('Madhur'))) ||
+        voices.find((v) => v.lang === 'hi-IN' || v.lang.startsWith('hi')) ||
+        voices.find((v) => v.name.toLowerCase().includes('hindi'));
+    }
 
-    if (female) utt.voice = female;
+    if (!chosenVoice) {
+      const femaleKeywords = ['female', 'woman', 'girl', 'zira', 'samantha', 'victoria',
+        'karen', 'moira', 'tessa', 'fiona', 'allison', 'ava', 'susan', 'emma',
+        'lisa', 'sarah', 'aria', 'jenny', 'sonia', 'natasha', 'veena', 'raveena'];
+
+      chosenVoice =
+        voices.find((v) => v.lang === lang      && femaleKeywords.some((k) => v.name.toLowerCase().includes(k))) ||
+        voices.find((v) => v.lang === 'en-US'   && femaleKeywords.some((k) => v.name.toLowerCase().includes(k))) ||
+        voices.find((v) => v.lang.startsWith('en') && femaleKeywords.some((k) => v.name.toLowerCase().includes(k))) ||
+        voices.find((v) => ['Microsoft Zira', 'Samantha', 'Karen', 'Moira', 'Tessa',
+          'Microsoft Jenny', 'Aria'].some((n) => v.name.includes(n))) ||
+        voices.find((v) => v.lang.startsWith('en')) ||
+        voices[0];
+    }
+
+    if (chosenVoice) utt.voice = chosenVoice;
     utt.onstart = onStart;
     utt.onend   = onEnd;
     utt.onerror = onEnd;

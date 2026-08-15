@@ -85,8 +85,12 @@ const jobSchema = new mongoose.Schema(
 
 jobSchema.index({ jobTitle: 'text', description: 'text', requiredSkills: 'text', companyName: 'text' });
 jobSchema.index({ isActive: 1, isExpired: 1, postedDate: -1 });
-jobSchema.index({ category: 1, workMode: 1, employmentType: 1 });
+jobSchema.index({ category: 1, isActive: 1, postedDate: -1 });
+jobSchema.index({ requiredSkills: 1, isActive: 1, postedDate: -1 });
+jobSchema.index({ source: 1, isActive: 1, postedDate: -1 });
+jobSchema.index({ workMode: 1, isActive: 1, postedDate: -1 });
 jobSchema.index({ salaryMax: -1 });
+jobSchema.index({ createdAt: -1 });
 jobSchema.index({ expiresAt: 1 });
 
 const Job = mongoose.model('Job', jobSchema);
