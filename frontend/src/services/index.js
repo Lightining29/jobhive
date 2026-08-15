@@ -63,15 +63,83 @@ const recruiterService = {
 
 const adminService = {
   dashboard: () => api.get('/admin/dashboard'),
+
+  // Users & Credits
   users: (params) => api.get('/admin/users', { params }),
+  getUser: (id) => api.get(`/admin/users/${id}`),
   updateUser: (id, data) => api.patch(`/admin/users/${id}`, data),
+  grantCredits: (id, data) => api.post(`/admin/users/${id}/grant-credits`, data),
+  extendTrial: (id, data) => api.post(`/admin/users/${id}/extend-trial`, data),
+  changeSubscription: (id, data) => api.post(`/admin/users/${id}/change-subscription`, data),
+
+  // Services Catalog
+  services: (params) => api.get('/admin/services', { params }),
+  getService: (id) => api.get(`/admin/services/${id}`),
+  createService: (data) => api.post('/admin/services', data),
+  updateService: (id, data) => api.put(`/admin/services/${id}`, data),
+  toggleService: (id) => api.patch(`/admin/services/${id}/toggle`),
+  deleteService: (id) => api.delete(`/admin/services/${id}`),
+
+  // Subscription Plans
+  plans: (params) => api.get('/admin/plans', { params }),
+  getPlan: (id) => api.get(`/admin/plans/${id}`),
+  createPlan: (data) => api.post('/admin/plans', data),
+  updatePlan: (id, data) => api.put(`/admin/plans/${id}`, data),
+  togglePlan: (id) => api.patch(`/admin/plans/${id}/toggle`),
+  deletePlan: (id) => api.delete(`/admin/plans/${id}`),
+
+  // Coupons & Discounts
+  coupons: (params) => api.get('/admin/coupons', { params }),
+  getCoupon: (id) => api.get(`/admin/coupons/${id}`),
+  createCoupon: (data) => api.post('/admin/coupons', data),
+  updateCoupon: (id, data) => api.put(`/admin/coupons/${id}`, data),
+  toggleCoupon: (id) => api.patch(`/admin/coupons/${id}/toggle`),
+  deleteCoupon: (id) => api.delete(`/admin/coupons/${id}`),
+
+  // Service Bundles
+  bundles: (params) => api.get('/admin/bundles', { params }),
+  getBundle: (id) => api.get(`/admin/bundles/${id}`),
+  createBundle: (data) => api.post('/admin/bundles', data),
+  updateBundle: (id, data) => api.put(`/admin/bundles/${id}`, data),
+  deleteBundle: (id) => api.delete(`/admin/bundles/${id}`),
+
+  // Payments & Invoices
+  payments: (params) => api.get('/admin/payments', { params }),
+  getPayment: (id) => api.get(`/admin/payments/${id}`),
+  createManualPayment: (data) => api.post('/admin/payments/manual', data),
+  refundPayment: (id, reason) => api.patch(`/admin/payments/${id}/refund`, { reason }),
+
+  // Analytics & Reports
+  analytics: () => api.get('/admin/reports/analytics'),
+  exportCSV: (type) => api.get(`/admin/reports/export?type=${type}`, { responseType: 'blob' }),
+
+  // Companies & Verification
   companies: (params) => api.get('/admin/companies', { params }),
   verifyCompany: (id, verified) => api.patch(`/admin/companies/${id}/verify`, { verified }),
+
+  // Jobs Moderation
   jobs: (params) => api.get('/admin/jobs', { params }),
   moderateJob: (id, data) => api.patch(`/admin/jobs/${id}`, data),
+  toggleFeaturedJob: (id) => api.patch(`/admin/jobs/${id}/featured`),
   deleteJob: (id) => api.delete(`/admin/jobs/${id}`),
+
+  // Reports & Flags
   reports: (params) => api.get('/admin/reports', { params }),
   resolveReport: (id, action, resolution) => api.patch(`/admin/reports/${id}`, { action, resolution }),
+
+  // Staff Roles & Permissions
+  roles: (params) => api.get('/admin/roles/staff', { params }),
+  updateRole: (id, data) => api.put(`/admin/roles/staff/${id}`, data),
+  promoteRole: (data) => api.post('/admin/roles/promote', data),
+
+  // Notifications & Templates
+  templates: () => api.get('/admin/notifications/templates'),
+  updateTemplate: (id, data) => api.put(`/admin/notifications/templates/${id}`, data),
+  broadcastNotification: (data) => api.post('/admin/notifications/broadcast', data),
+
+  // Platform Settings
+  settings: () => api.get('/admin/settings'),
+  updateSettings: (data) => api.put('/admin/settings', data),
 };
 
 const notificationService = {

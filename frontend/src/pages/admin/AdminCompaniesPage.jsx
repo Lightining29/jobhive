@@ -2,16 +2,9 @@ import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { FaUsers, FaBuilding, FaBriefcase, FaFlag, FaGaugeHigh, FaCircleCheck, FaClockRotateLeft } from 'react-icons/fa6';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
+import { adminNavItems } from '../../components/admin/adminNav';
 import { adminService } from '../../services';
 import { formatDateTime } from '../../utils/format';
-
-const navItems = [
-  { to: '/admin/dashboard', label: 'Overview', icon: FaGaugeHigh },
-  { to: '/admin/users', label: 'Users', icon: FaUsers },
-  { to: '/admin/companies', label: 'Companies', icon: FaBuilding },
-  { to: '/admin/jobs', label: 'Jobs', icon: FaBriefcase },
-  { to: '/admin/reports', label: 'Reports', icon: FaFlag },
-];
 
 const AdminCompaniesPage = () => {
   const [companies, setCompanies] = useState([]);
@@ -46,7 +39,7 @@ const AdminCompaniesPage = () => {
   };
 
   return (
-    <DashboardLayout title="Company Management" subtitle="Verify and manage companies" navItems={navItems}>
+    <DashboardLayout title="Companies" subtitle="Company profiles and verification" navItems={adminNavItems}>
       <div className="mb-5">
         <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search companies..." className="input !w-72" />
       </div>

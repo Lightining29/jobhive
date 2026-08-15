@@ -39,9 +39,18 @@ const MyJobsPage = lazy(() => import('./pages/recruiter/MyJobsPage'));
 const ApplicantsPage = lazy(() => import('./pages/recruiter/ApplicantsPage'));
 
 const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'));
+const AdminServicesPage = lazy(() => import('./pages/admin/AdminServicesPage'));
+const AdminPlansPage = lazy(() => import('./pages/admin/AdminPlansPage'));
+const AdminCouponsPage = lazy(() => import('./pages/admin/AdminCouponsPage'));
+const AdminBundlesPage = lazy(() => import('./pages/admin/AdminBundlesPage'));
 const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage'));
 const AdminCompaniesPage = lazy(() => import('./pages/admin/AdminCompaniesPage'));
 const AdminJobsPage = lazy(() => import('./pages/admin/AdminJobsPage'));
+const AdminPaymentsPage = lazy(() => import('./pages/admin/AdminPaymentsPage'));
+const AdminAnalyticsPage = lazy(() => import('./pages/admin/AdminAnalyticsPage'));
+const AdminRolesPage = lazy(() => import('./pages/admin/AdminRolesPage'));
+const AdminNotificationsPage = lazy(() => import('./pages/admin/AdminNotificationsPage'));
+const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage'));
 const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'));
 
 const withSuspense = (el) => <Suspense fallback={<PageLoader />}>{el}</Suspense>;
@@ -95,9 +104,18 @@ const App = () => (
 
             <Route element={<ProtectedRoute roles={['admin']} />}>
               <Route path="/admin/dashboard" element={withSuspense(<AdminDashboardPage />)} />
+              <Route path="/admin/services" element={withSuspense(<AdminServicesPage />)} />
+              <Route path="/admin/plans" element={withSuspense(<AdminPlansPage />)} />
+              <Route path="/admin/coupons" element={withSuspense(<AdminCouponsPage />)} />
+              <Route path="/admin/bundles" element={withSuspense(<AdminBundlesPage />)} />
               <Route path="/admin/users" element={withSuspense(<AdminUsersPage />)} />
-              <Route path="/admin/companies" element={withSuspense(<AdminCompaniesPage />)} />
               <Route path="/admin/jobs" element={withSuspense(<AdminJobsPage />)} />
+              <Route path="/admin/companies" element={withSuspense(<AdminCompaniesPage />)} />
+              <Route path="/admin/payments" element={withSuspense(<AdminPaymentsPage />)} />
+              <Route path="/admin/analytics" element={withSuspense(<AdminAnalyticsPage />)} />
+              <Route path="/admin/roles" element={withSuspense(<AdminRolesPage />)} />
+              <Route path="/admin/notifications" element={withSuspense(<AdminNotificationsPage />)} />
+              <Route path="/admin/settings" element={withSuspense(<AdminSettingsPage />)} />
               <Route path="/admin/reports" element={withSuspense(<AdminReportsPage />)} />
             </Route>
 

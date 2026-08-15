@@ -121,6 +121,40 @@ const userSchema = new mongoose.Schema(
       ref: 'Company',
     },
 
+    // Admin Role & Custom Permissions
+    adminRole: {
+      type: String,
+      enum: ['super_admin', 'finance_admin', 'job_moderator', 'support_admin', 'marketing_admin', 'staff', ''],
+      default: '',
+    },
+    permissions: [{ type: String, trim: true }],
+
+    // User Quota / Credits Balance
+    credits: {
+      jobPosts: { type: Number, default: 3 },
+      featuredJobs: { type: Number, default: 0 },
+      urgentJobs: { type: Number, default: 0 },
+      profileViews: { type: Number, default: 10 },
+      resumeDownloads: { type: Number, default: 5 },
+      contactCredits: { type: Number, default: 5 },
+    },
+
+    // Subscription & Free Trial
+    subscription: {
+      plan: { type: mongoose.Schema.Types.ObjectId, ref: 'SubscriptionPlan' },
+      planName: { type: String, default: 'Free' },
+      status: {
+        type: String,
+        enum: ['free', 'trial', 'active', 'past_due', 'canceled', 'expired'],
+        default: 'free',
+      },
+      isTrial: { type: Boolean, default: false },
+      trialEndsAt: { type: Date },
+      periodStart: { type: Date, default: Date.now },
+      periodEnd: { type: Date },
+      autoRenew: { type: Boolean, default: false },
+    },
+
     status: {
       type: String,
       enum: ['active', 'suspended'],

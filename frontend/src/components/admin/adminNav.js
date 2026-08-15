@@ -1,0 +1,33 @@
+import {
+  FaGaugeHigh,
+  FaGears,
+  FaGem,
+  FaTicket,
+  FaBoxesPacking,
+  FaUsers,
+  FaBriefcase,
+  FaBuilding,
+  FaCreditCard,
+  FaChartLine,
+  FaUserShield,
+  FaBell,
+  FaSliders,
+  FaFlag,
+} from 'react-icons/fa6';
+
+export const adminNavItems = [
+  { to: '/admin/dashboard', label: 'Overview', icon: FaGaugeHigh, end: true },
+  { to: '/admin/services', label: 'Services Catalog', icon: FaGears },
+  { to: '/admin/plans', label: 'Plans & Free Trials', icon: FaGem },
+  { to: '/admin/coupons', label: 'Coupons & Promo', icon: FaTicket },
+  { to: '/admin/bundles', label: 'Service Bundles', icon: FaBoxesPacking },
+  { to: '/admin/users', label: 'Users & Credits', icon: FaUsers },
+  { to: '/admin/jobs', label: 'Jobs Moderation', icon: FaBriefcase },
+  { to: '/admin/companies', label: 'Companies', icon: FaBuilding },
+  { to: '/admin/payments', label: 'Payments & Billing', icon: FaCreditCard },
+  { to: '/admin/analytics', label: 'Analytics & MRR', icon: FaChartLine },
+  { to: '/admin/roles', label: 'Roles & Staff', icon: FaUserShield },
+  { to: '/admin/notifications', label: 'Notifications', icon: FaBell },
+  { to: '/admin/settings', label: 'Platform Settings', icon: FaSliders },
+  { to: '/admin/reports', label: 'User Reports', icon: FaFlag },
+];

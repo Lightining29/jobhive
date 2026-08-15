@@ -9,6 +9,14 @@ export const formatSalary = (job) => {
   return fmt(max || min);
 };
 
+export const formatCurrency = (amount = 0, currency = 'USD') => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency || 'USD',
+    maximumFractionDigits: 2,
+  }).format(Number(amount) || 0);
+};
+
 export const timeAgo = (date) => {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
   if (seconds < 60) return 'just now';

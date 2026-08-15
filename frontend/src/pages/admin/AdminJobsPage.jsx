@@ -1,141 +1,249 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FaUsers, FaBuilding, FaBriefcase, FaFlag, FaGaugeHigh, FaTrash, FaEye, FaEyeSlash } from 'react-icons/fa6';
+import {
+  FaMagnifyingGlass,
+  FaStar,
+  FaCheck,
+  FaXmark,
+  FaTrash,
+  FaArrowTrendUp,
+  FaBolt,
+} from 'react-icons/fa6';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
+import { adminNavItems } from '../../components/admin/adminNav';
 import { adminService } from '../../services';
-import { formatSalary, timeAgo, capitalize } from '../../utils/format';
-
-const navItems = [
-  { to: '/admin/dashboard', label: 'Overview', icon: FaGaugeHigh },
-  { to: '/admin/users', label: 'Users', icon: FaUsers },
-  { to: '/admin/companies', label: 'Companies', icon: FaBuilding },
-  { to: '/admin/jobs', label: 'Jobs', icon: FaBriefcase },
-  { to: '/admin/reports', label: 'Reports', icon: FaFlag },
-];
+import { capitalize, formatDateTime } from '../../utils/format';
+import Pagination from '../../components/ui/Pagination';
 
 const AdminJobsPage = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [source, setSource] = useState('');
-  const [category, setCategory] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
-  const load = useCallback(async () => {
+  const [verifiedFilter, setVerifiedFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [sourceFilter, setSourceFilter] = useState('');
+  const [search, setSearch] = useState('');
+
+  const load = useCallback(async (p = 1) => {
     setLoading(true);
     try {
-      const { data } = await adminService.jobs({ page: 1, limit: 50, search: search || undefined, source: source || undefined, category: category || undefined });
-      setJobs(data.jobs);
+      const { data } = await adminService.jobs({
+        page: p,
+        limit: 12,
+        isVerified: verifiedFilter || undefined,
+        category: categoryFilter || undefined,
+        source: sourceFilter || undefined,
+        search: search || undefined,
+      });
+      setJobs(data.jobs || []);
+      setTotalPages(data.pagination?.pages || 1);
+      setTotalCount(data.pagination?.total || 0);
+      setPage(p);
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || 'Failed to load jobs');
     } finally {
       setLoading(false);
     }
-  }, [search, source, category]);
+  }, [verifiedFilter, categoryFilter, sourceFilter, search]);
 
   useEffect(() => {
-    const t = setTimeout(load, 400);
-    return () => clearTimeout(t);
+    load(1);
   }, [load]);
 
-  const toggleActive = async (job) => {
+  const handleVerify = async (job, isVerified) => {
     try {
-      await adminService.moderateJob(job._id, { isActive: !job.isActive });
-      toast.success(job.isActive ? 'Job deactivated' : 'Job activated');
-      load();
+      await adminService.moderateJob(job._id, { isVerified, isActive: true });
+      toast.success(`Job marked as ${isVerified ? 'verified & approved' : 'pending'}`);
+      setJobs((prev) => prev.map((j) => (j._id === job._id ? { ...j, isVerified } : j)));
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || 'Failed to update job status');
     }
   };
 
-  const toggleVerified = async (job) => {
+  const handleToggleFeatured = async (job) => {
     try {
-      await adminService.moderateJob(job._id, { isVerified: !job.isVerified });
-      toast.success(job.isVerified ? 'Verification removed' : 'Job verified');
-      load();
+      const { data } = await adminService.toggleFeaturedJob(job._id);
+      toast.success(data.message);
+      setJobs((prev) => prev.map((j) => (j._id === job._id ? { ...j, trendingScore: (j.trendingScore || 0) > 0 ? 0 : 50 } : j)));
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || 'Failed to toggle featured status');
     }
   };
 
-  const remove = async (job) => {
-    if (!window.confirm(`Remove "${job.jobTitle}" from the platform?`)) return;
+  const handleDelete = async (job) => {
+    if (!window.confirm(`Remove job "${job.jobTitle}" from platform?`)) return;
     try {
       await adminService.deleteJob(job._id);
       toast.success('Job removed');
-      load();
+      load(page);
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || 'Failed to delete job');
     }
   };
 
   return (
-    <DashboardLayout title="Job Moderation" subtitle="Remove fake jobs and manage listings" navItems={navItems}>
-      <div className="flex flex-wrap gap-3 mb-5">
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search title or company..." className="input !w-72" />
-        <select value={source} onChange={(e) => setSource(e.target.value)} className="input !w-auto">
-          <option value="">All sources</option>
-          <option value="recruiter">Recruiter</option><option value="jooble">Jooble</option><option value="adzuna">Adzuna</option>
-          <option value="arbeitnow">Arbeitnow</option><option value="remotive">Remotive</option><option value="muse">The Muse</option>
-        </select>
-        <select value={category} onChange={(e) => setCategory(e.target.value)} className="input !w-auto">
-          <option value="">All categories</option><option value="technical">Technical</option><option value="non-technical">Non-Technical</option>
-        </select>
-      </div>
+    <DashboardLayout title="Job Moderation & Verification" subtitle="Review listings, approve employer posts, feature top jobs and moderate flags" navItems={adminNavItems}>
+      <div className="space-y-6">
+        {/* Filter Controls */}
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative">
+              <FaMagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted text-xs" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search job title or company..."
+                className="input !py-2 !pl-9 text-xs w-64 rounded-xl"
+              />
+            </div>
+            <select
+              value={verifiedFilter}
+              onChange={(e) => setVerifiedFilter(e.target.value)}
+              className="input !py-2 text-xs rounded-xl"
+            >
+              <option value="">All Verification Status</option>
+              <option value="true">Approved / Verified</option>
+              <option value="false">Pending Verification</option>
+            </select>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="input !py-2 text-xs rounded-xl"
+            >
+              <option value="">All Categories</option>
+              <option value="technical">Technical</option>
+              <option value="non-technical">Non-Technical</option>
+            </select>
+            <select
+              value={sourceFilter}
+              onChange={(e) => setSourceFilter(e.target.value)}
+              className="input !py-2 text-xs rounded-xl"
+            >
+              <option value="">All Sources</option>
+              <option value="recruiter">Recruiter Direct</option>
+              <option value="greenhouse">Greenhouse ATS</option>
+              <option value="ashby">Ashby ATS</option>
+              <option value="lever">Lever ATS</option>
+              <option value="amazon">Amazon Careers</option>
+              <option value="internshala">Internshala</option>
+            </select>
+          </div>
 
-      {loading ? (
-        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <div key={i} className="card p-5 skeleton h-20" />)}</div>
-      ) : jobs.length === 0 ? (
-        <div className="card p-10 text-center text-muted"><FaBriefcase className="h-10 w-10 mx-auto mb-3 text-gray-300" /><p>No jobs found.</p></div>
-      ) : (
-        <div className="card overflow-x-auto">
-          <table className="w-full text-sm min-w-[760px]">
-            <thead className="bg-gray-50 border-b border-line text-left">
-              <tr>
-                <th className="px-4 py-3 font-semibold text-xs uppercase text-muted">Job</th>
-                <th className="px-4 py-3 font-semibold text-xs uppercase text-muted">Source</th>
-                <th className="px-4 py-3 font-semibold text-xs uppercase text-muted">Category</th>
-                <th className="px-4 py-3 font-semibold text-xs uppercase text-muted">Salary</th>
-                <th className="px-4 py-3 font-semibold text-xs uppercase text-muted">Posted</th>
-                <th className="px-4 py-3 font-semibold text-xs uppercase text-muted">Verified</th>
-                <th className="px-4 py-3 font-semibold text-xs uppercase text-muted">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line">
-              {jobs.map((job) => (
-                <tr key={job._id} className="hover:bg-primary-50/40">
-                  <td className="px-4 py-3">
-                    <Link to={`/jobs/${job._id}`} className="font-semibold hover:text-primary block truncate max-w-[220px]">{job.jobTitle}</Link>
-                    <p className="text-xs text-muted">{job.companyName}</p>
-                  </td>
-                  <td className="px-4 py-3"><span className="badge bg-gray-100 text-muted border border-line capitalize">{job.source}</span></td>
-                  <td className="px-4 py-3 text-muted capitalize">{job.category}</td>
-                  <td className="px-4 py-3 text-muted">{formatSalary(job)}</td>
-                  <td className="px-4 py-3 text-muted">{timeAgo(job.postedDate)}</td>
-                  <td className="px-4 py-3">
-                    <span className={`badge border ${job.isVerified ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-100 text-gray-500 border-gray-200'}`}>
-                      {job.isVerified ? 'Verified' : 'Unverified'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-1.5">
-                      <button onClick={() => toggleActive(job)} title={job.isActive ? 'Deactivate' : 'Activate'} className="p-2 rounded-lg text-gray-400 hover:text-ink hover:bg-gray-50">
-                        {job.isActive ? <FaEye className="h-4 w-4" /> : <FaEyeSlash className="h-4 w-4" />}
-                      </button>
-                      <button onClick={() => toggleVerified(job)} title={job.isVerified ? 'Unverify' : 'Verify'} className={`p-2 rounded-lg ${job.isVerified ? 'text-emerald-600' : 'text-gray-400'} hover:bg-gray-50`}>
-                        {job.isVerified ? <FaEye className="h-4 w-4" /> : <FaEyeSlash className="h-4 w-4" />}
-                      </button>
-                      <button onClick={() => remove(job)} title="Remove job" className="p-2 rounded-lg text-red-500 hover:bg-red-50">
-                        <FaTrash className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="text-xs font-semibold text-muted">
+            Total Jobs: <span className="text-ink font-bold">{totalCount}</span>
+          </div>
         </div>
-      )}
+
+        {/* Jobs Table */}
+        <div className="card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-surface-sunken/50 text-muted uppercase text-[11px] font-bold tracking-wider border-b border-line">
+                <tr>
+                  <th className="px-5 py-3.5">Job Title & Company</th>
+                  <th className="px-5 py-3.5">Category & Work Mode</th>
+                  <th className="px-5 py-3.5">Source</th>
+                  <th className="px-5 py-3.5">Verification</th>
+                  <th className="px-5 py-3.5">Promotion</th>
+                  <th className="px-5 py-3.5 text-right">Moderation Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {loading ? (
+                  <tr>
+                    <td colSpan={6} className="px-5 py-8 text-center text-muted">Loading jobs...</td>
+                  </tr>
+                ) : jobs.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-5 py-8 text-center text-muted">No jobs match your filter criteria.</td>
+                  </tr>
+                ) : (
+                  jobs.map((j) => (
+                    <tr key={j._id} className="hover:bg-surface-sunken/20 transition-colors">
+                      <td className="px-5 py-4">
+                        <a href={`/jobs/${j._id}`} target="_blank" rel="noreferrer" className="font-bold text-ink hover:text-primary-600">
+                          {j.jobTitle}
+                        </a>
+                        <div className="text-xs text-muted font-medium">{j.companyName} • {j.location || 'Remote'}</div>
+                        <div className="text-[10px] text-muted">Posted {formatDateTime(j.createdAt)}</div>
+                      </td>
+
+                      <td className="px-5 py-4">
+                        <span className={`badge text-[11px] capitalize ${j.category === 'technical' ? 'badge-primary' : 'badge-neutral'}`}>
+                          {j.category || 'General'}
+                        </span>
+                        <div className="text-xs text-muted mt-1 capitalize">{j.workMode || 'Full-Time'}</div>
+                      </td>
+
+                      <td className="px-5 py-4 text-xs font-mono uppercase text-muted">
+                        <span className="bg-surface-sunken px-2 py-0.5 rounded border border-line">{j.source || 'Direct'}</span>
+                      </td>
+
+                      <td className="px-5 py-4">
+                        <span className={`badge text-[11px] font-semibold ${j.isVerified ? 'badge-success' : 'badge-danger'}`}>
+                          {j.isVerified ? 'Verified' : 'Pending Review'}
+                        </span>
+                      </td>
+
+                      <td className="px-5 py-4">
+                        <button
+                          onClick={() => handleToggleFeatured(j)}
+                          className={`flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg border transition-all ${
+                            (j.trendingScore || 0) > 0
+                              ? 'bg-amber-500/10 text-amber-600 border-amber-500/30'
+                              : 'border-line text-muted hover:border-amber-500/50'
+                          }`}
+                        >
+                          <FaStar className={`h-3 w-3 ${(j.trendingScore || 0) > 0 ? 'text-amber-500' : 'text-gray-300'}`} />
+                          {(j.trendingScore || 0) > 0 ? 'Featured' : 'Standard'}
+                        </button>
+                      </td>
+
+                      <td className="px-5 py-4 text-right space-x-2 whitespace-nowrap">
+                        {!j.isVerified ? (
+                          <button
+                            onClick={() => handleVerify(j, true)}
+                            className="btn-outline !py-1.5 !px-2.5 text-xs text-emerald-600 border-emerald-500 hover:bg-emerald-500/10 font-semibold"
+                            title="Approve Job"
+                          >
+                            <FaCheck className="inline mr-1" /> Approve
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleVerify(j, false)}
+                            className="btn-outline !py-1.5 !px-2.5 text-xs text-amber-600 border-amber-500 hover:bg-amber-500/10 font-semibold"
+                            title="Set to Pending"
+                          >
+                            <FaXmark className="inline mr-1" /> Unverify
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDelete(j)}
+                          className="btn-danger !p-1.5 text-xs rounded-lg"
+                          title="Delete Job"
+                        >
+                          <FaTrash className="h-3 w-3" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center text-xs text-muted">
+            <span>Showing {jobs.length} of {totalCount} jobs</span>
+            <Pagination page={page} pages={totalPages} onPageChange={(p) => load(p)} />
+          </div>
+        )}
+      </div>
     </DashboardLayout>
   );
 };

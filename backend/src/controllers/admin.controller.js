@@ -4,39 +4,65 @@ const Job = require('../models/Job');
 const Application = require('../models/Application');
 const Report = require('../models/Report');
 const Notification = require('../models/Notification');
+const Transaction = require('../models/Transaction');
+const Coupon = require('../models/Coupon');
+const SubscriptionPlan = require('../models/SubscriptionPlan');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
-const { paginate, buildPagination, parseArray } = require('../utils/query');
-void parseArray;
+const { paginate, buildPagination } = require('../utils/query');
 
 const dashboard = asyncHandler(async (req, res) => {
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const dayStart = new Date(now.setHours(0, 0, 0, 0));
+  const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   const [
-    users, candidates, recruiters, companies, jobs, applications,
-    openReports, jobsToday, applicationsToday, usersToday,
-    jobsByCategory, jobsBySource, applicationsByStatus,
-    recentUsers, recentJobs, recentReports,
+    users, candidates, recruiters, companies,
+    activeJobs, pendingJobs, totalJobs,
+    applications, openReports,
+    jobsToday, applicationsToday, usersToday,
+    activeSubscriptions, trialUsers,
+    monthlyRevenueAgg, totalRevenueAgg,
+    couponStatsAgg,
+    recentUsers, recentJobs, recentPayments, recentReports,
+    jobsByCategory, jobsBySource,
   ] = await Promise.all([
     User.countDocuments(),
     User.countDocuments({ role: 'candidate' }),
     User.countDocuments({ role: 'recruiter' }),
     Company.countDocuments(),
+    Job.countDocuments({ isActive: true, isExpired: false }),
+    Job.countDocuments({ isVerified: false, isExpired: false }),
     Job.countDocuments(),
     Application.countDocuments(),
     Report.countDocuments({ status: 'open' }),
     Job.countDocuments({ createdAt: { $gte: dayStart } }),
     Application.countDocuments({ createdAt: { $gte: dayStart } }),
     User.countDocuments({ createdAt: { $gte: dayStart } }),
+    User.countDocuments({ 'subscription.status': 'active', 'subscription.isTrial': false }),
+    User.countDocuments({ 'subscription.status': 'trial', 'subscription.isTrial': true }),
+    Transaction.aggregate([
+      { $match: { status: 'succeeded', createdAt: { $gte: monthStart } } },
+      { $group: { _id: null, total: { $sum: '$totalAmount' } } },
+    ]),
+    Transaction.aggregate([
+      { $match: { status: 'succeeded' } },
+      { $group: { _id: null, total: { $sum: '$totalAmount' } } },
+    ]),
+    Coupon.aggregate([
+      { $group: { _id: null, totalUsed: { $sum: '$timesUsed' }, totalDiscount: { $sum: '$totalDiscountGiven' } } },
+    ]),
+    User.find().sort({ createdAt: -1 }).limit(6).select('name email role avatar status subscription createdAt').lean(),
+    Job.find().sort({ createdAt: -1 }).limit(6).select('jobTitle companyName category isVerified isActive trendingScore createdAt').lean(),
+    Transaction.find().sort({ createdAt: -1 }).limit(6).populate('user', 'name email role').lean(),
+    Report.find({ status: 'open' }).sort({ createdAt: -1 }).limit(6).populate('reportedBy', 'name email').lean(),
     Job.aggregate([{ $group: { _id: '$category', count: { $sum: 1 } } }]),
     Job.aggregate([{ $group: { _id: '$source', count: { $sum: 1 } } }]),
-    Application.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
-    User.find().sort({ createdAt: -1 }).limit(6).select('name email role avatar status createdAt').lean(),
-    Job.find().sort({ createdAt: -1 }).limit(6).select('jobTitle companyName category isVerified isActive createdAt').lean(),
-    Report.find({ status: 'open' }).sort({ createdAt: -1 }).limit(6).populate('reportedBy', 'name email').lean(),
   ]);
+
+  const monthlyRevenue = (monthlyRevenueAgg[0] && monthlyRevenueAgg[0].total) || 0;
+  const totalRevenue = (totalRevenueAgg[0] && totalRevenueAgg[0].total) || 0;
+  const couponStats = couponStatsAgg[0] || { totalUsed: 0, totalDiscount: 0 };
 
   res.json({
     success: true,
@@ -45,18 +71,26 @@ const dashboard = asyncHandler(async (req, res) => {
       candidates,
       recruiters,
       companies,
-      jobs,
+      activeJobs,
+      pendingJobs,
+      totalJobs,
       applications,
       openReports,
       jobsToday,
       applicationsToday,
       usersToday,
-      jobsByCategory: Object.fromEntries(jobsByCategory.map((j) => [j._id, j.count])),
-      jobsBySource: Object.fromEntries(jobsBySource.map((j) => [j._id, j.count])),
-      applicationsByStatus: Object.fromEntries(applicationsByStatus.map((a) => [a._id, a.count])),
+      activeSubscriptions,
+      trialUsers,
+      monthlyRevenue,
+      totalRevenue,
+      couponUsage: couponStats.totalUsed,
+      totalDiscountGiven: couponStats.totalDiscount,
+      jobsByCategory: Object.fromEntries(jobsByCategory.map((j) => [j._id || 'other', j.count])),
+      jobsBySource: Object.fromEntries(jobsBySource.map((j) => [j._id || 'direct', j.count])),
     },
     recentUsers,
     recentJobs,
+    recentPayments,
     recentReports,
   });
 });
@@ -66,27 +100,146 @@ const listUsers = asyncHandler(async (req, res) => {
   const filter = {};
   if (req.query.role) filter.role = req.query.role;
   if (req.query.status) filter.status = req.query.status;
+  if (req.query.subscriptionStatus) filter['subscription.status'] = req.query.subscriptionStatus;
   if (req.query.search) {
     const term = req.query.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     filter.$or = [{ name: { $regex: term, $options: 'i' } }, { email: { $regex: term, $options: 'i' } }];
   }
 
   const [users, total] = await Promise.all([
-    User.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).select('-password'),
+    User.find(filter).populate('company').populate('subscription.plan').sort({ createdAt: -1 }).skip(skip).limit(limit).select('-password').lean(),
     User.countDocuments(filter),
   ]);
   res.json({ success: true, users, pagination: buildPagination(page, limit, total) });
 });
 
+const getUserDetails = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.params.id)
+    .populate('company')
+    .populate('subscription.plan')
+    .select('-password');
+
+  if (!user) return next(new ApiError(404, 'User not found.'));
+
+  const [transactions, applications, postedJobs] = await Promise.all([
+    Transaction.find({ user: user._id }).sort({ createdAt: -1 }).limit(20).lean(),
+    Application.find({ candidate: user._id }).populate('job').sort({ createdAt: -1 }).limit(20).lean(),
+    user.role === 'recruiter' ? Job.find({ postedBy: user._id }).sort({ createdAt: -1 }).limit(20).lean() : [],
+  ]);
+
+  res.json({ success: true, user, transactions, applications, postedJobs });
+});
+
 const updateUser = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   if (!user) return next(new ApiError(404, 'User not found.'));
-  if (user.role === 'admin' && req.body.status === 'suspended') {
+  if (user.role === 'admin' && req.body.status === 'suspended' && req.user._id.toString() !== user._id.toString()) {
     return next(new ApiError(400, 'Cannot suspend another admin.'));
   }
   if (req.body.status) user.status = req.body.status;
+  if (req.body.name) user.name = req.body.name;
+  if (req.body.phone) user.phone = req.body.phone;
+  if (req.body.headline) user.headline = req.body.headline;
+  if (req.body.emailVerified !== undefined) user.emailVerified = req.body.emailVerified;
+
   await user.save();
   res.json({ success: true, message: 'User updated.', user: user.toSafeJSON() });
+});
+
+const grantUserCredits = asyncHandler(async (req, res, next) => {
+  const { jobPosts = 0, featuredJobs = 0, urgentJobs = 0, profileViews = 0, resumeDownloads = 0, contactCredits = 0 } = req.body;
+  const user = await User.findById(req.params.id);
+  if (!user) return next(new ApiError(404, 'User not found.'));
+
+  if (!user.credits) {
+    user.credits = { jobPosts: 0, featuredJobs: 0, urgentJobs: 0, profileViews: 0, resumeDownloads: 0, contactCredits: 0 };
+  }
+
+  user.credits.jobPosts = Math.max(0, (user.credits.jobPosts || 0) + Number(jobPosts));
+  user.credits.featuredJobs = Math.max(0, (user.credits.featuredJobs || 0) + Number(featuredJobs));
+  user.credits.urgentJobs = Math.max(0, (user.credits.urgentJobs || 0) + Number(urgentJobs));
+  user.credits.profileViews = Math.max(0, (user.credits.profileViews || 0) + Number(profileViews));
+  user.credits.resumeDownloads = Math.max(0, (user.credits.resumeDownloads || 0) + Number(resumeDownloads));
+  user.credits.contactCredits = Math.max(0, (user.credits.contactCredits || 0) + Number(contactCredits));
+
+  await user.save();
+
+  await Notification.create({
+    user: user._id,
+    type: 'system',
+    title: 'Credits Added to Your Account',
+    message: `Admin granted you promotional hiring credits. Check your recruiter dashboard to use them!`,
+    link: '/recruiter/dashboard',
+  });
+
+  res.json({ success: true, message: 'Credits granted successfully.', credits: user.credits });
+});
+
+const extendUserTrial = asyncHandler(async (req, res, next) => {
+  const { additionalDays = 14 } = req.body;
+  const user = await User.findById(req.params.id);
+  if (!user) return next(new ApiError(404, 'User not found.'));
+
+  const currentTrialEnd = user.subscription?.trialEndsAt && new Date(user.subscription.trialEndsAt) > new Date()
+    ? new Date(user.subscription.trialEndsAt)
+    : new Date();
+
+  const newTrialEnd = new Date(currentTrialEnd.getTime() + Number(additionalDays) * 24 * 60 * 60 * 1000);
+
+  user.subscription = {
+    ...user.subscription,
+    status: 'trial',
+    isTrial: true,
+    trialEndsAt: newTrialEnd,
+  };
+
+  await user.save();
+
+  await Notification.create({
+    user: user._id,
+    type: 'system',
+    title: 'Free Trial Extended!',
+    message: `Your free trial has been extended by ${additionalDays} days until ${newTrialEnd.toLocaleDateString()}. Enjoy full hiring features!`,
+    link: '/recruiter/dashboard',
+  });
+
+  res.json({ success: true, message: `Free trial extended by ${additionalDays} days.`, subscription: user.subscription });
+});
+
+const changeUserSubscription = asyncHandler(async (req, res, next) => {
+  const { planId, status = 'active', isTrial = false, durationDays = 30 } = req.body;
+  const user = await User.findById(req.params.id);
+  if (!user) return next(new ApiError(404, 'User not found.'));
+
+  const plan = await SubscriptionPlan.findById(planId);
+  if (!plan) return next(new ApiError(404, 'Subscription plan not found.'));
+
+  const now = new Date();
+  const periodEnd = new Date(now.getTime() + Number(durationDays) * 24 * 60 * 60 * 1000);
+
+  user.subscription = {
+    plan: plan._id,
+    planName: plan.name,
+    status,
+    isTrial: Boolean(isTrial),
+    trialEndsAt: isTrial ? periodEnd : undefined,
+    periodStart: now,
+    periodEnd,
+    autoRenew: false,
+  };
+
+  // Sync plan quotas to user credits
+  user.credits = {
+    jobPosts: plan.maxJobPosts === -1 ? 9999 : plan.maxJobPosts,
+    featuredJobs: plan.featuredJobsIncluded,
+    urgentJobs: plan.urgentJobsIncluded,
+    profileViews: plan.candidateProfileViews,
+    resumeDownloads: plan.resumeDownloads,
+    contactCredits: plan.candidateContactCredits,
+  };
+
+  await user.save();
+  res.json({ success: true, message: `Subscription changed to ${plan.name}.`, user: user.toSafeJSON() });
 });
 
 const listCompanies = asyncHandler(async (req, res) => {
@@ -98,7 +251,7 @@ const listCompanies = asyncHandler(async (req, res) => {
   }
 
   const [companies, total] = await Promise.all([
-    Company.find(filter).populate('owner', 'name email').sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Company.find(filter).populate('owner', 'name email').sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
     Company.countDocuments(filter),
   ]);
   res.json({ success: true, companies, pagination: buildPagination(page, limit, total) });
@@ -135,7 +288,7 @@ const listJobs = asyncHandler(async (req, res) => {
   }
 
   const [jobs, total] = await Promise.all([
-    Job.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Job.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
     Job.countDocuments(filter),
   ]);
   res.json({ success: true, jobs, pagination: buildPagination(page, limit, total) });
@@ -146,12 +299,21 @@ const moderateJob = asyncHandler(async (req, res, next) => {
   if (!job) return next(new ApiError(404, 'Job not found.'));
 
   if (req.body.isActive !== undefined) job.isActive = req.body.isActive;
-  if (req.body.isVerified !== undefined) {
-    job.isVerified = req.body.isVerified;
-  }
+  if (req.body.isVerified !== undefined) job.isVerified = req.body.isVerified;
   if (req.body.isActive === false) job.isExpired = true;
+  if (req.body.trendingScore !== undefined) job.trendingScore = req.body.trendingScore;
+
   await job.save();
   res.json({ success: true, message: 'Job updated.', job });
+});
+
+const toggleFeaturedJob = asyncHandler(async (req, res, next) => {
+  const job = await Job.findById(req.params.id);
+  if (!job) return next(new ApiError(404, 'Job not found.'));
+
+  job.trendingScore = job.trendingScore > 0 ? 0 : 50;
+  await job.save();
+  res.json({ success: true, message: `Job ${job.trendingScore > 0 ? 'featured' : 'unfeatured'}.`, job });
 });
 
 const deleteJob = asyncHandler(async (req, res, next) => {
@@ -176,7 +338,8 @@ const listReports = asyncHandler(async (req, res) => {
       .populate('resolvedBy', 'name')
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .lean(),
     Report.countDocuments(filter),
   ]);
   res.json({ success: true, reports, pagination: buildPagination(page, limit, total) });
@@ -196,11 +359,16 @@ const resolveReport = asyncHandler(async (req, res, next) => {
 module.exports = {
   dashboard,
   listUsers,
+  getUserDetails,
   updateUser,
+  grantUserCredits,
+  extendUserTrial,
+  changeUserSubscription,
   listCompanies,
   verifyCompany,
   listJobs,
   moderateJob,
+  toggleFeaturedJob,
   deleteJob,
   listReports,
   resolveReport,

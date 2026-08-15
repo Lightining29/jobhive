@@ -2,16 +2,9 @@ import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { FaUsers, FaBuilding, FaBriefcase, FaFlag, FaGaugeHigh, FaCircleCheck, FaBan } from 'react-icons/fa6';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
+import { adminNavItems } from '../../components/admin/adminNav';
 import { adminService } from '../../services';
 import { formatDateTime } from '../../utils/format';
-
-const navItems = [
-  { to: '/admin/dashboard', label: 'Overview', icon: FaGaugeHigh },
-  { to: '/admin/users', label: 'Users', icon: FaUsers },
-  { to: '/admin/companies', label: 'Companies', icon: FaBuilding },
-  { to: '/admin/jobs', label: 'Jobs', icon: FaBriefcase },
-  { to: '/admin/reports', label: 'Reports', icon: FaFlag },
-];
 
 const AdminReportsPage = () => {
   const [reports, setReports] = useState([]);
@@ -46,7 +39,7 @@ const AdminReportsPage = () => {
   };
 
   return (
-    <DashboardLayout title="Reports" subtitle="Moderate user reports" navItems={navItems}>
+    <DashboardLayout title="Reports" subtitle="Content moderation and user reports" navItems={adminNavItems}>
       <div className="flex gap-2 mb-5">
         {['open', 'resolved', 'dismissed'].map((s) => (
           <button key={s} onClick={() => setStatus(s)} className={`badge py-1.5 px-3 cursor-pointer border capitalize ${status === s ? 'bg-accent text-ink border-accent' : 'bg-white text-muted border-line hover:border-accent'}`}>
