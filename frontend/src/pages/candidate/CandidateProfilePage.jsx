@@ -209,7 +209,7 @@ const CandidateProfilePage = () => {
     { to: '/candidate/recommended',  label: 'Recommended Jobs',icon: FaWandMagicSparkles },
     { to: '/candidate/saved-jobs',   label: 'Saved Jobs',      icon: FaRegBookmark },
     { to: '/candidate/applications', label: 'My Applications', icon: FaBriefcase },
-    { to: '/candidate/portfolio',    label: 'AI Portfolio',    icon: FaGlobe },
+    { to: '/candidate/resume',       label: 'Resume Hub',      icon: FaFileArrowUp },
   ];
 
   const SubCard = ({ title, children }) => (

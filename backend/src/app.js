@@ -110,23 +110,6 @@ app.use('/api/notifications', apiLimiter, require('./routes/notifications.routes
 app.use('/api/voice',  apiLimiter, require('./routes/voice.routes'));
 app.use('/api/resume',             require('./routes/resumeAnalyzer.routes'));
 app.use('/api/news',      require('./routes/careerNews.routes'));
-app.use('/api/portfolio',    require('./routes/portfolio.routes'));
-// ── Serve Published User Portfolios Live Forever at /p/:slug & /portfolio/:slug ──
-const deploymentService = require('./services/deployment.service');
-
-const serveLivePortfolio = (req, res, next) => {
-  const { slug } = req.params;
-  const currentDir = path.join(deploymentService.DEPLOYMENTS_DIR, slug, 'current');
-  if (fs.existsSync(currentDir)) {
-    deploymentService.incrementViews(slug).catch(() => {});
-    res.setHeader('Cache-Control', 'public, max-age=300'); // Cache for 5 mins for ultra-fast loading
-    return express.static(currentDir)(req, res, next);
-  }
-  next();
-};
-
-app.use('/p/:slug', serveLivePortfolio);
-app.use('/portfolio/:slug', serveLivePortfolio);
 
 const fs = require('fs');
 

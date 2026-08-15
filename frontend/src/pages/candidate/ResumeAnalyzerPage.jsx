@@ -17,7 +17,6 @@ const navItems = [
   { to: '/candidate/saved-jobs',   label: 'Saved Jobs',       icon: FaRegBookmark },
   { to: '/candidate/applications', label: 'My Applications',  icon: FaBriefcase },
   { to: '/candidate/resume',       label: 'Resume Hub',       icon: FaFileArrowUp },
-  { to: '/candidate/portfolio',    label: 'AI Portfolio',     icon: FaGlobe },
 ];
 
 const ACCEPT = '.pdf,.doc,.docx';

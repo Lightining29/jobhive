@@ -81,14 +81,6 @@ const Navbar = () => {
             <FaBookmark className="h-3.5 w-3.5 text-muted" />
             Saved Jobs
           </Link>
-          <Link
-            to="/candidate/portfolio"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors"
-          >
-            <FaGlobe className="h-3.5 w-3.5 text-muted" />
-            AI Portfolio
-          </Link>
           {user.role === 'recruiter' && (
             <Link
               to="/recruiter/post-job"
@@ -231,10 +223,6 @@ const Navbar = () => {
                         <>
                           <Link to={dashboardPath} onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm font-semibold text-ink bg-accent/10 hover:bg-accent/20 transition-colors">Go to Dashboard</Link>
                           <Link to="/candidate/saved-jobs" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">Saved Jobs</Link>
-                          <Link to="/candidate/portfolio" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">AI Portfolio</Link>
-                          {user.role === 'candidate' && (
-                            <Link to="/candidate/deployment" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">My Portfolio</Link>
-                          )}
                           {user.role === 'recruiter' && (
                             <Link to="/recruiter/post-job" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors">Post a Job</Link>
                           )}

@@ -63,7 +63,6 @@ const CandidateDashboardPage = () => {
     { to: '/candidate/saved-jobs',   label: 'Saved Jobs',      icon: FaRegBookmark },
     { to: '/candidate/applications', label: 'My Applications', icon: FaBriefcase },
     { to: '/candidate/resume',       label: 'Resume Hub',      icon: FaFileArrowUp },
-    { to: '/candidate/portfolio',    label: 'AI Portfolio',    icon: FaGlobe },
   ].map((item) => ({ ...item, active: window.location.pathname.startsWith(item.to) && (item.end ? window.location.pathname === item.to : true) }));
 
   return (
@@ -141,11 +140,11 @@ const CandidateDashboardPage = () => {
                 <p className="text-xs text-muted">Jobs matched to your skills</p>
               </div>
             </Link>
-            <Link to="/candidate/portfolio" className="card card-hover p-5 flex items-center gap-3">
-              <FaGlobe className="h-6 w-6 text-ink" />
+            <Link to="/candidate/saved-jobs" className="card card-hover p-5 flex items-center gap-3">
+              <FaRegBookmark className="h-6 w-6 text-ink" />
               <div>
-                <p className="font-semibold text-sm">AI Portfolio</p>
-                <p className="text-xs text-muted">Generate your live portfolio site</p>
+                <p className="font-semibold text-sm">Saved Jobs</p>
+                <p className="text-xs text-muted">View your bookmarked roles</p>
               </div>
             </Link>
             <Link to="/candidate/profile" className="card card-hover p-5 flex items-center gap-3">

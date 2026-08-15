@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FaUser, FaBriefcase, FaRegBookmark, FaWandMagicSparkles, FaGaugeHigh, FaClockRotateLeft, FaGlobe } from 'react-icons/fa6';
+import { FaUser, FaBriefcase, FaRegBookmark, FaWandMagicSparkles, FaGaugeHigh, FaClockRotateLeft, FaFileArrowUp } from 'react-icons/fa6';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { jobService } from '../../services';
 import { STATUS_COLORS, capitalize, formatDateTime } from '../../utils/format';
@@ -13,7 +13,7 @@ const navItems = [
   { to: '/candidate/recommended',  label: 'Recommended Jobs', icon: FaWandMagicSparkles },
   { to: '/candidate/saved-jobs',   label: 'Saved Jobs',       icon: FaRegBookmark },
   { to: '/candidate/applications', label: 'My Applications',  icon: FaBriefcase },
-  { to: '/candidate/portfolio',    label: 'AI Portfolio',     icon: FaGlobe },
+  { to: '/candidate/resume',       label: 'Resume Hub',       icon: FaFileArrowUp },
 ];
 
 const STATUS_FILTERS = ['', 'pending', 'shortlisted', 'interview', 'accepted', 'rejected', 'withdrawn'];

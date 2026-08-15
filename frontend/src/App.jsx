@@ -20,8 +20,6 @@ const JobDetailPage = lazy(() => import('./pages/JobDetailPage'));
 const RecommendedJobsPage = lazy(() => import('./pages/RecommendedJobsPage'));
 
 const ResumeAnalyzerPage = lazy(() => import('./pages/candidate/ResumeAnalyzerPage'));
-const PortfolioPage = lazy(() => import('./pages/candidate/PortfolioPage'));
-const DeploymentPage = lazy(() => import('./pages/candidate/DeploymentPage'));
 const CareerNewsPage = lazy(() => import('./pages/CareerNewsPage'));
 
 const CandidateDashboardPage = lazy(() => import('./pages/candidate/CandidateDashboardPage'));
@@ -88,8 +86,6 @@ const App = () => (
               <Route path="/candidate/applications" element={withSuspense(<MyApplicationsPage />)} />
               <Route path="/candidate/resume" element={withSuspense(<ResumeUploadPage />)} />
               <Route path="/candidate/resume/analyze" element={withSuspense(<ResumeAnalyzerPage />)} />
-              <Route path="/candidate/portfolio" element={withSuspense(<PortfolioPage />)} />
-              <Route path="/candidate/deployment" element={withSuspense(<DeploymentPage />)} />
             </Route>
 
             <Route element={<ProtectedRoute roles={['recruiter']} />}>
