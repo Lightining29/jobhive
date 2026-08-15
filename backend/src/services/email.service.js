@@ -24,6 +24,18 @@ const sendBrevoMail = async ({ to, toName, subject, text, html }) => {
   const senderEmail = env.brevo.senderEmail?.trim() || 'no-reply@jobhive.app';
   const senderName = env.brevo.senderName?.trim() || 'JobHive';
 
+  // Generate clean plain-text content required by Brevo API
+  const plainText =
+    text && text.trim().length > 0
+      ? text.trim()
+      : html
+        ? html
+            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+        : subject || 'JobHive Verification Code';
+
   const payload = {
     sender: {
       name: senderName,
@@ -31,8 +43,8 @@ const sendBrevoMail = async ({ to, toName, subject, text, html }) => {
     },
     to: [{ email: to.trim(), name: toName || to.split('@')[0] }],
     subject,
-    htmlContent: html || `<p>${text || ''}</p>`,
-    textContent: text || '',
+    htmlContent: html || `<p>${plainText}</p>`,
+    textContent: plainText || `Your JobHive verification code: ${subject}`,
   };
 
   const response = await fetch(url, {
