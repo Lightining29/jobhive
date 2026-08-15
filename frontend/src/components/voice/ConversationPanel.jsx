@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import AIAvatar from './AIAvatar';
+import Canvas3DBot from './Canvas3DBot';
 import ThinkingAnimation from './ThinkingAnimation';
 import JobResultCard from './JobResultCard';
 import { FaUser, FaArrowRight } from 'react-icons/fa6';
@@ -195,23 +196,23 @@ export default function ConversationPanel({
       aria-label="Conversation history"
     >
       {showEmpty && (
-        <div className="flex flex-col items-center justify-center h-full text-center py-8">
-          <AIAvatar mode="idle" size="lg" />
-          <p className="mt-4 text-sm font-semibold text-slate-700">Hi! I'm JobHive AI</p>
-          <p className="text-xs text-muted mt-1 max-w-xs">
-            Ask me anything — find jobs, prep for interviews, review your resume, or explore
-            career paths.
+        <div className="flex flex-col items-center justify-center h-full text-center py-6">
+          <Canvas3DBot mode="cute" size={110} showControls={true} interactive={true} />
+          <p className="mt-3 text-sm font-bold text-slate-800">Hi! I'm Your 3D AI Doll Assistant</p>
+          <p className="text-xs text-muted mt-0.5 max-w-xs">
+            Ask me in Hindi or English — find jobs, review your resume, check salaries, or tap on me to change my mood!
           </p>
-          <div className="mt-4 flex flex-wrap gap-2 justify-center max-w-xs">
+          <div className="mt-3 flex flex-wrap gap-1.5 justify-center max-w-xs">
             {[
-              'Find React jobs in Bangalore',
-              'Remote Python jobs',
-              'Interview prep tips',
+              'हिंदी में जॉब्स बताएं',
+              'Java Developer jobs',
+              'React Remote jobs',
+              'Marketing jobs',
               'Resume advice',
             ].map((hint) => (
               <span
                 key={hint}
-                className="text-[11px] bg-primary-50 text-primary-700 border border-primary-100 rounded-full px-2.5 py-1 cursor-default"
+                className="text-[11px] bg-primary-50 text-primary-700 border border-primary-100 rounded-full px-2.5 py-1 cursor-pointer hover:bg-primary-100 transition-colors"
               >
                 {hint}
               </span>
