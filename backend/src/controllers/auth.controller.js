@@ -59,7 +59,9 @@ const register = asyncHandler(async (req, res, next) => {
       }),
     });
   } catch (err) {
-    logger.warn(`[auth] Pre-signup OTP email failed: ${err.message}`);
+    logger.error(`[auth] Pre-signup OTP email failed for ${normalizedEmail}: ${err.message}`);
+    await PendingUser.deleteMany({ email: normalizedEmail });
+    return next(new ApiError(500, `Failed to send verification email: ${err.message}. Please check your email settings or try again.`));
   }
 
   res.status(200).json({
@@ -202,7 +204,8 @@ const resendOtp = asyncHandler(async (req, res, next) => {
         }),
       });
     } catch (err) {
-      logger.warn(`[auth] Resend OTP email failed: ${err.message}`);
+      logger.error(`[auth] Resend OTP email failed for ${normalizedEmail}: ${err.message}`);
+      return next(new ApiError(500, `Failed to resend verification code: ${err.message}. Please check your email configuration.`));
     }
 
     return res.json({
@@ -228,7 +231,8 @@ const resendOtp = asyncHandler(async (req, res, next) => {
         }),
       });
     } catch (err) {
-      logger.warn(`[auth] Resend OTP email failed: ${err.message}`);
+      logger.error(`[auth] Resend OTP email failed: ${err.message}`);
+      return next(new ApiError(500, `Failed to resend verification code: ${err.message}. Please check your email configuration.`));
     }
 
     return res.json({

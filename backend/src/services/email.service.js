@@ -17,18 +17,19 @@ const getTransporter = () => {
 };
 
 const sendBrevoMail = async ({ to, toName, subject, text, html }) => {
-  const apiKey = env.brevo?.apiKey;
+  const apiKey = env.brevo?.apiKey ? env.brevo.apiKey.trim() : '';
   if (!apiKey) return null;
 
   const url = 'https://api.brevo.com/v3/smtp/email';
-  const sender = {
-    name: env.brevo.senderName || 'JobHive',
-    email: env.brevo.senderEmail || 'no-reply@jobhive.app',
-  };
+  const senderEmail = env.brevo.senderEmail?.trim() || 'no-reply@jobhive.app';
+  const senderName = env.brevo.senderName?.trim() || 'JobHive';
 
   const payload = {
-    sender,
-    to: [{ email: to, name: toName || to.split('@')[0] }],
+    sender: {
+      name: senderName,
+      email: senderEmail,
+    },
+    to: [{ email: to.trim(), name: toName || to.split('@')[0] }],
     subject,
     htmlContent: html || `<p>${text || ''}</p>`,
     textContent: text || '',
@@ -46,27 +47,33 @@ const sendBrevoMail = async ({ to, toName, subject, text, html }) => {
 
   if (!response.ok) {
     const errorText = await response.text();
-    logger.error(`[mail][brevo] API call failed: ${response.status} ${errorText}`);
-    throw new Error(`Brevo API error (${response.status}): ${errorText}`);
+    let parsedMsg = errorText;
+    try {
+      const parsed = JSON.parse(errorText);
+      parsedMsg = parsed.message || errorText;
+    } catch (_) {}
+    logger.error(`[mail][brevo] API error (${response.status}): ${parsedMsg}`);
+    throw new Error(`Brevo error: ${parsedMsg}`);
   }
 
   const data = await response.json();
-  logger.info(`[mail][brevo] Sent email to ${to} (${subject}) - messageId: ${data.messageId || 'ok'}`);
+  logger.info(`[mail][brevo] Email successfully delivered to ${to} (${subject}) - messageId: ${data.messageId || 'ok'}`);
   return { sent: true, provider: 'brevo', messageId: data.messageId, to, subject };
 };
 
 const sendMail = async ({ to, toName, subject, text, html }) => {
   // 1. Try Brevo REST API first if API key is provided
-  if (env.brevo?.apiKey) {
+  if (env.brevo?.apiKey && env.brevo.apiKey.trim().length > 0) {
     try {
       const result = await sendBrevoMail({ to, toName, subject, text, html });
       if (result) return result;
     } catch (err) {
-      logger.warn(`[mail] Brevo delivery failed: ${err.message}. Trying fallback...`);
+      logger.error(`[mail][brevo] Failed: ${err.message}`);
+      throw err;
     }
   }
 
-  // 2. Try SMTP if configured and not in pure dev mode
+  // 2. Try SMTP if configured and not in dev mode
   const t = getTransporter();
   if (t && !env.smtp.dev) {
     try {
@@ -80,14 +87,20 @@ const sendMail = async ({ to, toName, subject, text, html }) => {
       logger.info(`[mail][smtp] Sent to ${to} (${subject})`);
       return { sent: true, provider: 'smtp', to, subject };
     } catch (err) {
-      logger.warn(`[mail][smtp] Delivery failed: ${err.message}`);
+      logger.error(`[mail][smtp] Failed: ${err.message}`);
+      throw new Error(`SMTP Error: ${err.message}`);
     }
   }
 
-  // 3. Fallback dev logger (local development)
-  logger.info(`[mail][dev] To: ${to} | Subject: ${subject}`);
-  logger.debug(`[mail][dev] Body: ${text || html}`);
-  return { dev: true, to, subject };
+  // 3. Fallback dev logger (local development mode)
+  if (env.smtp.dev || process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
+    logger.info(`[mail][dev] Verification email sent to: ${to} | Subject: ${subject}`);
+    logger.debug(`[mail][dev] Body: ${text || html}`);
+    return { dev: true, sent: true, to, subject };
+  }
+
+  // 4. Production error if no email transport configured
+  throw new Error('Email service is not configured. Please set BREVO_API_KEY in .env');
 };
 
 const buildEmailHtml = (heading, content, ctaText, ctaUrl) => `

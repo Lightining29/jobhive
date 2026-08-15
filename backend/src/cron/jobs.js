@@ -24,12 +24,12 @@ const startCronJobs = () => {
     }
   })();
 
-  // Fetch every 5 minutes for high-concurrency rapid updates (10,000+ users)
-  cron.schedule('*/5 * * * *', async () => {
-    logger.info('[cron] scheduled 5-minute job fetch started');
+  // Fetch once every 12 hours to maintain fresh jobs without overflowing database quota
+  cron.schedule('0 */12 * * *', async () => {
+    logger.info('[cron] scheduled 12-hour job fetch started');
     try {
       const results = await fetchAllJobs();
-      logger.info('[cron] scheduled 5-minute job fetch finished', results);
+      logger.info('[cron] scheduled 12-hour job fetch finished', results);
     } catch (err) {
       logger.error('[cron] scheduled job fetch error', { message: err.message });
     }
