@@ -22,7 +22,7 @@ const FilterSection = ({ title, children }) => (
   </div>
 );
 
-const SidebarFilters = ({ filters, onChange, onClear, counts }) => {
+const SidebarFilters = ({ filters, onChange, onClear, counts, className = '', hideHeader = false }) => {
   const set = (key, value) => onChange({ ...filters, [key]: value });
 
   const toggleArray = (key, value) => {
@@ -36,15 +36,17 @@ const SidebarFilters = ({ filters, onChange, onClear, counts }) => {
   ];
 
   return (
-    <div className="card p-5 sticky top-20">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold flex items-center gap-2">
-          <FaMagnifyingGlass className="h-4 w-4 text-primary" /> Filters
-        </h3>
-        <button onClick={onClear} className="text-xs font-medium text-muted hover:text-red-500 flex items-center gap-1">
-          <FaXmark className="h-3 w-3" /> Clear
-        </button>
-      </div>
+    <div className={`p-5 ${className || 'card sticky top-20'}`}>
+      {!hideHeader && (
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold flex items-center gap-2">
+            <FaMagnifyingGlass className="h-4 w-4 text-primary" /> Filters
+          </h3>
+          <button onClick={onClear} className="text-xs font-medium text-muted hover:text-red-500 flex items-center gap-1">
+            <FaXmark className="h-3 w-3" /> Clear
+          </button>
+        </div>
+      )}
 
       <FilterSection title="Category">
         {['technical', 'non-technical'].map((c) => (

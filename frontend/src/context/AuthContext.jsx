@@ -46,18 +46,25 @@ export const AuthProvider = ({ children }) => {
     return data.user;
   }, []);
 
-  const googleLogin = useCallback(async (payload) => {
-    const { data } = await authService.googleLogin(payload);
+  const register = useCallback(async (payload) => {
+    const { data } = await authService.register(payload);
+    if (data.user) {
+      setUser(data.user);
+    }
+    return data;
+  }, []);
+
+  const verifyOtp = useCallback(async (payload) => {
+    const { data } = await authService.verifyOtp(payload);
     setUser(data.user);
-    toast.success('Welcome!');
+    toast.success(data.message || 'Email verified successfully!');
     return data.user;
   }, []);
 
-  const register = useCallback(async (payload) => {
-    const { data } = await authService.register(payload);
-    setUser(data.user);
-    toast.success('Account created!');
-    return data.user;
+  const resendOtp = useCallback(async (payload) => {
+    const { data } = await authService.resendOtp(payload);
+    toast.success(data.message || 'Verification code resent!');
+    return data;
   }, []);
 
   const logout = useCallback(async () => {
@@ -90,8 +97,9 @@ export const AuthProvider = ({ children }) => {
       setUser,
       loading,
       login,
-      googleLogin,
       register,
+      verifyOtp,
+      resendOtp,
       logout,
       refreshUser,
       savedJobs,
@@ -99,7 +107,7 @@ export const AuthProvider = ({ children }) => {
       unreadCount,
       setUnreadCount,
     }),
-    [user, loading, login, googleLogin, register, logout, refreshUser, savedJobs, toggleSaved, unreadCount]
+    [user, loading, login, register, verifyOtp, resendOtp, logout, refreshUser, savedJobs, toggleSaved, unreadCount]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -5,6 +5,8 @@ const { authLimiter } = require('../middleware/rateLimit');
 const {
   validateRegister,
   validateLogin,
+  validateVerifyOtp,
+  validateResendOtp,
   validateVerifyEmail,
   validateForgotPassword,
   validateResetPassword,
@@ -12,6 +14,8 @@ const {
 
 router.post('/register', authLimiter, validateRegister, auth.register);
 router.post('/login', authLimiter, validateLogin, auth.login);
+router.post('/verify-otp', authLimiter, validateVerifyOtp, auth.verifyOtp);
+router.post('/resend-otp', authLimiter, validateResendOtp, auth.resendOtp);
 router.post('/google', authLimiter, auth.googleLogin);
 router.post('/logout', auth.logout);
 router.post('/verify-email', validateVerifyEmail, auth.verifyEmail);

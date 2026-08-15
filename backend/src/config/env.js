@@ -37,6 +37,12 @@ module.exports = {
     apiSecret: process.env.CLOUDINARY_API_SECRET || '',
   },
 
+  brevo: {
+    apiKey: process.env.BREVO_API_KEY || process.env.SENDINBLUE_API_KEY || '',
+    senderEmail: process.env.BREVO_SENDER_EMAIL || process.env.SMTP_FROM_EMAIL || 'no-reply@jobhive.app',
+    senderName: process.env.BREVO_SENDER_NAME || 'JobHive',
+  },
+
   smtp: {
     host: process.env.SMTP_HOST || '',
     port: parseInt(process.env.SMTP_PORT, 10) || 587,

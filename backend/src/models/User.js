@@ -110,6 +110,8 @@ const userSchema = new mongoose.Schema(
     savedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Job' }],
 
     emailVerified: { type: Boolean, default: false },
+    verificationOtp: String,
+    verificationOtpExpires: Date,
     verificationToken: String,
     verificationTokenExpires: Date,
 
@@ -164,11 +166,10 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.pre('save', async function hashPassword(next) {
-  if (!this.isModified('password') || !this.password) return next();
+userSchema.pre('save', async function hashPassword() {
+  if (!this.isModified('password') || !this.password) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
 userSchema.methods.comparePassword = function comparePassword(candidate) {
@@ -179,6 +180,8 @@ userSchema.methods.comparePassword = function comparePassword(candidate) {
 userSchema.methods.toSafeJSON = function toSafeJSON() {
   const obj = this.toObject();
   delete obj.password;
+  delete obj.verificationOtp;
+  delete obj.verificationOtpExpires;
   delete obj.verificationToken;
   delete obj.verificationTokenExpires;
   delete obj.resetPasswordToken;

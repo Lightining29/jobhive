@@ -148,7 +148,6 @@ const buildJobDoc = (providerName, normalized) => {
     isActive: true,
     isVerified: true,
     isExpired: false,
-    raw: normalized,
   };
 };
 

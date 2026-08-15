@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FaMagnifyingGlass, FaArrowTrendUp, FaRotate } from 'react-icons/fa6';
+import { FaMagnifyingGlass, FaArrowTrendUp, FaRotate, FaSliders, FaXmark } from 'react-icons/fa6';
 import { jobService } from '../services';
 import JobCard from '../components/jobs/JobCard';
 import SidebarFilters from '../components/jobs/SidebarFilters';
@@ -48,6 +48,7 @@ const JobsPage = () => {
   const [page,    setPage]    = useState(initialPage);
   const [sort,    setSort]    = useState('newest');
   const [semanticActive, setSemanticActive] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [counts,  setCounts]  = useState({ technical: 0, 'non-technical': 0, remote: 0, hybrid: 0, onsite: 0 });
 
   const [filters, setFilters] = useState({
@@ -60,6 +61,18 @@ const JobsPage = () => {
     source:         '',
     postedWithinDays:'',
   });
+
+  const activeFilterCount = useMemo(() => {
+    let c = 0;
+    if (filters.category) c++;
+    if (filters.workModes?.length) c += filters.workModes.length;
+    if (filters.employmentTypes?.length) c += filters.employmentTypes.length;
+    if (filters.experienceLevel) c++;
+    if (filters.salaryMin) c++;
+    if (filters.source) c++;
+    if (filters.postedWithinDays) c++;
+    return c;
+  }, [filters]);
 
   // Sync state if pathname or search params change externally (e.g. clicking top nav links)
   useEffect(() => {
@@ -263,23 +276,41 @@ const JobsPage = () => {
 
               {/* Toolbar */}
               <div className="flex items-center justify-between mb-4 gap-3">
-                <div className="flex items-center gap-2 text-sm flex-wrap">
-                  {filters.category && (
-                    <span className="badge bg-primary-50 text-yellow-800 border border-accent">
-                      {capitalize(filters.category)}
-                    </span>
-                  )}
-                  {filters.workModes?.map((w) => (
-                    <span key={w} className="badge bg-primary-50 text-yellow-800 border border-accent">
-                      {capitalize(w)}
-                    </span>
-                  ))}
-                  {(filters.category || filters.workModes?.length > 0) && (
-                    <button onClick={clearFilters} className="text-xs text-muted hover:text-red-500">
-                      Clear filters
-                    </button>
-                  )}
+                <div className="flex items-center gap-2">
+                  {/* Mobile Filters Toggle Button */}
+                  <button
+                    type="button"
+                    onClick={() => setMobileFiltersOpen(true)}
+                    className="lg:hidden inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-line hover:border-primary-500 rounded-xl text-sm font-semibold text-ink shadow-sm transition-all"
+                  >
+                    <FaSliders className="h-4 w-4 text-primary" />
+                    <span>Filters</span>
+                    {activeFilterCount > 0 && (
+                      <span className="bg-primary text-ink text-xs font-bold px-2 py-0.5 rounded-full">
+                        {activeFilterCount}
+                      </span>
+                    )}
+                  </button>
+
+                  <div className="flex items-center gap-2 text-sm flex-wrap">
+                    {filters.category && (
+                      <span className="badge bg-primary-50 text-yellow-800 border border-accent">
+                        {capitalize(filters.category)}
+                      </span>
+                    )}
+                    {filters.workModes?.map((w) => (
+                      <span key={w} className="badge bg-primary-50 text-yellow-800 border border-accent">
+                        {capitalize(w)}
+                      </span>
+                    ))}
+                    {(filters.category || filters.workModes?.length > 0 || activeFilterCount > 0) && (
+                      <button onClick={clearFilters} className="text-xs text-muted hover:text-red-500">
+                        Clear all
+                      </button>
+                    )}
+                  </div>
                 </div>
+
                 <select
                   value={sort}
                   onChange={(e) => { setSort(e.target.value); }}
@@ -325,22 +356,74 @@ const JobsPage = () => {
             </div>
           </div>
 
-          {/* Mobile filters */}
-          <div className="lg:hidden mt-6">
-            <details className="card p-4">
-              <summary className="font-semibold cursor-pointer flex items-center gap-2 text-sm">
-                <FaArrowTrendUp className="h-4 w-4 text-primary" /> Show Filters
-              </summary>
-              <div className="mt-4">
-                <SidebarFilters
-                  filters={filters}
-                  onChange={handleFilterChange}
-                  onClear={clearFilters}
-                  counts={counts}
-                />
+          {/* ── Mobile Filters Slide-over Drawer ─────────────────────── */}
+          {mobileFiltersOpen && (
+            <div className="fixed inset-0 z-50 lg:hidden overflow-hidden" role="dialog" aria-modal="true">
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300"
+                onClick={() => setMobileFiltersOpen(false)}
+              />
+
+              {/* Drawer Panel */}
+              <div className="fixed inset-y-0 right-0 max-w-full flex pl-8">
+                <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col z-10 animate-slide-left">
+                  {/* Drawer Header */}
+                  <div className="px-5 py-4 border-b border-line flex items-center justify-between bg-slate-50">
+                    <div className="flex items-center gap-2.5">
+                      <FaSliders className="h-4 w-4 text-primary" />
+                      <h3 className="text-base font-bold text-ink">Filters</h3>
+                      {activeFilterCount > 0 && (
+                        <span className="bg-primary/20 text-yellow-900 font-bold text-xs px-2 py-0.5 rounded-full">
+                          {activeFilterCount} active
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setMobileFiltersOpen(false)}
+                      className="h-8 w-8 rounded-lg flex items-center justify-center text-muted hover:text-ink hover:bg-slate-200 transition-all"
+                      aria-label="Close filters"
+                    >
+                      <FaXmark className="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  {/* Scrollable Filters Body */}
+                  <div className="flex-1 overflow-y-auto p-5">
+                    <SidebarFilters
+                      filters={filters}
+                      onChange={handleFilterChange}
+                      onClear={clearFilters}
+                      counts={counts}
+                      className="!p-0 !border-0 !shadow-none !bg-transparent"
+                      hideHeader={true}
+                    />
+                  </div>
+
+                  {/* Drawer Footer Actions */}
+                  <div className="p-4 border-t border-line bg-slate-50 flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        clearFilters();
+                      }}
+                      className="btn-outline flex-1 !py-2.5 text-sm font-semibold"
+                    >
+                      Clear All
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMobileFiltersOpen(false)}
+                      className="btn-primary flex-1 !py-2.5 text-sm font-semibold shadow-md"
+                    >
+                      {loading ? 'Searching...' : `Show ${total.toLocaleString()} Jobs`}
+                    </button>
+                  </div>
+                </div>
               </div>
-            </details>
-          </div>
+            </div>
+          )}
         </>
       )}
     </div>

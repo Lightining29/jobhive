@@ -3,9 +3,11 @@ const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 const { setAuthCookie, clearAuthCookie } = require('../middleware/auth');
 const { randomToken, hashToken } = require('../utils/helpers');
-const { sendMail, buildEmailHtml } = require('../services/email.service');
+const { sendMail, buildEmailHtml, buildOtpEmailHtml } = require('../services/email.service');
 const env = require('../config/env');
 const logger = require('../config/logger');
+
+const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 const getVerificationUrl = (token) =>
   `${env.clientUrl}/auth/verify-email?token=${token}`;
@@ -25,33 +27,122 @@ const register = asyncHandler(async (req, res, next) => {
     }
   }
 
+  const otp = generateOtp();
   const verificationToken = randomToken(32);
+  const otpExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
+
   const user = await User.create({
     name,
     email,
     password,
-    role,
+    role: role === 'recruiter' ? 'recruiter' : 'candidate',
+    emailVerified: false,
+    verificationOtp: hashToken(otp),
+    verificationOtpExpires: otpExpiry,
     verificationToken: hashToken(verificationToken),
     verificationTokenExpires: Date.now() + 24 * 60 * 60 * 1000,
   });
 
+  logger.info(`[auth] Registration successful for ${user.email}. OTP: ${otp}`);
+
   try {
     await sendMail({
       to: user.email,
-      subject: 'Verify your email',
-      html: buildEmailHtml(
-        'Verify your email',
-        `<p>Hi ${user.name},</p><p>Welcome to JobHive! Click the button below to verify your email address.</p>`,
-        'Verify Email',
-        getVerificationUrl(verificationToken)
-      ),
+      toName: user.name,
+      subject: `Your JobHive Verification Code: ${otp}`,
+      html: buildOtpEmailHtml({
+        name: user.name,
+        otp,
+        expiryMinutes: 10,
+      }),
     });
   } catch (err) {
-    logger.warn(`[auth] verification email failed: ${err.message}`);
+    logger.warn(`[auth] OTP verification email failed: ${err.message}`);
   }
 
+  // Set auth cookie so session is initialized, but emailVerified remains false until OTP verified
   setAuthCookie(res, user._id);
-  res.status(201).json({ success: true, message: 'Account created. Please verify your email.', user: user.toSafeJSON() });
+  res.status(201).json({
+    success: true,
+    message: 'Account created! Please enter the 6-digit OTP sent to your email.',
+    email: user.email,
+    user: user.toSafeJSON(),
+  });
+});
+
+const verifyOtp = asyncHandler(async (req, res, next) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) {
+    return next(new ApiError(400, 'Email and 6-digit OTP are required.'));
+  }
+
+  const hashedOtp = hashToken(String(otp).trim());
+  const user = await User.findOne({
+    email: String(email).toLowerCase().trim(),
+    verificationOtp: hashedOtp,
+    verificationOtpExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new ApiError(400, 'Invalid or expired OTP code. Please request a new code.'));
+  }
+
+  user.emailVerified = true;
+  user.verificationOtp = undefined;
+  user.verificationOtpExpires = undefined;
+  user.verificationToken = undefined;
+  user.verificationTokenExpires = undefined;
+  await user.save();
+
+  setAuthCookie(res, user._id);
+  res.json({
+    success: true,
+    message: 'Email verified successfully! Welcome to JobHive.',
+    user: user.toSafeJSON(),
+  });
+});
+
+const resendOtp = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+  if (!email) {
+    return next(new ApiError(400, 'Email is required to resend OTP.'));
+  }
+
+  const user = await User.findOne({ email: String(email).toLowerCase().trim() });
+  if (!user) {
+    return next(new ApiError(404, 'No account found with this email address.'));
+  }
+
+  if (user.emailVerified) {
+    return res.json({ success: true, message: 'Email is already verified.' });
+  }
+
+  const otp = generateOtp();
+  user.verificationOtp = hashToken(otp);
+  user.verificationOtpExpires = Date.now() + 10 * 60 * 1000;
+  await user.save();
+
+  logger.info(`[auth] Resent OTP for ${user.email}. New OTP: ${otp}`);
+
+  try {
+    await sendMail({
+      to: user.email,
+      toName: user.name,
+      subject: `Your JobHive Verification Code: ${otp}`,
+      html: buildOtpEmailHtml({
+        name: user.name,
+        otp,
+        expiryMinutes: 10,
+      }),
+    });
+  } catch (err) {
+    logger.warn(`[auth] Resend OTP email failed: ${err.message}`);
+  }
+
+  res.json({
+    success: true,
+    message: 'A fresh 6-digit verification code has been sent to your email.',
+  });
 });
 
 const login = asyncHandler(async (req, res, next) => {
@@ -74,44 +165,73 @@ const logout = (req, res) => {
 };
 
 const verifyEmail = asyncHandler(async (req, res, next) => {
-  const { token } = req.body;
+  const { token, email, otp } = req.body;
+
+  // Support OTP verification through verifyEmail endpoint as well
+  if (email && otp) {
+    const hashedOtp = hashToken(String(otp).trim());
+    const user = await User.findOne({
+      email: String(email).toLowerCase().trim(),
+      verificationOtp: hashedOtp,
+      verificationOtpExpires: { $gt: Date.now() },
+    });
+    if (!user) return next(new ApiError(400, 'Invalid or expired OTP code.'));
+
+    user.emailVerified = true;
+    user.verificationOtp = undefined;
+    user.verificationOtpExpires = undefined;
+    user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
+    await user.save();
+
+    setAuthCookie(res, user._id);
+    return res.json({ success: true, message: 'Email verified successfully.', user: user.toSafeJSON() });
+  }
+
+  if (!token) return next(new ApiError(400, 'Verification token or OTP is required.'));
+
   const hashed = hashToken(token);
   const user = await User.findOne({
     verificationToken: hashed,
     verificationTokenExpires: { $gt: Date.now() },
   });
-  if (!user) return next(new ApiError(400, 'Invalid or expired verification token.'));
+  if (!user) return next(new ApiError(400, 'Invalid or expired verification link.'));
 
   user.emailVerified = true;
   user.verificationToken = undefined;
   user.verificationTokenExpires = undefined;
+  user.verificationOtp = undefined;
+  user.verificationOtpExpires = undefined;
   await user.save();
 
+  setAuthCookie(res, user._id);
   res.json({ success: true, message: 'Email verified successfully.', user: user.toSafeJSON() });
 });
 
 const resendVerification = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user._id);
+  const user = await User.findById(req.user?._id) || await User.findOne({ email: req.body.email });
   if (!user) return next(new ApiError(404, 'User not found.'));
   if (user.emailVerified) return res.json({ success: true, message: 'Email already verified.' });
 
+  const otp = generateOtp();
   const verificationToken = randomToken(32);
+  user.verificationOtp = hashToken(otp);
+  user.verificationOtpExpires = Date.now() + 10 * 60 * 1000;
   user.verificationToken = hashToken(verificationToken);
   user.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
   await user.save();
 
   await sendMail({
     to: user.email,
-    subject: 'Verify your email',
-    html: buildEmailHtml(
-      'Verify your email',
-      `<p>Hi ${user.name},</p><p>Here is a fresh verification link for your JobHive account.</p>`,
-      'Verify Email',
-      getVerificationUrl(verificationToken)
-    ),
+    subject: `Your JobHive Verification Code: ${otp}`,
+    html: buildOtpEmailHtml({
+      name: user.name,
+      otp,
+      expiryMinutes: 10,
+    }),
   });
 
-  res.json({ success: true, message: 'Verification email sent.' });
+  res.json({ success: true, message: 'Verification OTP sent to your email.' });
 });
 
 const forgotPassword = asyncHandler(async (req, res, next) => {
@@ -210,6 +330,8 @@ module.exports = {
   register,
   login,
   logout,
+  verifyOtp,
+  resendOtp,
   verifyEmail,
   resendVerification,
   forgotPassword,

@@ -2,6 +2,8 @@ const validate = require('../middleware/validate');
 const {
   registerSchema,
   loginSchema,
+  verifyOtpSchema,
+  resendOtpSchema,
   verifyEmailSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
@@ -24,6 +26,8 @@ const { adminActionSchema, resolveReportSchema } = require('../validators/adminV
 module.exports = {
   validateRegister: validate(registerSchema),
   validateLogin: validate(loginSchema),
+  validateVerifyOtp: validate(verifyOtpSchema),
+  validateResendOtp: validate(resendOtpSchema),
   validateVerifyEmail: validate(verifyEmailSchema),
   validateForgotPassword: validate(forgotPasswordSchema),
   validateResetPassword: validate(resetPasswordSchema),

@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaBuilding, FaUserTie } from 'react-icons/fa6';
 import { useAuth } from '../../context/AuthContext';
 import { AuthLayout, Field, InputWrap } from './AuthShared';
-import GoogleLoginButton from '../../components/ui/GoogleLoginButton';
 
 const RegisterPage = () => {
   const { register: registerUser } = useAuth();
@@ -16,10 +15,11 @@ const RegisterPage = () => {
 
   const onSubmit = async (values) => {
     try {
-      const user = await registerUser({ ...values, role });
-      navigate(user.role === 'recruiter' ? '/recruiter/company' : '/candidate/dashboard');
+      await registerUser({ ...values, role });
+      toast.success('Verification code sent to your email!');
+      navigate(`/auth/verify-email?email=${encodeURIComponent(values.email.toLowerCase().trim())}&role=${role}`);
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || 'Failed to create account. Please try again.');
     }
   };
 
@@ -68,12 +68,6 @@ const RegisterPage = () => {
           {isSubmitting ? 'Creating account...' : `Sign up as ${role === 'candidate' ? 'Candidate' : 'Recruiter'}`}
         </button>
       </form>
-      <div className="flex items-center gap-3 my-5">
-        <div className="flex-1 h-px bg-line" />
-        <span className="text-xs text-muted">or</span>
-        <div className="flex-1 h-px bg-line" />
-      </div>
-      <GoogleLoginButton role={role} />
       <p className="text-center text-sm text-muted mt-6">
         Already have an account? <Link to="/auth/login" className="text-primary font-semibold hover:underline">Login</Link>
       </p>

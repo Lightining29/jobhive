@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa6';
 import { useAuth } from '../../context/AuthContext';
 import { AuthLayout, Field, InputWrap } from './AuthShared';
-import GoogleLoginButton from '../../components/ui/GoogleLoginButton';
 
 export const LoginPage = () => {
   const { login } = useAuth();
@@ -44,12 +43,6 @@ export const LoginPage = () => {
           {isSubmitting ? 'Logging in...' : 'Login'}
         </button>
       </form>
-      <div className="flex items-center gap-3 my-5">
-        <div className="flex-1 h-px bg-line" />
-        <span className="text-xs text-muted">or</span>
-        <div className="flex-1 h-px bg-line" />
-      </div>
-      <GoogleLoginButton />
       <p className="text-center text-sm text-muted mt-6">
         New to JobHive? <Link to="/auth/register" className="text-primary font-semibold hover:underline">Create an account</Link>
       </p>
