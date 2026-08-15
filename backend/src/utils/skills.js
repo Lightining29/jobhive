@@ -22,21 +22,24 @@ const TECHNICAL_KEYWORDS = [
 ];
 
 const NON_TECHNICAL_KEYWORDS = [
-  'human resources', 'talent acquisition', 'recruiter', 'recruitment', 'people operations', 'payroll',
-  'sales executive', 'account executive', 'business development', 'b2b sales', 'account manager',
-  'inside sales', 'field sales', 'sales representative', 'sales director',
-  'marketing specialist', 'digital marketing', 'content writer', 'copywriter', 'social media manager',
-  'brand manager', 'growth marketing', 'seo specialist', 'public relations', 'pr manager',
-  'accountant', 'accounting', 'financial analyst', 'auditor', 'tax specialist', 'bookkeeper',
-  'investment banking', 'credit analyst', 'wealth manager', 'underwriter', 'insurance agent',
+  'marketing', 'marketer', 'digital marketing', 'growth marketing', 'social media', 'social media manager',
+  'brand manager', 'campaign manager', 'seo specialist', 'sem specialist', 'content marketing', 'email marketing',
+  'performance marketing', 'product marketing', 'affiliate marketing', 'public relations', 'pr manager', 'advertising',
+  'translator', 'translation', 'interpreter', 'localization', 'localization specialist', 'linguist', 'language specialist', 'transcriptionist',
+  'business executive', 'business development', 'business development executive', 'bde', 'bdr', 'sdr', 'account executive',
+  'sales executive', 'sales representative', 'sales rep', 'sales manager', 'client executive', 'operations executive',
+  'executive assistant', 'administrative assistant', 'office administrator', 'relationship manager', 'inside sales', 'field sales', 'corporate sales',
+  'human resources', 'talent acquisition', 'recruiter', 'recruitment', 'people operations', 'payroll', 'sourcer',
+  'content writer', 'copywriter', 'content creator', 'editor', 'journalist', 'technical writer',
+  'accountant', 'accounting', 'financial analyst', 'auditor', 'tax specialist', 'bookkeeper', 'controller',
+  'investment banking', 'credit analyst', 'wealth manager', 'underwriter', 'insurance agent', 'banker',
   'legal counsel', 'attorney', 'lawyer', 'paralegal', 'compliance officer',
   'registered nurse', 'physician', 'medical assistant', 'pharmacist', 'therapist', 'clinic',
   'operations manager', 'supply chain', 'logistics coordinator', 'procurement specialist', 'warehouse supervisor',
-  'customer support', 'customer service representative', 'client success', 'customer success manager', 'call center',
+  'customer support', 'customer service representative', 'client success', 'customer success manager', 'call center', 'telecaller',
   'teacher', 'instructor', 'professor', 'academic tutor', 'corporate trainer',
-  'executive assistant', 'administrative assistant', 'office administrator', 'receptionist',
-  'real estate agent', 'property manager',
-  'hotel manager', 'restaurant manager', 'executive chef', 'store manager',
+  'receptionist', 'front desk', 'real estate agent', 'property manager',
+  'hotel manager', 'restaurant manager', 'executive chef', 'store manager', 'retail associate', 'cashier',
 ];
 
 const TECHNICAL_CATEGORIES = {

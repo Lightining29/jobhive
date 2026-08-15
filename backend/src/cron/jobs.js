@@ -7,6 +7,12 @@ const startCronJobs = () => {
   (async () => {
     logger.info('[cron] startup job fetch started');
     try {
+      const Job = require('../models/Job');
+      const nonTechRegex = /\b(marketing|marketer|translator|translation|interpreter|localization|linguist|language specialist|business executive|business development|account executive|sales executive|sales representative|sales rep|sales manager|client executive|executive assistant|operations executive|relationship manager|bdr|sdr|bde|recruiter|recruitment|talent acquisition|human resource|hr executive|hr manager|people operations|sourcer|copywriter|content writer|content creator|journalist|editor|accountant|accounting|financial analyst|auditor|tax specialist|bookkeeper|legal counsel|paralegal|lawyer|customer support|customer service|customer success|call center|telecaller|office assistant|receptionist|store manager|retail associate|nursing|nurse|physician|chef|cook|driver)\b/i;
+      await Job.updateMany(
+        { jobTitle: { $regex: nonTechRegex }, category: { $ne: 'non-technical' } },
+        { $set: { category: 'non-technical' } }
+      );
       const results = await fetchAllJobs();
       logger.info('[cron] startup job fetch finished', results);
     } catch (err) {

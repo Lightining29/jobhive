@@ -76,7 +76,16 @@ const buildFilters = (query) => {
     }
   }
 
-  if (query.category) filter.category = query.category;
+  if (query.category) {
+    filter.category = query.category;
+    if (query.category === 'technical') {
+      const nonTechExclusion = /\b(marketing|marketer|translator|translation|interpreter|localization|linguist|language specialist|business executive|business development|account executive|sales executive|sales representative|sales rep|sales manager|client executive|executive assistant|operations executive|relationship manager|recruiter|recruitment|talent acquisition|human resource|hr executive|hr manager|people operations|copywriter|content writer|content creator|journalist|editor|accountant|accounting|financial analyst|auditor|tax specialist|bookkeeper|legal counsel|paralegal|lawyer|customer support|customer service|customer success|telecaller|call center|receptionist|store manager|nurse|chef)\b/i;
+      filter.$and = [
+        ...(filter.$and || []),
+        { jobTitle: { $not: nonTechExclusion } },
+      ];
+    }
+  }
   if (query.subCategory) filter.subCategory = query.subCategory;
   if (query.workMode) filter.workMode = query.workMode;
   if (query.employmentType) filter.employmentType = query.employmentType;
