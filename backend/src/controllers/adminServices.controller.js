@@ -8,22 +8,29 @@ const DEFAULT_SERVICES = [
   { name: 'Featured Job Badge', slug: 'featured-job-badge', description: 'Highlight job on top of search results and homepage with badge', category: 'job_posting', price: 49, durationDays: 30, usageLimit: 1, isSubscriptionOnly: false, canPurchaseSeparately: true },
   { name: 'Urgent Hiring Tag', slug: 'urgent-hiring-tag', description: 'Mark job as urgent to attract immediate active job seekers', category: 'job_posting', price: 19, durationDays: 14, usageLimit: 1, isSubscriptionOnly: false, canPurchaseSeparately: true },
   { name: 'Job 7-Day Auto Boost', slug: 'job-7day-boost', description: 'Bump job listing to top of search results daily for 7 days', category: 'job_posting', price: 35, durationDays: 7, usageLimit: 1, isSubscriptionOnly: false, canPurchaseSeparately: true },
-  { name: 'Resume Database Access', slug: 'resume-database-access', description: 'Search and filter millions of verified candidate resumes', category: 'candidate_access', price: 99, durationDays: 30, usageLimit: 100, isSubscriptionOnly: false, canPurchaseSeparately: true },
+  { name: 'Java / MERN / Python Specialist Hiring Slot', slug: 'specialist-developer-slot', description: 'Targeted spotlight placement for Java, MERN (React/Node) and Python engineering roles', category: 'job_posting', price: 59, durationDays: 30, usageLimit: 1, isSubscriptionOnly: false, canPurchaseSeparately: true },
+  { name: 'Bulk Job Slot Pack (5 Postings)', slug: 'bulk-job-pack-5', description: 'Bundle of 5 verified job postings with 30-day validity', category: 'job_posting', price: 119, durationDays: 60, usageLimit: 5, isSubscriptionOnly: false, canPurchaseSeparately: true },
+  { name: 'Enterprise Job Slot Pack (25 Postings)', slug: 'enterprise-job-pack-25', description: 'High-volume hiring package of 25 job postings with priority moderation', category: 'job_posting', price: 499, durationDays: 90, usageLimit: 25, isSubscriptionOnly: false, canPurchaseSeparately: true },
+  { name: 'Resume Database Access', slug: 'resume-database-access', description: 'Search and filter millions of verified candidate resumes with direct download', category: 'candidate_access', price: 99, durationDays: 30, usageLimit: 100, isSubscriptionOnly: false, canPurchaseSeparately: true },
   { name: 'Candidate Contact Credits (50)', slug: 'candidate-contact-50', description: 'Unlock direct email and phone numbers of 50 candidates', category: 'candidate_access', price: 45, durationDays: 60, creditsGranted: 50, isSubscriptionOnly: false, canPurchaseSeparately: true },
   { name: 'Candidate Profile Unlock (10)', slug: 'candidate-unlock-10', description: 'Unlock 10 complete candidate profiles with portfolio and work history', category: 'candidate_access', price: 20, durationDays: 60, creditsGranted: 10, isSubscriptionOnly: false, canPurchaseSeparately: true },
   { name: 'Company Profile Promotion', slug: 'company-profile-promotion', description: 'Featured company profile in Employer directory and home showcase', category: 'branding', price: 79, durationDays: 30, isSubscriptionOnly: false, canPurchaseSeparately: true },
   { name: 'Homepage Banner Advertisement', slug: 'homepage-banner-ad', description: 'Exclusive hiring banner placed on high-traffic homepage', category: 'branding', price: 199, durationDays: 14, isSubscriptionOnly: false, canPurchaseSeparately: true },
   { name: 'Email Candidate Blast', slug: 'email-candidate-blast', description: 'Direct targeted email campaign sent to 1,000+ matching candidates', category: 'communication', price: 149, durationDays: 1, usageLimit: 1000, isSubscriptionOnly: false, canPurchaseSeparately: true },
+  { name: 'WhatsApp Candidate Alert Blast', slug: 'whatsapp-candidate-blast', description: 'Instant verified WhatsApp notifications delivered to 500+ pre-vetted matching candidates', category: 'communication', price: 129, durationDays: 7, usageLimit: 500, isSubscriptionOnly: false, canPurchaseSeparately: true },
   { name: 'Bulk Candidate Messaging', slug: 'bulk-candidate-messaging', description: 'Send in-app chat invitations to 250 qualified candidates', category: 'communication', price: 59, durationDays: 30, creditsGranted: 250, isSubscriptionOnly: false, canPurchaseSeparately: true },
   { name: 'AI Resume Screening & Ranking', slug: 'ai-resume-screening', description: 'AI automatically screens and scores applicant resumes against job requirements', category: 'ai_tools', price: 39, durationDays: 30, usageLimit: 500, isSubscriptionOnly: false, canPurchaseSeparately: true },
   { name: 'AI Candidate Matching Engine', slug: 'ai-candidate-matching', description: 'Semantic AI engine recommends best-fit active talent automatically', category: 'ai_tools', price: 49, durationDays: 30, isSubscriptionOnly: false, canPurchaseSeparately: true },
+  { name: 'AI Technical Coding Assessment Suite', slug: 'ai-coding-assessment', description: 'Automated live skill assessment and coding challenges in Java, JavaScript, Python, and SQL', category: 'ai_tools', price: 89, durationDays: 30, usageLimit: 100, isSubscriptionOnly: false, canPurchaseSeparately: true },
+  { name: 'AI Job Description & SEO Optimizer', slug: 'ai-job-optimizer', description: 'Generate high-converting, keyword-optimized job descriptions with salary benchmarking', category: 'ai_tools', price: 15, durationDays: 30, usageLimit: 10, isSubscriptionOnly: false, canPurchaseSeparately: true },
+  { name: 'Fast-Track Background Verification', slug: 'background-verification', description: 'Automated identity, educational degree, and employment verification check', category: 'verification', price: 39, durationDays: 30, usageLimit: 1, isSubscriptionOnly: false, canPurchaseSeparately: true },
+  { name: 'Dedicated Talent Sourcing Specialist (Weekly)', slug: 'dedicated-sourcing-specialist', description: 'Dedicated recruitment specialist assigned to curate and deliver top shortlisted talent', category: 'other', price: 299, durationDays: 7, usageLimit: 1, isSubscriptionOnly: false, canPurchaseSeparately: true },
   { name: 'Recruiter Team Accounts (3 Seats)', slug: 'recruiter-team-3', description: 'Add 3 sub-recruiter team accounts with role-based permissions', category: 'other', price: 69, durationDays: 30, creditsGranted: 3, isSubscriptionOnly: false, canPurchaseSeparately: true },
 ];
 
 const seedDefaultsIfEmpty = async () => {
-  const count = await Service.countDocuments();
-  if (count === 0) {
-    await Service.insertMany(DEFAULT_SERVICES);
+  for (const s of DEFAULT_SERVICES) {
+    await Service.updateOne({ slug: s.slug }, { $setOnInsert: s }, { upsert: true });
   }
 };
 

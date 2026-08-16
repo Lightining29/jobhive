@@ -187,8 +187,55 @@ const listJobs = asyncHandler(async (req, res) => {
   const baseFilter = baseJobFilter();
   const indiaFilter = indiaScopeFilter();
 
+  const isDefaultSort = !req.query.sort || req.query.sort === 'relevance' || req.query.sort === 'default';
+  const isSearchQuery = Boolean(req.query.search || req.query.q);
+
+  const priorityCond = {
+    $or: [
+      { jobTitle: { $regex: /\b(java|mern|react|node|nodejs|python|django|fastapi|mongodb|express|spring boot)\b/i } },
+      { headline: { $regex: /\b(java|mern|react|node|nodejs|python|django|fastapi|mongodb|express|spring boot)\b/i } },
+      { requiredSkills: { $in: ['java', 'react', 'react.js', 'reactjs', 'node', 'node.js', 'nodejs', 'mern', 'python', 'django', 'fastapi', 'mongodb', 'express', 'spring boot'] } },
+    ],
+  };
+
+  let jobs = [];
+  if (isDefaultSort && !isSearchQuery) {
+    const priorityFilter = { ...filter, $and: [...(filter.$and || []), priorityCond] };
+    const priorityJobsCount = await Job.countDocuments(priorityFilter);
+
+    if (skip < priorityJobsCount) {
+      const priorityJobs = await Job.find(priorityFilter)
+        .sort({ trendingScore: -1, postedDate: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+
+      if (priorityJobs.length < limit) {
+        const remainingLimit = limit - priorityJobs.length;
+        const generalFilter = { ...filter, $and: [...(filter.$and || []), { $nor: [priorityCond] }] };
+        const generalJobs = await Job.find(generalFilter)
+          .sort({ trendingScore: -1, postedDate: -1 })
+          .skip(0)
+          .limit(remainingLimit)
+          .lean();
+        jobs = [...priorityJobs, ...generalJobs];
+      } else {
+        jobs = priorityJobs;
+      }
+    } else {
+      const generalSkip = skip - priorityJobsCount;
+      const generalFilter = { ...filter, $and: [...(filter.$and || []), { $nor: [priorityCond] }] };
+      jobs = await Job.find(generalFilter)
+        .sort({ trendingScore: -1, postedDate: -1 })
+        .skip(generalSkip)
+        .limit(limit)
+        .lean();
+    }
+  } else {
+    jobs = await baseQuery.skip(skip).limit(limit).lean();
+  }
+
   const [
-    jobs,
     total,
     technicalCount,
     nonTechnicalCount,
@@ -200,7 +247,6 @@ const listJobs = asyncHandler(async (req, res) => {
     contractCount,
     internshipCount,
   ] = await Promise.all([
-    baseQuery.skip(skip).limit(limit).lean(),
     Job.countDocuments(filter),
     Job.countDocuments({
       ...baseFilter,
@@ -304,26 +350,34 @@ const homeFeed = asyncHandler(async (req, res) => {
 
   const preferred = buildPreferredFilter();
 
-  // Fetch section jobs: prefer matching user profile, fill remaining with general
+  // Fetch section jobs: prefer matching user profile or Java/MERN/Python, fill remaining with general
   const fetchSection = async (extraFilter, limit = 8) => {
-    if (preferred) {
-      const matched = await Job.find({ ...scoped, ...extraFilter, ...preferred })
-        .sort({ postedDate: -1 })
-        .limit(limit)
-        .lean();
-      if (matched.length >= limit) return matched;
-      const remaining = limit - matched.length;
-      const excludeIds = matched.map((j) => j._id);
-      const general = await Job.find({
-        ...scoped, ...extraFilter,
-        _id: { $nin: excludeIds },
-      })
-        .sort({ postedDate: -1 })
-        .limit(remaining)
-        .lean();
-      return [...matched, ...general];
-    }
-    return Job.find({ ...scoped, ...extraFilter }).sort({ postedDate: -1 }).limit(limit).lean();
+    const priorityCond = {
+      $or: [
+        { jobTitle: { $regex: /\b(java|mern|react|node|nodejs|python|django|fastapi|mongodb|express|spring boot)\b/i } },
+        { headline: { $regex: /\b(java|mern|react|node|nodejs|python|django|fastapi|mongodb|express|spring boot)\b/i } },
+        { requiredSkills: { $in: ['java', 'react', 'react.js', 'reactjs', 'node', 'node.js', 'nodejs', 'mern', 'python', 'django', 'fastapi', 'mongodb', 'express', 'spring boot'] } },
+      ],
+    };
+
+    const targetFilter = preferred || priorityCond;
+    const matched = await Job.find({ ...scoped, ...extraFilter, ...targetFilter })
+      .sort({ trendingScore: -1, postedDate: -1 })
+      .limit(limit)
+      .lean();
+
+    if (matched.length >= limit) return matched;
+    const remaining = limit - matched.length;
+    const excludeIds = matched.map((j) => j._id);
+    const general = await Job.find({
+      ...scoped,
+      ...extraFilter,
+      _id: { $nin: excludeIds },
+    })
+      .sort({ postedDate: -1 })
+      .limit(remaining)
+      .lean();
+    return [...matched, ...general];
   };
 
   // Build recommended section for logged-in users with skills
