@@ -10,6 +10,7 @@
     "build": "echo 'Backend build complete'",
     "dev": "node --watch server.js",
     "seed": "node src/seed.js",
+    "make-admin": "node scripts/makeAdmin.js",
     "cron:fetch": "node src/cron/runNow.js"
   },
   "dependencies": {
