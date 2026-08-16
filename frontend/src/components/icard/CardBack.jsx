@@ -240,15 +240,6 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
         <div className="relative pt-3 px-6 pb-2 border-b border-slate-100">
           <div className="w-16 h-3 rounded-full bg-slate-200/90 mx-auto border border-slate-300 shadow-inner relative z-30 mb-2" />
 
-          {/* Top Left Corner Geometric Accent (Non-overlapping) */}
-          <div className="absolute top-0 left-0 w-24 h-16 pointer-events-none overflow-hidden z-10">
-            <svg viewBox="0 0 100 65" className="w-full h-full">
-              <polygon points="0,0 65,0 35,45 0,28" fill="#1b1c3a" />
-              <polygon points="35,0 95,0 68,28 20,0" fill="#f59e0b" />
-              <polygon points="65,0 100,0 82,16 50,0" fill="#d97706" />
-            </svg>
-          </div>
-
           <div className="flex items-center justify-end gap-2 relative z-20">
             <span className="text-xs font-black text-[#1b1c3a] uppercase font-mono tracking-wider">
               {card.personal?.organization || 'COMPANY NAME'}

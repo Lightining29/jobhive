@@ -160,15 +160,6 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
           <div className="w-16 h-3 rounded-full bg-slate-200/90 border border-slate-300 shadow-inner" />
         </div>
 
-        {/* Top Right Sharp Geometry */}
-        <div className="absolute top-0 right-0 w-48 h-44 pointer-events-none overflow-hidden z-10">
-          <svg viewBox="0 0 200 180" className="w-full h-full">
-            <polygon points="40,0 200,0 200,180 90,180" fill="#1b1c3a" />
-            <polygon points="120,0 200,0 200,60 80,0" fill="#d97706" />
-            <polygon points="90,0 200,0 200,105 45,0" fill="#f59e0b" />
-          </svg>
-        </div>
-
         {/* Logo & Header */}
         <div className="flex items-center gap-3 relative z-20 px-6 pt-1">
           <div className="relative w-9 h-9 flex-shrink-0">
