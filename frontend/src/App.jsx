@@ -36,6 +36,7 @@ const MyJobsPage = lazy(() => import('./pages/recruiter/MyJobsPage'));
 const ApplicantsPage = lazy(() => import('./pages/recruiter/ApplicantsPage'));
 
 const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'));
+const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage'));
 const AdminServicesPage = lazy(() => import('./pages/admin/AdminServicesPage'));
 const AdminPlansPage = lazy(() => import('./pages/admin/AdminPlansPage'));
 const AdminCouponsPage = lazy(() => import('./pages/admin/AdminCouponsPage'));
@@ -68,6 +69,8 @@ const App = () => (
             <Route path="/jobs/onsite" element={withSuspense(<JobsPage key="onsite" />)} />
             <Route path="/jobs/recommended" element={withSuspense(<RecommendedJobsPage />)} />
             <Route path="/jobs/:id" element={withSuspense(<JobDetailPage />)} />
+
+            <Route path="/admin/login" element={withSuspense(<AdminLoginPage />)} />
 
             <Route element={<GuestRoute />}>
               <Route path="/auth/login" element={withSuspense(<LoginPage />)} />
