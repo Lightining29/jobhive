@@ -274,6 +274,27 @@ const listJobs = asyncHandler(async (req, res) => {
         .limit(limit)
         .lean();
     }
+  } else if (isSearchQuery) {
+    const rawJobs = await baseQuery.skip(skip).limit(limit * 3).lean();
+    const searchTerms = getSearchTerms(req.query.search || req.query.q || '');
+
+    const scoredJobs = rawJobs.map((j) => {
+      let score = 0;
+      const titleLower = (j.jobTitle || '').toLowerCase();
+      const headlineLower = (j.headline || '').toLowerCase();
+      const skillsLower = (j.requiredSkills || []).map((s) => s.toLowerCase());
+
+      for (const term of searchTerms) {
+        const t = term.toLowerCase();
+        if (titleLower.includes(t)) score += 100;
+        if (headlineLower.includes(t)) score += 80;
+        if (skillsLower.includes(t)) score += 50;
+      }
+      return { ...j, _searchScore: score };
+    });
+
+    scoredJobs.sort((a, b) => b._searchScore - a._searchScore || new Date(b.postedDate) - new Date(a.postedDate));
+    jobs = scoredJobs.slice(0, limit);
   } else {
     jobs = await baseQuery.skip(skip).limit(limit).lean();
   }
