@@ -155,8 +155,9 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
         className="relative w-full h-full select-none overflow-hidden flex flex-col justify-between bg-white text-slate-900 shadow-2xl rounded-[1.75rem] p-0"
         style={{ fontFamily: "'Inter', sans-serif" }}
       >
-        <div className="relative z-30 pt-4 px-6 flex justify-center">
-          <div className="w-16 h-3.5 rounded-full bg-slate-200/90 border border-slate-300 shadow-inner" />
+        {/* Top Punch Slot */}
+        <div className="relative z-30 pt-3.5 px-6 flex justify-center">
+          <div className="w-16 h-3 rounded-full bg-slate-200/90 border border-slate-300 shadow-inner" />
         </div>
 
         {/* Top Right Sharp Geometry */}
@@ -168,6 +169,7 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
           </svg>
         </div>
 
+        {/* Logo & Header */}
         <div className="flex items-center gap-3 relative z-20 px-6 pt-1">
           <div className="relative w-9 h-9 flex-shrink-0">
             <svg viewBox="0 0 36 36" className="w-full h-full">
@@ -177,17 +179,18 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
             </svg>
           </div>
           <div>
-            <h4 className="text-xs font-black text-[#1b1c3a] uppercase leading-normal tracking-wider font-mono">
-              {card.personal?.organization || 'COMPANY'}
+            <h4 className="text-[11px] font-black text-[#1b1c3a] uppercase leading-tight tracking-wider font-mono">
+              {card.personal?.organization || 'COMPANY NAME'}
             </h4>
-            <span className="text-[11px] font-extrabold text-[#1b1c3a] uppercase tracking-wider font-mono block leading-normal">
-              {card.personal?.department || 'NAME'}
+            <span className="text-[9.5px] font-extrabold text-[#1b1c3a] uppercase tracking-wider font-mono block leading-tight">
+              {card.personal?.department || 'MANAGEMENT DIVISION'}
             </span>
           </div>
         </div>
 
+        {/* Profile Avatar & Identity */}
         <div className="flex flex-col items-center text-center my-auto py-1 px-6 relative z-20">
-          <div className="w-36 h-40 rounded-2xl overflow-hidden shadow-2xl border-[3.5px] border-white mb-3 bg-slate-200">
+          <div className="w-36 h-40 rounded-2xl overflow-hidden shadow-2xl border-[3.5px] border-white mb-2.5 bg-slate-200">
             <img
               src={card.media?.avatarUrl || "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&auto=format&fit=crop&q=80"}
               alt="Avatar"
@@ -196,16 +199,17 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
             />
           </div>
 
-          <h2 className="text-2xl font-black text-[#1b1c3a] uppercase tracking-wide truncate max-w-full leading-normal">
+          <h2 className="text-2xl font-black text-[#1b1c3a] uppercase tracking-wide truncate max-w-full leading-tight">
             {card.personal?.fullName || 'JAMIE JHONSON'}
           </h2>
-          <div className="w-56 h-[2.5px] bg-[#1b1c3a] my-1.5" />
-          <p className="text-xs font-black text-[#1b1c3a] uppercase tracking-[0.18em] leading-normal">
+          <div className="w-56 h-[2px] bg-[#1b1c3a] my-1.5" />
+          <p className="text-xs font-black text-[#1b1c3a] uppercase tracking-[0.18em] leading-tight">
             {card.personal?.jobTitle || 'ASSISTANT MANAGER'}
           </p>
         </div>
 
-        <div className="relative pb-5 px-6 flex items-center justify-center z-20">
+        {/* Bottom Barcode with Bottom Left Yellow Angle */}
+        <div className="relative pb-4 px-6 flex items-center justify-center z-20">
           <div className="absolute bottom-0 left-0 w-24 h-24 pointer-events-none">
             <svg viewBox="0 0 100 100" className="w-full h-full">
               <polygon points="0,50 100,100 0,100" fill="#fde68a" />
@@ -214,7 +218,7 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
           </div>
 
           <div className="relative z-10">
-            <Barcode number={card.security?.barcodeNumber || "89845653208871"} height="h-10" textColor="text-[#1b1c3a]" />
+            <Barcode number={card.security?.barcodeNumber || "89845653208871"} height="h-9" textColor="text-[#1b1c3a]" />
           </div>
         </div>
       </div>

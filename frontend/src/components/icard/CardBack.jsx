@@ -236,80 +236,85 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
         className="relative w-full h-full select-none overflow-hidden flex flex-col justify-between bg-white text-slate-900 shadow-2xl rounded-[1.75rem] p-0"
         style={{ fontFamily: "'Inter', sans-serif" }}
       >
-        {/* Top Gold Geometric Header */}
-        <div className="relative pt-4 px-6">
-          <div className="w-16 h-3 rounded-full bg-slate-200/90 mx-auto border border-slate-300 shadow-inner relative z-30" />
+        {/* Top Header & Slot */}
+        <div className="relative pt-3 px-6 pb-2 border-b border-slate-100">
+          <div className="w-16 h-3 rounded-full bg-slate-200/90 mx-auto border border-slate-300 shadow-inner relative z-30 mb-2" />
 
-          <div className="absolute top-0 left-0 w-48 h-40 pointer-events-none overflow-hidden z-10">
-            <svg viewBox="0 0 200 180" className="w-full h-full transform scale-x-[-1]">
-              <polygon points="40,0 200,0 200,180 90,180" fill="#1b1c3a" />
-              <polygon points="120,0 200,0 200,60 80,0" fill="#d97706" />
-              <polygon points="90,0 200,0 200,105 45,0" fill="#f59e0b" />
+          {/* Top Left Corner Geometric Accent (Non-overlapping) */}
+          <div className="absolute top-0 left-0 w-24 h-16 pointer-events-none overflow-hidden z-10">
+            <svg viewBox="0 0 100 65" className="w-full h-full">
+              <polygon points="0,0 65,0 35,45 0,28" fill="#1b1c3a" />
+              <polygon points="35,0 95,0 68,28 20,0" fill="#f59e0b" />
+              <polygon points="65,0 100,0 82,16 50,0" fill="#d97706" />
             </svg>
           </div>
 
-          <div className="flex items-center justify-end gap-2 relative z-20 pt-1 pb-2 border-b border-slate-100">
+          <div className="flex items-center justify-end gap-2 relative z-20">
             <span className="text-xs font-black text-[#1b1c3a] uppercase font-mono tracking-wider">
               {card.personal?.organization || 'COMPANY NAME'}
             </span>
-            <div className="w-3.5 h-3.5 rounded-full bg-[#f59e0b]" />
+            <div className="w-3 h-3 rounded-full bg-[#f59e0b]" />
           </div>
         </div>
 
         {/* Center Content with Rich Guidelines and BIG CENTERED QR */}
-        <div className="space-y-3 my-auto relative z-20 px-6 flex-1 flex flex-col justify-between py-2">
+        <div className="space-y-2.5 px-6 py-2 relative z-20 flex-1 flex flex-col justify-between">
           <div>
-            <h4 className="text-xs font-black text-[#1b1c3a] uppercase tracking-wider mb-1 flex items-center justify-between">
-              <span>Cardholder Terms & Security</span>
-              <span className="text-[8.5px] font-mono text-amber-600 font-extrabold">AUTHENTIC</span>
-            </h4>
+            <div className="flex items-center justify-between mb-1">
+              <h4 className="text-xs font-black text-[#1b1c3a] uppercase tracking-wider">
+                CARDHOLDER TERMS & SECURITY
+              </h4>
+              <span className="text-[8px] font-mono text-amber-600 font-extrabold uppercase">AUTHENTIC</span>
+            </div>
             <p className="text-[9.5px] text-slate-600 leading-relaxed font-medium">
-              This credential is the exclusive property of {card.personal?.organization || 'JobHive'}. Scan the live QR below for cryptographic verification.
+              This credential is the exclusive property of {card.personal?.organization || 'COMPANY NAME'}. Scan the live QR below for cryptographic verification.
             </p>
           </div>
 
-          {/* BIG CENTERED QR CODE */}
-          <div className="flex flex-col items-center justify-center my-auto">
-            <div className="p-3 rounded-2xl bg-white shadow-xl border-2 border-amber-500/40 flex flex-col items-center group hover:scale-105 transition-transform">
+          {/* Big Center QR with Gold Border */}
+          <div className="flex flex-col items-center justify-center my-auto py-1">
+            <div className="p-3 rounded-2xl bg-white shadow-xl border-2 border-amber-400/80 flex flex-col items-center group hover:scale-105 transition-transform">
               <QRCodeSVG value={qrValue} size={isVertical ? 115 : 75} level="H" fgColor="#1b1c3a" bgColor="#ffffff" />
-              <span className="text-[8.5px] font-mono font-black text-[#1b1c3a] uppercase tracking-wider mt-1">
+              <span className="text-[8px] font-mono font-black text-[#1b1c3a] uppercase tracking-wider mt-1">
                 SCAN TO VERIFY CREDENTIAL
               </span>
             </div>
           </div>
 
-          {/* Info Ledger */}
-          <div className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1 text-[9.5px] text-slate-700 font-mono">
+          {/* Details Table */}
+          <div className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1 text-[9.5px] text-slate-700 font-mono">
             <div className="flex justify-between border-b border-slate-200/60 pb-0.5">
               <span className="text-slate-500 font-bold">Badge Number:</span>
-              <strong className="text-[#1b1c3a] font-black">{card.personal?.idNumber || '8984565320'}</strong>
+              <strong className="text-[#1b1c3a] font-mono">{card.security?.barcodeNumber || card.personal?.idNumber || '89845653208871'}</strong>
             </div>
             <div className="flex justify-between border-b border-slate-200/60 pb-0.5">
               <span className="text-slate-500 font-bold">Issue / Expiry:</span>
-              <strong className="text-[#1b1c3a]">{card.personal?.issueDate || '01/2024'} – {card.personal?.validUntil || '12/2028'}</strong>
+              <strong className="text-[#1b1c3a]">{card.personal?.issueDate || '01/01/2024'} – {card.personal?.validUntil || card.personal?.expiryDate || '12/2028'}</strong>
             </div>
             <div className="flex justify-between border-b border-slate-200/60 pb-0.5">
               <span className="text-slate-500 font-bold">Emergency Hotline:</span>
-              <strong className="text-[#1b1c3a]">{card.contact?.phone || '+91 98765 43210'}</strong>
+              <strong className="text-[#1b1c3a]">{card.contact?.phone || '+1 800 555 0192'}</strong>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500 font-bold">Headquarters:</span>
-              <strong className="text-[#1b1c3a] truncate max-w-[170px]">{card.contact?.address || '450 Corporate Plaza, NY'}</strong>
+              <strong className="text-[#1b1c3a] truncate max-w-[170px]">{card.contact?.address || '450 Corporate Plaza, Suite 400'}</strong>
             </div>
           </div>
         </div>
 
-        {/* Footer Signature Strip */}
+        {/* Footer with Signature on Left, Barcode on Right */}
         <div className="pb-4 px-6 pt-2 border-t border-slate-100 flex items-end justify-between relative z-20">
           <div className="text-left">
-            <span className="text-[8px] font-mono text-slate-400 block uppercase font-black">Authorized Signature</span>
+            <span className="text-[7.5px] font-mono text-slate-400 block uppercase font-bold">AUTHORIZED SIGNATURE</span>
             <p className="font-serif italic text-base text-[#1b1c3a] font-black mt-0.5">
-              {card.personal?.signatureText || card.personal?.fullName || 'Jamie Jhonson'}
+              {card.personal?.signatureText || 'Jamie Jhonson'}
             </p>
-            <div className="w-28 h-[1px] bg-slate-300 mt-1" />
+            <div className="w-24 h-[1px] bg-slate-300 mt-0.5" />
           </div>
 
-          <Barcode number={card.security?.barcodeNumber || "898456532088"} height="h-6" textColor="text-[#1b1c3a]" />
+          <div className="text-right">
+            <Barcode number={card.security?.barcodeNumber || "89845653208871"} height="h-6" showDigits={true} textColor="text-[#1b1c3a]" />
+          </div>
         </div>
       </div>
     );
