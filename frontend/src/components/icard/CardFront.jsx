@@ -327,7 +327,8 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
           <div className="absolute bottom-20 left-6 text-blue-600 font-mono text-sm tracking-tighter">{'>>>'}</div>
         </div>
 
-        <div className="relative z-10 flex flex-col items-center text-center pt-5 px-5">
+        {/* Top Header */}
+        <div className="relative z-10 flex flex-col items-center text-center pt-4 px-5">
           <div className="flex items-center gap-1.5 text-[#071d36]">
             <Home className="w-5 h-5 text-blue-600" />
             <span className="text-xs font-black tracking-[0.2em] uppercase font-mono leading-normal">
@@ -336,8 +337,9 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
           </div>
         </div>
 
+        {/* Center Profile & Identity */}
         <div className="relative z-10 flex flex-col items-center text-center my-auto py-1 px-5">
-          <div className="w-28 h-28 rounded-full p-1.5 bg-gradient-to-tr from-blue-600 to-cyan-400 shadow-xl shadow-blue-500/20 mb-3">
+          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full p-1.5 bg-gradient-to-tr from-blue-600 to-cyan-400 shadow-xl shadow-blue-500/20 mb-2">
             <img
               src={card.media?.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80"}
               alt="Avatar"
@@ -346,25 +348,43 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
             />
           </div>
 
-          <h2 className="text-xl font-black tracking-wider text-[#071d36] uppercase truncate max-w-full leading-normal">
+          <h2 className="text-lg sm:text-xl font-black tracking-wider text-[#071d36] uppercase truncate max-w-full leading-tight">
             {card.personal?.fullName || 'AMY WILLIAMS'}
           </h2>
-          <p className="text-xs font-bold text-blue-600 tracking-[0.18em] uppercase mt-0.5 leading-normal">
+          <p className="text-[11px] font-bold text-blue-600 tracking-[0.18em] uppercase mt-0.5 leading-tight">
             {card.personal?.jobTitle || 'JOB POSITION'}
           </p>
 
-          <div className="space-y-0.5 text-xs text-slate-700 font-mono mt-3 font-semibold leading-normal">
-            <p>Join: {card.personal?.issueDate || '00-00-2021'}</p>
-            <p>Expire: {card.personal?.expiryDate || '12-2022'}</p>
+          {/* Detailed Contact, ID & Validity Ledger */}
+          <div className="w-full max-w-[280px] mt-2 p-2 rounded-xl bg-white/90 border border-slate-200/80 shadow-sm space-y-1 text-[9.5px] font-mono text-slate-700 leading-normal">
+            <div className="flex justify-between border-b border-slate-100 pb-0.5">
+              <span className="text-slate-500 font-bold">ID No:</span>
+              <strong className="text-blue-700 font-bold">{card.personal?.idNumber || '334265'}</strong>
+            </div>
+            <div className="flex justify-between border-b border-slate-100 pb-0.5">
+              <span className="text-slate-500 font-bold">Phone:</span>
+              <strong className="text-slate-900">{card.contact?.phone || '+1 800 555 0192'}</strong>
+            </div>
+            <div className="flex justify-between border-b border-slate-100 pb-0.5">
+              <span className="text-slate-500 font-bold">Email:</span>
+              <strong className="text-slate-900 truncate max-w-[170px]">{card.contact?.email || 'amy.williams@logohouse.com'}</strong>
+            </div>
+            <div className="flex justify-between text-[8.5px] pt-0.5 text-slate-500 font-semibold">
+              <span>Join: {card.personal?.issueDate || '00-00-2021'}</span>
+              <span>Expire: {card.personal?.validUntil || card.personal?.expiryDate || '12-2028'}</span>
+            </div>
           </div>
 
-          <div className="mt-3 text-center">
-            <span className="text-[10px] text-slate-400 block font-mono leading-normal">Signature:</span>
-            <div className="w-36 h-0.5 bg-slate-300 mt-2 mx-auto" />
+          <div className="mt-2 text-center">
+            <span className="text-[9px] text-slate-400 block font-mono">Signature:</span>
+            <p className="font-serif italic text-xs text-blue-700 font-bold">
+              {card.personal?.signatureText || card.personal?.fullName || 'Amy Williams'}
+            </p>
+            <div className="w-32 h-[1px] bg-slate-300 mx-auto mt-0.5" />
           </div>
         </div>
 
-        <div className="relative z-10 bg-gradient-to-r from-[#071d36] via-[#0d2c54] to-[#071d36] py-3 text-center font-black tracking-[0.25em] uppercase text-xs text-white font-mono shadow-md leading-normal">
+        <div className="relative z-10 bg-gradient-to-r from-[#071d36] via-[#0d2c54] to-[#071d36] py-2.5 text-center font-black tracking-[0.25em] uppercase text-xs text-white font-mono shadow-md leading-normal">
           {card.personal?.department || 'DEPARTMENT'}
         </div>
       </div>
