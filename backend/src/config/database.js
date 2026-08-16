@@ -1,13 +1,13 @@
-const { sequelize, connectMySQL } = require('./config/mysql');
-const logger = require('./config/logger');
+const { sequelize, connectMySQL } = require('./mysql');
+const logger = require('./logger');
 
 // MySQL Models export
-const User = require('./models/sql/User.sql');
-const Job = require('./models/sql/Job.sql');
-const Company = require('./models/sql/Company.sql');
-const Application = require('./models/sql/Application.sql');
-const Card = require('./models/sql/Card.sql');
-const SystemSetting = require('./models/sql/SystemSetting.sql');
+const User = require('../models/sql/User.sql');
+const Job = require('../models/sql/Job.sql');
+const Company = require('../models/sql/Company.sql');
+const Application = require('../models/sql/Application.sql');
+const Card = require('../models/sql/Card.sql');
+const SystemSetting = require('../models/sql/SystemSetting.sql');
 
 // Establish associations
 User.hasMany(Company, { foreignKey: 'ownerId', as: 'companies' });
