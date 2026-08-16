@@ -143,9 +143,11 @@ if (fs.existsSync(frontendDist)) {
 app.use(notFound);
 app.use(errorHandler);
 
+const { initDatabases } = require('./config/database');
+
 const startServer = async () => {
   try {
-    await connectDB();
+    await initDatabases();
     startCronJobs();
 
     if (env.nodeEnv !== 'test') {
