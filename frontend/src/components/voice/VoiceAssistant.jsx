@@ -29,8 +29,8 @@ const DEFAULT_SETTINGS = {
   autoSpeak: true,
   rate: 1.0,
   volume: 1.0,
-  lang: 'hi-IN',
-  kokoroVoice: 'hi-IN-Neural2-A',
+  lang: 'en-IN',
+  kokoroVoice: 'en-US-Journey-F',
   ttsFormat: 'mp3',
 };
 
@@ -157,7 +157,7 @@ export default function VoiceAssistant({ onClose, pageContext }) {
                 : isSpeaking
                 ? 'Speaking...'
                 : aiMode === 'idle'
-                ? connected ? 'Ready • हिंदी & English' : 'connecting…'
+                ? connected ? (settings.lang === 'hi-IN' ? 'हिंदी मोड • सक्रिय' : 'English Mode • Ready') : 'connecting…'
                 : aiMode}
             </p>
           </div>
@@ -165,6 +165,17 @@ export default function VoiceAssistant({ onClose, pageContext }) {
 
         {/* Header actions */}
         <div className="flex items-center gap-1">
+          {/* Quick Lang Switch */}
+          <button
+            onClick={() => {
+              const newLang = settings.lang === 'hi-IN' ? 'en-IN' : 'hi-IN';
+              setSettings((s) => ({ ...s, lang: newLang }));
+            }}
+            className="px-2 py-1 text-[11px] font-semibold rounded-lg bg-slate-100 hover:bg-primary-50 text-slate-700 hover:text-primary-700 transition-colors border border-slate-200"
+            title="Click to toggle English / Hindi voice recognition"
+          >
+            {settings.lang === 'hi-IN' ? '🇮🇳 हिन्दी' : '🇮🇳 Eng'}
+          </button>
           {/* TTS toggle */}
           <button
             onClick={() => {
@@ -247,9 +258,14 @@ export default function VoiceAssistant({ onClose, pageContext }) {
       )}
 
       {/* ── Live transcript preview ──────────────────────────────────────────── */}
-      {isListening && transcript && (
-        <div className="mx-3 mt-2 px-3 py-2 bg-primary-50 border border-primary-200 rounded-xl text-xs text-primary-700 italic">
-          "{transcript}…"
+      {isListening && (
+        <div className="mx-3 mt-2 px-3 py-2 bg-primary-50/90 border border-primary-300 rounded-xl text-xs text-primary-900 flex items-center gap-2 shadow-sm">
+          <span className="h-2 w-2 rounded-full bg-red-500 animate-ping" />
+          <span className="font-semibold text-primary-700">Hearing:</span>
+          <span className="flex-1 italic truncate">
+            {transcript ? `"${transcript}"` : 'Speak now...'}
+          </span>
+          <span className="text-[10px] text-muted">(Tap mic to finish)</span>
         </div>
       )}
 
