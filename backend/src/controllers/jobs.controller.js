@@ -32,6 +32,51 @@ const applyIndiaScope = (filter, query) => {
   }
 };
 
+const TECH_SYNONYMS = {
+  mern: ['mern', 'node.js', 'nodejs', 'react', 'mongodb', 'express', 'full stack'],
+  mean: ['mean', 'node.js', 'nodejs', 'angular', 'mongodb', 'express', 'full stack'],
+  'node js': ['node.js', 'nodejs', 'node', 'express'],
+  nodejs: ['node.js', 'nodejs', 'node', 'express'],
+  node: ['node.js', 'nodejs', 'node', 'express'],
+  'react js': ['react', 'react.js', 'reactjs', 'next.js'],
+  reactjs: ['react', 'react.js', 'reactjs', 'next.js'],
+  react: ['react', 'react.js', 'reactjs', 'next.js', 'react native'],
+  python: ['python', 'django', 'fastapi', 'flask'],
+  java: ['java', 'spring boot', 'spring', 'hibernate', 'j2ee'],
+  golang: ['golang', 'go'],
+  go: ['golang', 'go'],
+  vue: ['vue', 'vue.js', 'vuejs', 'nuxt'],
+  angular: ['angular', 'angularjs', 'angular.js'],
+  devops: ['devops', 'docker', 'kubernetes', 'aws', 'ci/cd', 'terraform', 'sre'],
+  qa: ['qa', 'selenium', 'automation test', 'sdet', 'cypress', 'testing'],
+  sdet: ['sdet', 'qa', 'selenium', 'cypress', 'test automation'],
+  ai: ['ai', 'artificial intelligence', 'machine learning', 'ml', 'nlp', 'llm', 'deep learning'],
+  ml: ['machine learning', 'ml', 'ai', 'deep learning', 'data science'],
+  fullstack: ['full stack', 'fullstack', 'mern', 'mean'],
+  'full stack': ['full stack', 'fullstack', 'mern', 'mean'],
+  frontend: ['frontend', 'front end', 'react', 'angular', 'vue', 'ui/ux'],
+  backend: ['backend', 'back end', 'node.js', 'java', 'python', 'golang'],
+};
+
+const getSearchTerms = (input) => {
+  const cleanInput = input.trim().toLowerCase();
+  const synonyms = new Set([cleanInput]);
+
+  if (TECH_SYNONYMS[cleanInput]) {
+    TECH_SYNONYMS[cleanInput].forEach((t) => synonyms.add(t));
+  }
+
+  const words = cleanInput.split(/\s+/).filter((w) => w.length > 1);
+  words.forEach((w) => {
+    synonyms.add(w);
+    if (TECH_SYNONYMS[w]) {
+      TECH_SYNONYMS[w].forEach((t) => synonyms.add(t));
+    }
+  });
+
+  return Array.from(synonyms);
+};
+
 const buildFilters = (query) => {
   const filter = baseJobFilter();
   const search = (query.search || query.q || '').trim();
@@ -49,30 +94,21 @@ const buildFilters = (query) => {
   }
 
   if (search) {
-    const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const words = search.split(/\s+/).filter((w) => w.length > 1);
+    const searchTerms = getSearchTerms(search);
+    const searchOrConditions = [];
 
-    // Each searched keyword must match in the heading / title / headline or exact skill
-    const wordConditions = words.map((w) => {
-      const escWord = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      return {
-        $or: [
-          { headline: { $regex: escWord, $options: 'i' } },
-          { jobTitle: { $regex: escWord, $options: 'i' } },
-          { requiredSkills: { $regex: `^${escWord}$`, $options: 'i' } },
-        ],
-      };
-    });
+    for (const term of searchTerms) {
+      const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      searchOrConditions.push(
+        { headline: { $regex: escaped, $options: 'i' } },
+        { jobTitle: { $regex: escaped, $options: 'i' } },
+        { requiredSkills: { $regex: `^${escaped}$`, $options: 'i' } }
+      );
+    }
 
     filter.$and = [
       ...(filter.$and || []),
-      {
-        $or: [
-          { headline: { $regex: escaped, $options: 'i' } },
-          { jobTitle: { $regex: escaped, $options: 'i' } },
-          ...(wordConditions.length > 0 ? [{ $and: wordConditions }] : []),
-        ],
-      },
+      { $or: searchOrConditions },
     ];
   }
 

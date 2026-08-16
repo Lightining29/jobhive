@@ -4,15 +4,15 @@ const jobsController = require('../src/controllers/jobs.controller');
 async function test() {
   await connectDB();
 
-  const terms = ['java', 'python', 'react', 'sales', 'devops'];
+  const terms = ['mern', 'node js', 'nodejs', 'java', 'react'];
   for (const term of terms) {
     console.log(`\n=== SEARCH QUERY: "${term}" ===`);
-    const mockReq = { query: { search: term, page: 1, limit: 5 } };
+    const mockReq = { query: { search: term, page: 1, limit: 10 } };
     const mockRes = {
       json: (data) => {
         console.log(`Found ${data.jobs.length} jobs for "${term}":`);
         data.jobs.forEach((j, i) => {
-          console.log(`  ${i + 1}. [Heading/Title] ${j.jobTitle} | [Headline Badge] "${j.headline}"`);
+          console.log(`  ${i + 1}. [Heading/Title] ${j.jobTitle} | [Company] ${j.companyName} | [Skills] ${(j.requiredSkills || []).join(', ')}`);
         });
       },
     };
