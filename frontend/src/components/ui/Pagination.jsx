@@ -16,11 +16,12 @@ function buildPages(current, total) {
   return [1, '...', current - 1, current, current + 1, '...', total];
 }
 
-export default function Pagination({ page, pages, total, limit, onPageChange, loading = false }) {
+export default function Pagination({ page = 1, pages = 1, total, limit, onPageChange, loading = false, itemLabel = 'items' }) {
   if (!pages || pages <= 1) return null;
 
-  const start = (page - 1) * limit + 1;
-  const end   = Math.min(page * limit, total);
+  const hasRange = typeof total === 'number' && typeof limit === 'number';
+  const start = hasRange ? (page - 1) * limit + 1 : null;
+  const end   = hasRange ? Math.min(page * limit, total) : null;
   const pageList = buildPages(page, pages);
 
   const btn = (label, target, disabled, isActive = false) => (
@@ -43,11 +44,13 @@ export default function Pagination({ page, pages, total, limit, onPageChange, lo
 
   return (
     <div className="flex flex-col items-center gap-3 py-6">
-      {/* Result range */}
-      <p className="text-xs text-muted">
-        Showing <span className="font-semibold text-ink">{start.toLocaleString()}–{end.toLocaleString()}</span> of{' '}
-        <span className="font-semibold text-ink">{total.toLocaleString()}</span> jobs
-      </p>
+      {/* Result range — only show if total and limit are defined */}
+      {hasRange && (
+        <p className="text-xs text-muted">
+          Showing <span className="font-semibold text-ink">{(start ?? 0).toLocaleString()}–{(end ?? 0).toLocaleString()}</span> of{' '}
+          <span className="font-semibold text-ink">{(total ?? 0).toLocaleString()}</span> {itemLabel}
+        </p>
+      )}
 
       {/* Page buttons */}
       <div className="flex items-center gap-1">

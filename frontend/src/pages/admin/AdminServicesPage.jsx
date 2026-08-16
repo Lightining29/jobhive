@@ -302,7 +302,7 @@ const AdminServicesPage = () => {
         {totalPages > 1 && (
           <div className="flex justify-between items-center text-xs text-muted">
             <span>Showing {services.length} of {totalCount} services</span>
-            <Pagination page={page} pages={totalPages} onPageChange={(p) => load(p)} />
+            <Pagination page={page} pages={totalPages} total={totalCount} limit={10} onPageChange={(p) => load(p)} itemLabel="services" />
           </div>
         )}
       </div>
