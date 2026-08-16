@@ -63,7 +63,7 @@ class MuseProvider extends JobProvider {
       postedDate: raw.publication_date ? new Date(raw.publication_date) : new Date(),
       category,
       subCategory,
-      requiredSkills: extractSkills(title, description),
+      requiredSkills: extractSkills(title, description, (raw.categories || []).map((c) => c.name), category),
       experienceLevel,
       workMode: String(raw.location || '').toLowerCase().includes('remote') ? 'remote' : 'onsite',
     };

@@ -129,7 +129,7 @@ class AshbyProvider extends JobProvider {
       postedDate: raw.publishedAt ? new Date(raw.publishedAt) : new Date(),
       category,
       subCategory: clean(raw.department) || subCategory,
-      requiredSkills: extractSkills(title, description).slice(0, 15),
+      requiredSkills: extractSkills(title, description, [clean(raw.department), clean(raw.team)].filter(Boolean), category),
       workMode,
       industry: clean(raw.team),
     };

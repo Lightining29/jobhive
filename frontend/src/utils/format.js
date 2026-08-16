@@ -61,6 +61,53 @@ export const initials = (name = '') =>
     .join('')
     .toUpperCase();
 
+const ACRONYMS = {
+  'ui/ux': 'UI/UX',
+  'ux/ui': 'UX/UI',
+  aws: 'AWS',
+  gcp: 'GCP',
+  sql: 'SQL',
+  nosql: 'NoSQL',
+  qa: 'QA',
+  sdet: 'SDET',
+  sre: 'SRE',
+  seo: 'SEO',
+  sem: 'SEM',
+  hr: 'HR',
+  b2b: 'B2B',
+  crm: 'CRM',
+  bde: 'BDE',
+  bdr: 'BDR',
+  sdr: 'SDR',
+  html: 'HTML',
+  css: 'CSS',
+  php: 'PHP',
+  ai: 'AI',
+  ml: 'ML',
+  nlp: 'NLP',
+  llm: 'LLM',
+  'ci/cd': 'CI/CD',
+  'rest api': 'REST API',
+  'node.js': 'Node.js',
+  'next.js': 'Next.js',
+  'vue.js': 'Vue.js',
+  'react.js': 'React.js',
+  'react native': 'React Native',
+  'c++': 'C++',
+  'c#': 'C#',
+  '.net': '.NET',
+};
+
+export const formatSkillName = (str = '') => {
+  if (!str) return '';
+  const lower = str.toLowerCase().trim();
+  if (ACRONYMS[lower]) return ACRONYMS[lower];
+  return lower
+    .split(' ')
+    .map((word) => ACRONYMS[word] || (word.charAt(0).toUpperCase() + word.slice(1)))
+    .join(' ');
+};
+
 export const capitalize = (str = '') => str.charAt(0).toUpperCase() + str.slice(1);
 
 export const matchColor = (score) => {

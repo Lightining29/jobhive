@@ -180,7 +180,7 @@ class GreenhouseProvider extends JobProvider {
       postedDate: raw.first_published ? new Date(raw.first_published) : new Date(raw.updated_at || Date.now()),
       category,
       subCategory: department || subCategory,
-      requiredSkills: extractSkills(title, description).slice(0, 15),
+      requiredSkills: extractSkills(title, description, [department].filter(Boolean), category),
       workMode: inferWorkMode(location, office),
       industry: department,
     };

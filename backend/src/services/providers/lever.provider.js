@@ -133,7 +133,7 @@ class LeverProvider extends JobProvider {
       postedDate: raw.createdAt ? new Date(raw.createdAt) : new Date(),
       category,
       subCategory: department || subCategory,
-      requiredSkills: extractSkills(title, description).slice(0, 15),
+      requiredSkills: extractSkills(title, description, [department, ...(raw.categories && raw.categories.tags ? raw.categories.tags : [])].filter(Boolean), category),
       workMode,
       industry: department,
     };

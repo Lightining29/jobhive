@@ -15,6 +15,7 @@ import { FaBookmark, FaRegBookmark, FaRegBuilding } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import {
   capitalize,
+  formatSkillName,
   EMPLOYMENT_LABELS,
   formatSalary,
   initials,
@@ -280,7 +281,7 @@ const JobCard = ({ job, match }) => {
           <div className="flex flex-wrap gap-1.5 mt-3">
             {shownSkills.map((skill, i) => (
               <span key={i} className="bg-accent/10 text-ink rounded-full px-2 py-0.5 text-[11px] font-medium">
-                {capitalize(skill)}
+                {formatSkillName(skill)}
               </span>
             ))}
             {extraSkills > 0 && (

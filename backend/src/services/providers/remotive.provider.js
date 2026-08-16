@@ -52,7 +52,7 @@ class RemotiveProvider extends JobProvider {
       postedDate: new Date(raw.publication_date),
       category,
       subCategory,
-      requiredSkills: extractSkills(title, description),
+      requiredSkills: extractSkills(title, description, raw.tags || [], category),
       workMode: 'remote',
     };
   }

@@ -74,7 +74,7 @@ class AdzunaProvider extends JobProvider {
       postedDate: new Date(raw.created),
       category: jobCategory,
       subCategory,
-      requiredSkills: extractSkills(title, clean(raw.description)),
+      requiredSkills: extractSkills(title, clean(raw.description), [clean(raw.category && raw.category.label), clean(raw.category && raw.category.tag)].filter(Boolean), jobCategory),
       workMode,
     };
   }

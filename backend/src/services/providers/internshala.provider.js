@@ -130,8 +130,7 @@ class InternshalaProvider extends JobProvider {
     const description = descriptionParts.join('\n\n');
 
     const { category, subCategory } = classifyJob(title, description);
-    const extractedSkills = extractSkills(title, description).slice(0, 15);
-    const allSkills = [...new Set([...skills, ...extractedSkills])].slice(0, 15);
+    const allSkills = extractSkills(title, description, skills, category);
 
     const workMode = location.toLowerCase().includes('remote') ? 'remote' : 'onsite';
 

@@ -113,7 +113,7 @@ class AmazonProvider extends JobProvider {
       postedDate: parseDate(raw.posted_date),
       category,
       subCategory: clean(raw.job_category) || subCategory,
-      requiredSkills: extractSkills(title, description).slice(0, 15),
+      requiredSkills: extractSkills(title, description, [clean(raw.job_category), clean(raw.business_category), clean(raw.team)].filter(Boolean), category),
       experienceLevel: isIntern ? 'internship' : isManager ? 'lead' : 'mid',
       workMode: location.toLowerCase().includes('remote') ? 'remote' : 'onsite',
       industry: clean(raw.business_category) || clean(raw.team),

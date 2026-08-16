@@ -76,7 +76,7 @@ class HimalayasProvider extends JobProvider {
       postedDate: new Date((raw.pubDate || Math.floor(Date.now() / 1000)) * 1000),
       category,
       subCategory,
-      requiredSkills: Array.from(new Set([...extractSkills(title, description), ...skills])).slice(0, 15),
+      requiredSkills: extractSkills(title, description, skills, category),
       experienceLevel: mapExperience(raw.seniority),
       workMode: 'remote',
     };

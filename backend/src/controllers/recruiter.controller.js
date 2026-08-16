@@ -91,8 +91,8 @@ const postJob = asyncHandler(async (req, res, next) => {
   const company = await requireCompany(req);
   const { category, subCategory } = classifyJob(req.body.jobTitle, req.body.description);
   const requiredSkills = req.body.requiredSkills && req.body.requiredSkills.length
-    ? req.body.requiredSkills.map((s) => s.toLowerCase())
-    : extractSkills(req.body.jobTitle, req.body.description);
+    ? req.body.requiredSkills.map((s) => s.toLowerCase().trim()).filter(Boolean)
+    : extractSkills(req.body.jobTitle, req.body.description, [], category);
 
   const job = await Job.create({
     ...req.body,

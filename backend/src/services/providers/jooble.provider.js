@@ -55,7 +55,7 @@ class JoobleProvider extends JobProvider {
       postedDate: new Date(),
       category,
       subCategory,
-      requiredSkills: extractSkills(clean(raw.title), clean(raw.snippet)),
+      requiredSkills: extractSkills(clean(raw.title), clean(raw.snippet), [], category),
       workMode,
     };
   }

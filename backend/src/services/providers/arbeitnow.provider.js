@@ -31,7 +31,7 @@ class ArbeitnowProvider extends JobProvider {
     const description = stripHtml(clean(raw.description));
     const { category, subCategory } = classifyJob(title, description);
     const tags = Array.isArray(raw.tags) ? raw.tags.map((t) => clean(t)) : [];
-    const skills = Array.from(new Set([...extractSkills(title, description), ...tags.map((t) => t.toLowerCase())])).slice(0, 15);
+    const skills = extractSkills(title, description, tags, category);
     const workMode = title.toLowerCase().includes('remote') || String(raw.remote || '').toLowerCase() === 'true' ? 'remote' : title.toLowerCase().includes('hybrid') ? 'hybrid' : 'onsite';
     const location = clean(raw.location);
     const city = clean(raw.city);

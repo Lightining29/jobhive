@@ -72,7 +72,7 @@ class JobicyProvider extends JobProvider {
       postedDate: raw.pubDate ? new Date(raw.pubDate) : new Date(),
       category,
       subCategory,
-      requiredSkills: extractSkills(title, description).slice(0, 15),
+      requiredSkills: extractSkills(title, description, [...(raw.jobCategories || []), ...industries], category),
       experienceLevel: mapExperience(raw.jobLevel),
       workMode: 'remote',
       industry: industries[0] || '',
