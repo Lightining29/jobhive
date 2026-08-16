@@ -11,7 +11,8 @@
     "dev": "node --watch server.js",
     "seed": "node src/seed.js",
     "make-admin": "node scripts/makeAdmin.js",
-    "cron:fetch": "node src/cron/runNow.js"
+    "cron:fetch": "node src/cron/runNow.js",
+    "migrate:mysql": "node scripts/migrateMongoToMySQL.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
