@@ -14,39 +14,49 @@ import {
   ExternalLink,
   QrCode
 } from 'lucide-react';
-import { QRCodeSVG } from 'qrcode.react';
+import CardFront from './CardFront';
+import CardBack from './CardBack';
 import { downloadVCardFile, generateVCardString } from '../../utils/vcard';
 
 export default function ExportModal({ isOpen, onClose, card, theme }) {
   const [isExporting, setIsExporting] = useState(false);
   const [exportType, setExportType] = useState('');
-  const [copiedLink, setCopiedLink] = useState(false);
 
   if (!isOpen) return null;
 
   const cardTitle = card.personal?.fullName || 'smart_icard';
   const cleanFilename = cardTitle.toLowerCase().replace(/[^a-z0-9]/g, '_');
+  const isVertical = card.orientation === 'vertical';
 
-  // Helper to ensure all document fonts are ready before rasterizing
+  // Helper to ensure all document fonts and images are ready before rasterizing
   const captureCardElement = async (element) => {
     if (document.fonts && document.fonts.ready) {
       await document.fonts.ready;
     }
 
+    // Wait a brief tick for any image decoding
+    await new Promise((resolve) => setTimeout(resolve, 80));
+
     return await html2canvas(element, {
-      scale: 3, // 300+ DPI Crystal Sharp
+      scale: 3.5, // 350+ DPI Print Sharpness
       useCORS: true,
       allowTaint: true,
       backgroundColor: null,
       logging: false,
+      imageTimeout: 15000,
       onclone: (clonedDoc) => {
-        // Ensure all cloned text elements have overflow visible and clear line-height
+        // Ensure all cloned text and images have perfect rendering
+        const allImgs = clonedDoc.querySelectorAll('img');
+        allImgs.forEach((img) => {
+          img.crossOrigin = 'anonymous';
+        });
+
         const textElements = clonedDoc.querySelectorAll('h1, h2, h3, h4, p, span, div');
-        textElements.forEach(el => {
+        textElements.forEach((el) => {
           el.style.overflow = 'visible';
           el.style.textRendering = 'geometricPrecision';
         });
-      }
+      },
     });
   };
 
@@ -55,12 +65,15 @@ export default function ExportModal({ isOpen, onClose, card, theme }) {
     setIsExporting(true);
     setExportType(`png-${face}`);
     try {
-      const targetId = face === 'back' ? 'card-back-face' : 'card-front-face';
-      const element = document.getElementById(targetId);
-      if (!element) throw new Error('Card element not found');
+      const targetId = face === 'back' ? 'export-render-back' : 'export-render-front';
+      let element = document.getElementById(targetId);
+      if (!element) {
+        element = document.getElementById(face === 'back' ? 'card-back-face' : 'card-front-face');
+      }
+      if (!element) throw new Error('Card element not found for export');
 
       const canvas = await captureCardElement(element);
-      const dataUrl = canvas.toDataURL('image/png');
+      const dataUrl = canvas.toDataURL('image/png', 1.0);
       const a = document.createElement('a');
       a.href = dataUrl;
       a.download = `${cleanFilename}_${face}_hd.png`;
@@ -76,47 +89,45 @@ export default function ExportModal({ isOpen, onClose, card, theme }) {
     }
   };
 
-  // Export as Print-Ready CR80 PDF (True Proportional Aspect Ratio)
+  // Export as Print-Ready CR80 PDF (True ISO 7810 85.6mm x 53.98mm)
   const handleExportPDF = async () => {
     setIsExporting(true);
     setExportType('pdf');
     try {
-      const frontEl = document.getElementById('card-front-face');
-      const backEl = document.getElementById('card-back-face');
-      if (!frontEl) throw new Error('Card element not found');
+      let frontEl = document.getElementById('export-render-front');
+      let backEl = document.getElementById('export-render-back');
 
-      const isVertical = card.orientation === 'vertical';
+      if (!frontEl) frontEl = document.getElementById('card-front-face');
+      if (!backEl) backEl = document.getElementById('card-back-face');
 
-      // Capture Front with font-ready high-precision canvas
+      if (!frontEl) throw new Error('Card front element not found');
+
+      // ISO 7810 ID-1 standard dimensions: 85.60 mm × 53.98 mm
+      const cardWidthMm = isVertical ? 53.98 : 85.60;
+      const cardHeightMm = isVertical ? 85.60 : 53.98;
+
+      // Capture Front face
       const canvasFront = await captureCardElement(frontEl);
-
-      const frontRatio = canvasFront.width / canvasFront.height;
-      const baseWidthMm = isVertical ? 54 : 85.6;
-      const baseHeightMm = baseWidthMm / frontRatio;
+      const imgFront = canvasFront.toDataURL('image/jpeg', 0.98);
 
       const pdf = new jsPDF({
         orientation: isVertical ? 'portrait' : 'landscape',
         unit: 'mm',
-        format: [baseWidthMm, baseHeightMm]
+        format: [cardWidthMm, cardHeightMm],
       });
 
-      const imgFront = canvasFront.toDataURL('image/jpeg', 0.98);
-      pdf.addImage(imgFront, 'JPEG', 0, 0, baseWidthMm, baseHeightMm);
+      pdf.addImage(imgFront, 'JPEG', 0, 0, cardWidthMm, cardHeightMm, undefined, 'FAST');
 
-      // Capture Back if available
+      // Capture Back face
       if (backEl) {
         const canvasBack = await captureCardElement(backEl);
-
-        const backRatio = canvasBack.width / canvasBack.height;
-        const backWidthMm = isVertical ? 54 : 85.6;
-        const backHeightMm = backWidthMm / backRatio;
-
-        pdf.addPage([backWidthMm, backHeightMm], isVertical ? 'portrait' : 'landscape');
         const imgBack = canvasBack.toDataURL('image/jpeg', 0.98);
-        pdf.addImage(imgBack, 'JPEG', 0, 0, backWidthMm, backHeightMm);
+
+        pdf.addPage([cardWidthMm, cardHeightMm], isVertical ? 'portrait' : 'landscape');
+        pdf.addImage(imgBack, 'JPEG', 0, 0, cardWidthMm, cardHeightMm, undefined, 'FAST');
       }
 
-      pdf.save(`${cleanFilename}_cr80_print.pdf`);
+      pdf.save(`${cleanFilename}_cr80_standard_print.pdf`);
     } catch (err) {
       console.error('PDF export failed:', err);
       alert('PDF generation failed: ' + err.message);
@@ -128,6 +139,40 @@ export default function ExportModal({ isOpen, onClose, card, theme }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+      {/* Off-screen Pristine 1:1 Clean Stage for PDF/PNG Generation */}
+      <div 
+        style={{ 
+          position: 'fixed', 
+          left: '-99999px', 
+          top: 0, 
+          zIndex: -99999,
+          pointerEvents: 'none',
+          opacity: 1
+        }}
+      >
+        <div 
+          id="export-render-front"
+          style={{
+            width: isVertical ? '350px' : '540px',
+            height: isVertical ? '555px' : '341px',
+            overflow: 'hidden'
+          }}
+        >
+          <CardFront card={card} theme={theme} id="export-card-front-face" />
+        </div>
+
+        <div 
+          id="export-render-back"
+          style={{
+            width: isVertical ? '350px' : '540px',
+            height: isVertical ? '555px' : '341px',
+            overflow: 'hidden'
+          }}
+        >
+          <CardBack card={card} theme={theme} id="export-card-back-face" />
+        </div>
+      </div>
+
       <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-3xl shadow-2xl p-6 relative overflow-hidden">
         <div className="flex items-center justify-between pb-4 border-b border-slate-800">
           <div className="flex items-center gap-2.5">
@@ -156,7 +201,7 @@ export default function ExportModal({ isOpen, onClose, card, theme }) {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-white">High-Res PNG (Front)</h4>
-                <p className="text-xs text-slate-400">Ultra-sharp 300+ DPI image with perfect photo aspect ratio</p>
+                <p className="text-xs text-slate-400">Ultra-sharp 350+ DPI image with exact photo proportions</p>
               </div>
             </div>
             <button
@@ -177,7 +222,7 @@ export default function ExportModal({ isOpen, onClose, card, theme }) {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-white">High-Res PNG (Back)</h4>
-                <p className="text-xs text-slate-400">Includes detailed terms, signature, dates & barcode</p>
+                <p className="text-xs text-slate-400">Includes big centered QR code, terms & signature</p>
               </div>
             </div>
             <button
@@ -198,7 +243,7 @@ export default function ExportModal({ isOpen, onClose, card, theme }) {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-white">CR80 PVC Print PDF</h4>
-                <p className="text-xs text-slate-400">Standard ISO 7810 ID-1 card dimensions (Proportional — No Distortion)</p>
+                <p className="text-xs text-slate-400">Exact ISO 7810 ID-1 card dimensions (100% same size as screen)</p>
               </div>
             </div>
             <button
