@@ -1,5 +1,5 @@
 import { useAuth } from '../../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { FaBuilding, FaUser, FaShield } from 'react-icons/fa6';
 import { initials } from '../../utils/format';
 
@@ -43,18 +43,21 @@ const DashboardLayout = ({ title, subtitle, navItems, children }) => {
           <aside className="lg:w-56 shrink-0">
             <nav className="card p-3 space-y-1 sticky top-20">
               {navItems.map((item) => (
-                <Link
+                <NavLink
                   key={item.to}
                   to={item.to}
                   end={item.end}
-                  className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                    item.active
-                      ? 'bg-accent text-ink shadow-sm'
-                      : 'text-muted hover:bg-accent/10 hover:text-ink'
-                  }`}
+                  className={({ isActive }) =>
+                    `flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                      isActive
+                        ? 'bg-accent text-ink shadow-sm font-bold'
+                        : 'text-muted hover:bg-accent/10 hover:text-ink'
+                    }`
+                  }
                 >
-                  <item.icon className="h-4 w-4" /> {item.label}
-                </Link>
+                  <item.icon className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </NavLink>
               ))}
             </nav>
           </aside>

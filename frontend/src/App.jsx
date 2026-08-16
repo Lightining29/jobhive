@@ -50,8 +50,9 @@ const AdminRolesPage = lazy(() => import('./pages/admin/AdminRolesPage'));
 const AdminNotificationsPage = lazy(() => import('./pages/admin/AdminNotificationsPage'));
 const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage'));
 const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'));
+import ErrorBoundary from './components/ui/ErrorBoundary';
 
-const withSuspense = (el) => <Suspense fallback={<PageLoader />}>{el}</Suspense>;
+const withSuspense = (el) => <ErrorBoundary><Suspense fallback={<PageLoader />}>{el}</Suspense></ErrorBoundary>;
 
 const App = () => (
   <AuthProvider>
