@@ -2,22 +2,31 @@ const cron = require('node-cron');
 const logger = require('../config/logger');
 const { fetchAllJobs, cleanupExpiredJobs } = require('../services/jobIngestion.service');
 
-const startCronJobs = () => {
-  // Only run periodic scraper if explicitly enabled via JOB_INGESTION_CRON=true
-  if (process.env.JOB_INGESTION_CRON === 'true') {
-    cron.schedule('0 */12 * * *', async () => {
-      logger.info('[cron] scheduled 12-hour job fetch started');
-      try {
-        const results = await fetchAllJobs();
-        logger.info('[cron] scheduled 12-hour job fetch finished', results);
-      } catch (err) {
-        logger.error('[cron] scheduled job fetch error', { message: err.message });
-      }
-    });
-    logger.info('[cron] job ingestion cron registered (every 12 hours)');
-  } else {
-    logger.info('[cron] job ingestion cron is disabled to protect database storage quota');
+let isFetching = false;
+
+const runJobFetch = async (source = 'cron') => {
+  if (isFetching) {
+    logger.debug(`[cron] job fetch already in progress, skipping ${source} trigger`);
+    return;
   }
+  isFetching = true;
+  logger.info(`[cron] 5-minute automated job fetch started (${source})`);
+  try {
+    const results = await fetchAllJobs();
+    logger.info(`[cron] 5-minute automated job fetch finished (${source})`, results);
+  } catch (err) {
+    logger.error(`[cron] automated job fetch error (${source})`, { message: err.message });
+  } finally {
+    isFetching = false;
+  }
+};
+
+const startCronJobs = () => {
+  // Automatically fetch new jobs every 5 minutes
+  cron.schedule('*/5 * * * *', async () => {
+    await runJobFetch('5-minute-interval');
+  });
+  logger.info('[cron] automated job ingestion registered: every 5 minutes (*/5 * * * *)');
 
   // Daily cleanup at 2:30 AM
   cron.schedule('30 2 * * *', async () => {
@@ -30,7 +39,8 @@ const startCronJobs = () => {
     }
   });
 
-  logger.info('[cron] scheduled jobs registered (startup fetch + every 30 min + daily cleanup)');
+  logger.info('[cron] scheduled jobs active: 5-minute auto-fetch + daily cleanup');
 };
 
-module.exports = { startCronJobs };
+module.exports = { startCronJobs, runJobFetch };
+
