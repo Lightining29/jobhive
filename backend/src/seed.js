@@ -19,10 +19,12 @@ const seed = async () => {
   await Company.deleteMany({});
 
   const admin = await User.create({
-    name: 'Admin',
-    email: 'admin@jobhive.com',
-    password: 'admin12345',
+    name: 'Manish Kumar',
+    email: 'brayw433@gmail.com',
+    password: 'Manish@123',
     role: 'admin',
+    adminRole: 'super_admin',
+    permissions: ['all', 'services', 'plans', 'coupons', 'bundles', 'users', 'jobs', 'companies', 'payments', 'reports', 'settings', 'roles', 'notifications'],
     emailVerified: true,
   });
 
