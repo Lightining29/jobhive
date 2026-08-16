@@ -52,16 +52,14 @@ const buildFilters = (query) => {
     const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const words = search.split(/\s+/).filter((w) => w.length > 1);
 
-    // Build comprehensive search across headline, jobTitle, skills, company, and description
+    // Each searched keyword must match in the heading / title / headline or exact skill
     const wordConditions = words.map((w) => {
       const escWord = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       return {
         $or: [
           { headline: { $regex: escWord, $options: 'i' } },
           { jobTitle: { $regex: escWord, $options: 'i' } },
-          { requiredSkills: { $regex: escWord, $options: 'i' } },
-          { companyName: { $regex: escWord, $options: 'i' } },
-          { description: { $regex: escWord, $options: 'i' } },
+          { requiredSkills: { $regex: `^${escWord}$`, $options: 'i' } },
         ],
       };
     });
@@ -72,8 +70,6 @@ const buildFilters = (query) => {
         $or: [
           { headline: { $regex: escaped, $options: 'i' } },
           { jobTitle: { $regex: escaped, $options: 'i' } },
-          { requiredSkills: { $in: [search.toLowerCase()] } },
-          { companyName: { $regex: escaped, $options: 'i' } },
           ...(wordConditions.length > 0 ? [{ $and: wordConditions }] : []),
         ],
       },
