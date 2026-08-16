@@ -4,7 +4,6 @@ const jobLogSchema = new mongoose.Schema(
   {
     provider: {
       type: String,
-      enum: ['jooble', 'adzuna', 'arbeitnow', 'remotive', 'muse', 'cron'],
       index: true,
     },
     type: { type: String, enum: ['fetch', 'failure', 'update', 'expire', 'rate-limit'], index: true },

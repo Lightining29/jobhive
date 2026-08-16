@@ -10,9 +10,11 @@ const AmazonProvider = require('./amazon.provider');
 const AshbyProvider = require('./ashby.provider');
 const LeverProvider = require('./lever.provider');
 const InternshalaProvider = require('./internshala.provider');
+const CompanyPortalsProvider = require('./companyPortals.provider');
 
 const getProviders = () => {
   const providers = [
+    new CompanyPortalsProvider(),
     new GreenhouseProvider(),
     new AshbyProvider(),
     new LeverProvider(),
