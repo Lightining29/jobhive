@@ -21,8 +21,11 @@ import {
   RefreshCw,
   Layers,
   FileText,
-  UserCheck
+  UserCheck,
+  X,
+  Copy
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { adminNavItems } from '../../components/admin/adminNav';
 import CardCanvas from '../../components/icard/CardCanvas';
@@ -51,6 +54,8 @@ export default function AdminICardStudioPage() {
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isHfKeyOpen, setIsHfKeyOpen] = useState(false);
   const [isSavedDrawerOpen, setIsSavedDrawerOpen] = useState(false);
+  const [isFullQrModalOpen, setIsFullQrModalOpen] = useState(false);
+  const [fullQrCard, setFullQrCard] = useState(null);
 
   // Fetch cards on mount
   useEffect(() => {
@@ -67,6 +72,12 @@ export default function AdminICardStudioPage() {
     } finally {
       setIsLoadingCards(false);
     }
+  };
+
+  // Open Full Size QR Modal for any card
+  const handleOpenFullQr = (targetCard) => {
+    setFullQrCard(targetCard || card);
+    setIsFullQrModalOpen(true);
   };
 
   // Switch Archetype Template
@@ -179,7 +190,7 @@ export default function AdminICardStudioPage() {
       subtitle="Design, issue, print and verify tamper-proof digital smart cards powered by 20 Themes & Hugging Face AI"
       navItems={adminNavItems}
     >
-      <div className="space-y-6">
+      <div className="space-y-6 w-full max-w-full">
         {/* Top Control Bar */}
         <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900 border border-slate-800 text-white shadow-xl">
           {/* Left: View Tabs */}
@@ -232,6 +243,15 @@ export default function AdminICardStudioPage() {
           {/* Right Action Buttons */}
           <div className="flex items-center gap-2 flex-wrap">
             <button
+              onClick={() => handleOpenFullQr(card)}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-600/20 hover:from-cyan-500/30 hover:to-blue-600/30 text-cyan-300 text-xs font-bold border border-cyan-500/40 transition-all shadow-lg shadow-cyan-500/10"
+              title="View Full Size QR Verification Page"
+            >
+              <QrCode className="w-4 h-4 text-cyan-400" />
+              <span>Full Size QR</span>
+            </button>
+
+            <button
               onClick={() => setIsThemeGalleryOpen(true)}
               className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-all"
               title="Browse 20 Professional Themes"
@@ -278,13 +298,14 @@ export default function AdminICardStudioPage() {
 
         {/* TAB 1: 3D STUDIO */}
         {activeTab === 'studio' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
             {/* Left: 3D Canvas Stage */}
-            <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-4">
-              <div className="rounded-3xl bg-slate-950 border border-slate-800 p-6 min-h-[580px] flex flex-col justify-center items-center relative overflow-hidden shadow-2xl">
+            <div className="xl:col-span-8 flex flex-col gap-4">
+              <div className="rounded-3xl bg-slate-950 border border-slate-800 p-4 sm:p-8 min-h-[640px] flex flex-col justify-center items-center relative overflow-hidden shadow-2xl">
                 <CardCanvas
                   card={card}
                   theme={theme}
+                  initialScale="ultra"
                   onOpenExport={() => setIsExportOpen(true)}
                   onOpenShare={() => {
                     const verifyUrl = `${window.location.origin}/verify-card/${card._id || card.personal?.idNumber}`;
@@ -331,8 +352,8 @@ export default function AdminICardStudioPage() {
             </div>
 
             {/* Right: Studio Customization Panel */}
-            <div className="lg:col-span-5 xl:col-span-4">
-              <div className="rounded-3xl bg-slate-900 border border-slate-800 overflow-hidden shadow-2xl max-h-[800px] flex flex-col">
+            <div className="xl:col-span-4">
+              <div className="rounded-3xl bg-slate-900 border border-slate-800 overflow-hidden shadow-2xl max-h-[850px] flex flex-col">
                 <EditorPanel
                   card={card}
                   setCard={setCard}
@@ -555,6 +576,101 @@ export default function AdminICardStudioPage() {
         onLoadCard={handleLoadCard}
         onNewCard={handleNewCard}
       />
+
+      {/* FULL SIZE QR CODE & CERTIFICATE PREVIEW MODAL */}
+      {isFullQrModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
+          <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+            {/* Modal Header */}
+            <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400">
+                  <QrCode className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">Full-Size Live Verification QR</h3>
+                  <p className="text-xs text-slate-400">
+                    Scan with any mobile phone camera or open the live authenticated verification certificate
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsFullQrModalOpen(false)}
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 sm:p-8 flex flex-col items-center justify-center space-y-6 overflow-y-auto">
+              {/* Massive Crisp QR Container */}
+              <div className="p-6 rounded-3xl bg-white shadow-2xl border-4 border-cyan-500/40 relative flex flex-col items-center justify-center group hover:scale-[1.02] transition-transform">
+                <QRCodeSVG
+                  value={
+                    typeof window !== 'undefined'
+                      ? `${window.location.origin}/verify-card/${fullQrCard?._id || fullQrCard?.personal?.idNumber || 'preview'}`
+                      : 'https://jobhive.app'
+                  }
+                  size={260}
+                  level="H"
+                  includeMargin={false}
+                  fgColor="#0f172a"
+                  bgColor="#ffffff"
+                />
+                <div className="mt-3 text-center">
+                  <span className="text-[11px] font-mono font-bold text-slate-700 tracking-wider block">
+                    ID: {fullQrCard?.personal?.idNumber || 'JHV-9048-X'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Cardholder Details Strip */}
+              <div className="w-full text-center space-y-1">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Authentic JobHive Identity Card
+                </div>
+                <h2 className="text-xl font-bold text-white pt-1">
+                  {fullQrCard?.personal?.fullName || 'Alex Rivera'}
+                </h2>
+                <p className="text-xs text-slate-400">
+                  {fullQrCard?.personal?.jobTitle || 'Lead AI Engineer'} •{' '}
+                  <span className="text-slate-300 font-semibold">
+                    {fullQrCard?.personal?.organization || 'JobHive'}
+                  </span>
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <a
+                  href={`/verify-card/${fullQrCard?._id || fullQrCard?.personal?.idNumber || 'preview'}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>Open Full Verification Page</span>
+                </a>
+
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/verify-card/${fullQrCard?._id || fullQrCard?.personal?.idNumber || 'preview'}`;
+                    navigator.clipboard.writeText(url);
+                    toast.success('Live QR Verification URL copied to clipboard!');
+                  }}
+                  className="w-full py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-all flex items-center justify-center gap-2"
+                >
+                  <Copy className="w-4 h-4 text-cyan-400" />
+                  <span>Copy Scan Link</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

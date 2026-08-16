@@ -125,74 +125,75 @@ export default function VerifyCardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 py-10 px-4 sm:px-6 relative overflow-hidden">
+    <div className="min-h-screen bg-[#030712] text-slate-100 py-10 px-4 sm:px-8 relative overflow-hidden">
       {/* Background ambient glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-cyan-500/10 via-blue-500/5 to-transparent blur-3xl pointer-events-none" />
 
-      <div className="max-w-5xl mx-auto space-y-8 relative z-10">
+      <div className="w-full max-w-7xl mx-auto space-y-8 relative z-10">
         {/* Verification Status Header Banner */}
-        <div className="p-6 rounded-3xl bg-slate-900/90 border border-emerald-500/40 backdrop-blur-xl shadow-2xl shadow-emerald-500/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-lg shadow-emerald-500/20">
-              <ShieldCheck className="w-8 h-8" />
+        <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/90 border border-emerald-500/40 backdrop-blur-xl shadow-2xl shadow-emerald-500/10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className="p-4 rounded-3xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-lg shadow-emerald-500/20">
+              <ShieldCheck className="w-10 h-10" />
             </div>
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Official Verified Identity
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span className="px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4" />
+                  Official Verified Smart Identity
                 </span>
-                <span className="text-xs font-mono text-slate-400">
+                <span className="text-xs font-mono font-bold text-cyan-400 px-3 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
                   {verification?.authSignature}
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white mt-1">
+              <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight mt-2">
                 {card.personal?.fullName}
               </h1>
-              <p className="text-xs text-slate-400">
-                Issued by <span className="text-slate-200 font-semibold">{verification?.issuedBy}</span> • Verified Authentic
+              <p className="text-sm text-slate-400 mt-1">
+                Issued by <span className="text-slate-200 font-semibold">{verification?.issuedBy}</span> • Cryptographically Authenticated
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-3 w-full lg:w-auto">
             <button
               onClick={() => downloadVCardFile(card)}
-              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-lg shadow-emerald-500/25 transition-all"
+              className="flex-1 lg:flex-none flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs sm:text-sm font-bold shadow-xl shadow-emerald-500/25 transition-all active:scale-95"
             >
               <Download className="w-4 h-4" />
-              <span>Save Contact to Phone</span>
+              <span>Save Contact (.vcf)</span>
             </button>
 
             <button
               onClick={handleShare}
-              className="p-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all"
+              className="p-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all shadow-lg"
               title="Share Verified Card"
             >
-              <Share2 className="w-4 h-4" />
+              <Share2 className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Main Content Grid: 3D Card Interactive Stage + Verification Telemetry */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left: 3D Interactive Card */}
-          <div className="lg:col-span-7 flex flex-col items-center">
-            <div className="w-full rounded-3xl bg-slate-950/80 border border-slate-800/80 p-6 flex flex-col items-center justify-center shadow-2xl backdrop-blur-sm min-h-[500px]">
+        {/* Main Content Grid: Full-Size 3D Interactive Stage + Verification Telemetry */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+          {/* Left: Full-Size 3D Interactive Card */}
+          <div className="xl:col-span-7 flex flex-col items-center">
+            <div className="w-full rounded-3xl bg-slate-950/90 border border-slate-800/90 p-4 sm:p-8 flex flex-col items-center justify-center shadow-2xl backdrop-blur-md min-h-[620px]">
               <CardCanvas
                 card={card}
                 theme={activeTheme}
+                initialScale="ultra"
                 onOpenExport={() => downloadVCardFile(card)}
                 onOpenShare={handleShare}
               />
             </div>
-            <p className="text-xs text-slate-500 mt-3 text-center">
-              💡 Tap or hover the card to rotate in 3D, flip to back face, or tap the NFC chip.
+            <p className="text-xs text-slate-400 mt-3 text-center">
+              💡 Tap or hover to rotate in 3D, flip to back face, or tap the contactless NFC chip.
             </p>
           </div>
 
           {/* Right: Detailed Verified Information Card */}
-          <div className="lg:col-span-5 space-y-5">
+          <div className="xl:col-span-5 space-y-6">
             {/* Identity Details Card */}
             <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl space-y-5">
               <div className="flex items-center justify-between border-b border-slate-800 pb-4">
