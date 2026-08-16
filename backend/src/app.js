@@ -110,6 +110,8 @@ app.use('/api/notifications', apiLimiter, require('./routes/notifications.routes
 app.use('/api/voice',  apiLimiter, require('./routes/voice.routes'));
 app.use('/api/resume',             require('./routes/resumeAnalyzer.routes'));
 app.use('/api/news',      require('./routes/careerNews.routes'));
+app.use('/api/cards', apiLimiter, require('./routes/cards.routes'));
+app.use('/api/ai',    apiLimiter, require('./routes/ai.routes'));
 
 const fs = require('fs');
 

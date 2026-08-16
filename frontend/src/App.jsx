@@ -50,6 +50,8 @@ const AdminRolesPage = lazy(() => import('./pages/admin/AdminRolesPage'));
 const AdminNotificationsPage = lazy(() => import('./pages/admin/AdminNotificationsPage'));
 const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage'));
 const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'));
+const AdminICardStudioPage = lazy(() => import('./pages/admin/AdminICardStudioPage'));
+const VerifyCardPage = lazy(() => import('./pages/public/VerifyCardPage'));
 import ErrorBoundary from './components/ui/ErrorBoundary';
 
 const withSuspense = (el) => <ErrorBoundary><Suspense fallback={<PageLoader />}>{el}</Suspense></ErrorBoundary>;
@@ -104,6 +106,8 @@ const App = () => (
             <Route element={<ProtectedRoute roles={['admin']} />}>
               <Route path="/admin" element={withSuspense(<AdminDashboardPage />)} />
               <Route path="/admin/dashboard" element={withSuspense(<AdminDashboardPage />)} />
+              <Route path="/admin/icards" element={withSuspense(<AdminICardStudioPage />)} />
+              <Route path="/admin/icard-generator" element={withSuspense(<AdminICardStudioPage />)} />
               <Route path="/admin/services" element={withSuspense(<AdminServicesPage />)} />
               <Route path="/admin/plans" element={withSuspense(<AdminPlansPage />)} />
               <Route path="/admin/coupons" element={withSuspense(<AdminCouponsPage />)} />
@@ -119,6 +123,8 @@ const App = () => (
               <Route path="/admin/reports" element={withSuspense(<AdminReportsPage />)} />
             </Route>
 
+            <Route path="/verify-card/:id" element={withSuspense(<VerifyCardPage />)} />
+            <Route path="/verify/:id" element={withSuspense(<VerifyCardPage />)} />
             <Route path="/notifications" element={withSuspense(<NotificationsPage />)} />
             <Route path="/career-news" element={withSuspense(<CareerNewsPage />)} />
             <Route path="*" element={withSuspense(<NotFoundPage />)} />

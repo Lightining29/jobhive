@@ -511,3 +511,165 @@
 ::-webkit-scrollbar-thumb:hover {
   background-color: #94A3B8;
 }
+
+/* ==========================================================================
+   iCard Studio & 3D Interactive Card Engine
+   ========================================================================== */
+
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.hologram-effect {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.03) 30%,
+    rgba(255, 0, 128, 0.12) 45%,
+    rgba(0, 255, 255, 0.18) 50%,
+    rgba(255, 215, 0, 0.15) 55%,
+    rgba(255, 255, 255, 0.05) 70%,
+    transparent 100%
+  );
+  background-size: 250% 250%;
+  mix-blend-mode: color-dodge;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.scanlines-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.7;
+  z-index: 5;
+}
+
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: radial-gradient(#ffffff 1px, transparent 1px);
+  background-size: 4px 4px;
+  z-index: 4;
+}
+
+.chip-gold {
+  background: linear-gradient(135deg, #e5b85c 0%, #ffd700 50%, #b8860b 100%);
+  border: 1px solid #d4af37;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.chip-silver {
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 50%, #94a3b8 100%);
+  border: 1px solid #cbd5e1;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.chip-neon-cyan {
+  background: linear-gradient(135deg, #00f0ff 0%, #0284c7 50%, #0369a1 100%);
+  border: 1px solid #00f0ff;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.chip-cyber-holo {
+  background: linear-gradient(135deg, #c084fc 0%, #38bdf8 50%, #ec4899 100%);
+  border: 1px solid #c084fc;
+  box-shadow: 0 0 12px rgba(192, 132, 252, 0.5);
+}
+
+.chip-black {
+  background: linear-gradient(135deg, #27272a 0%, #18181b 50%, #09090b 100%);
+  border: 1px solid #3f3f46;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.pattern-grid {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.pattern-dots {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+.pattern-carbon {
+  background: linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+              linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+              linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+              linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+              linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+              linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+  background-size: 20px 20px;
+}
+
+.pattern-circuit {
+  background-image: 
+    radial-gradient(rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px),
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px, 14px 14px, 14px 14px;
+}
+
+.pattern-blueprint {
+  background-image: 
+    linear-gradient(rgba(56, 189, 248, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.2) 1px, transparent 1px),
+    linear-gradient(rgba(56, 189, 248, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.07) 1px, transparent 1px);
+  background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+}
+
+.pattern-waves {
+  background: radial-gradient(circle at 100% 50%, transparent 20%, rgba(255, 255, 255, 0.03) 21%, rgba(255, 255, 255, 0.03) 34%, transparent 35%, transparent),
+              radial-gradient(circle at 0% 50%, transparent 20%, rgba(255, 255, 255, 0.03) 21%, rgba(255, 255, 255, 0.03) 34%, transparent 35%, transparent) 0 30px;
+  background-size: 60px 60px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #print-card-target, #print-card-target * {
+    visibility: visible;
+  }
+  #print-card-target {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 85.6mm !important;
+    height: 53.98mm !important;
+    box-shadow: none !important;
+    border-radius: 3.18mm !important;
+    page-break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+

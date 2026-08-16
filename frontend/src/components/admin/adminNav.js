@@ -13,10 +13,12 @@ import {
   FaBell,
   FaSliders,
   FaFlag,
+  FaAddressCard,
 } from 'react-icons/fa6';
 
 export const adminNavItems = [
   { to: '/admin/dashboard', label: 'Overview', icon: FaGaugeHigh, end: true },
+  { to: '/admin/icards', label: 'I-Card Studio & QR', icon: FaAddressCard },
   { to: '/admin/services', label: 'Services Catalog', icon: FaGears },
   { to: '/admin/plans', label: 'Plans & Free Trials', icon: FaGem },
   { to: '/admin/coupons', label: 'Coupons & Promo', icon: FaTicket },
