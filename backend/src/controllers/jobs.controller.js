@@ -102,10 +102,16 @@ const buildFilters = (query) => {
   if (query.category) {
     filter.category = query.category;
     if (query.category === 'technical') {
-      const nonTechExclusion = /\b(marketing|marketer|translator|translation|interpreter|localization|linguist|language specialist|business executive|business development|account executive|sales executive|sales representative|sales rep|sales manager|client executive|executive assistant|operations executive|relationship manager|recruiter|recruitment|talent acquisition|human resource|hr executive|hr manager|people operations|copywriter|content writer|content creator|journalist|editor|accountant|accounting|financial analyst|auditor|tax specialist|bookkeeper|legal counsel|paralegal|lawyer|customer support|customer service|customer success|telecaller|call center|receptionist|store manager|nurse|chef)\b/i;
+      const nonTechExclusion = /\b(marketing|marketer|growth marketer|digital marketing|brand manager|campaign manager|seo|sem|social media|affiliate marketing|advertising|translator|translation|interpreter|localization|linguist|language specialist|transcriptionist|business executive|business development|account executive|sales executive|sales representative|sales rep|sales manager|client executive|operations executive|operations lead|operations manager|executive assistant|relationship manager|bdr|sdr|bde|recruiter|recruitment|talent acquisition|human resource|hr executive|hr manager|people operations|copywriter|content writer|content creator|journalist|editor|accountant|accounting|financial analyst|auditor|tax specialist|bookkeeper|legal counsel|paralegal|lawyer|customer support|customer service|customer success|telecaller|call center|receptionist|store manager|nurse|chef|producer|programs manager|event manager)\b/i;
       filter.$and = [
         ...(filter.$and || []),
         { jobTitle: { $not: nonTechExclusion } },
+      ];
+    } else if (query.category === 'non-technical') {
+      const techExclusion = /\b(developer|software engineer|software developer|programmer|coder|frontend|front-end|backend|back-end|fullstack|full-stack|full stack|web developer|devops|sre|cloud engineer|cloud architect|database administrator|dba|data scientist|data engineer|machine learning|deep learning|artificial intelligence|ai engineer|ml engineer|cybersecurity|security engineer|infosec|soc analyst|pentester|qa engineer|test engineer|software tester|sdet|mobile developer|ios developer|android developer|flutter developer|react native|systems engineer|firmware|embedded|iot|robotics|network engineer|blockchain|smart contract|solidity|tech lead|cto)\b/i;
+      filter.$and = [
+        ...(filter.$and || []),
+        { jobTitle: { $not: techExclusion } },
       ];
     }
   }
@@ -204,7 +210,7 @@ const listJobs = asyncHandler(async (req, res) => {
   };
 
   let jobs = [];
-  if (isDefaultSort && !isSearchQuery) {
+  if (isDefaultSort && !isSearchQuery && req.query.category !== 'non-technical') {
     const priorityFilter = { ...filter, $and: [...(filter.$and || []), priorityCond] };
     const priorityJobsCount = await Job.countDocuments(priorityFilter);
 
