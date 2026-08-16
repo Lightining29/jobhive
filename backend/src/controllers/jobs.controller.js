@@ -99,14 +99,16 @@ const buildFilters = (query) => {
 
     for (const term of searchTerms) {
       const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      // For short keywords (e.g. java, go, qa, ai, ml), enforce word boundaries
+      // For short keywords (e.g. java, go, qa, ai, ml), enforce word boundaries on title/headline
       const regexPattern = term.length <= 4 && /^[a-z0-9+#.]+$/i.test(term)
         ? `\\b${escaped}\\b`
         : escaped;
 
       searchOrConditions.push(
         { headline: { $regex: regexPattern, $options: 'i' } },
-        { jobTitle: { $regex: regexPattern, $options: 'i' } }
+        { jobTitle: { $regex: regexPattern, $options: 'i' } },
+        { requiredSkills: { $regex: escaped, $options: 'i' } },
+        { companyName: { $regex: escaped, $options: 'i' } }
       );
     }
 

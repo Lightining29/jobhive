@@ -4,18 +4,18 @@ const jobsController = require('../src/controllers/jobs.controller');
 async function test() {
   await connectDB();
 
-  const terms = ['java mern python', 'java', 'mern', 'python'];
-  for (const term of terms) {
+  const keywords = ['java', 'mern', 'python', 'react', 'node', 'sql', 'aws', 'sales', 'marketing'];
+  for (const kw of keywords) {
     console.log(`\n==============================================`);
-    console.log(`SEARCH QUERY: "${term}"`);
+    console.log(`SEARCH QUERY: "${kw}"`);
     console.log(`==============================================`);
-    const mockReq = { query: { search: term, page: 1, limit: 15 } };
+    const mockReq = { query: { search: kw, page: 1, limit: 5 } };
     const mockRes = {
       json: (data) => {
-        console.log(`Found ${data.jobs.length} matching jobs:`);
-        data.jobs.forEach((j, i) => {
-          console.log(`  ${i + 1}. [Title] ${j.jobTitle}`);
-          console.log(`     [Heading/Headline] "${j.headline}"`);
+        console.log(`Found ${data.pagination?.total || data.jobs.length} matching jobs:`);
+        data.jobs.slice(0, 5).forEach((j, i) => {
+          console.log(`  ${i + 1}. [${j.companyName}] "${j.headline || j.jobTitle}"`);
+          console.log(`     [Title] ${j.jobTitle}`);
           console.log(`     [Skills] ${(j.requiredSkills || []).join(', ')}`);
         });
       },
@@ -26,4 +26,4 @@ async function test() {
   process.exit(0);
 }
 
-test();
+test().catch(console.error);
