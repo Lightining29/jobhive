@@ -33,16 +33,16 @@ const applyIndiaScope = (filter, query) => {
 };
 
 const TECH_SYNONYMS = {
-  mern: ['mern', 'node.js', 'nodejs', 'react', 'mongodb', 'express', 'full stack'],
-  mean: ['mean', 'node.js', 'nodejs', 'angular', 'mongodb', 'express', 'full stack'],
+  mern: ['mern', 'node.js', 'nodejs', 'react', 'mongodb', 'express', 'full stack', 'fullstack'],
+  mean: ['mean', 'node.js', 'nodejs', 'angular', 'mongodb', 'express', 'full stack', 'fullstack'],
   'node js': ['node.js', 'nodejs', 'node', 'express'],
   nodejs: ['node.js', 'nodejs', 'node', 'express'],
   node: ['node.js', 'nodejs', 'node', 'express'],
   'react js': ['react', 'react.js', 'reactjs', 'next.js'],
   reactjs: ['react', 'react.js', 'reactjs', 'next.js'],
   react: ['react', 'react.js', 'reactjs', 'next.js', 'react native'],
-  python: ['python', 'django', 'fastapi', 'flask'],
-  java: ['java', 'spring boot', 'spring', 'hibernate', 'j2ee'],
+  python: ['python', 'django', 'fastapi', 'flask', 'pyspark'],
+  java: ['java', 'spring boot', 'spring framework', 'hibernate', 'j2ee', 'jvm'],
   golang: ['golang', 'go'],
   go: ['golang', 'go'],
   vue: ['vue', 'vue.js', 'vuejs', 'nuxt'],
@@ -99,10 +99,14 @@ const buildFilters = (query) => {
 
     for (const term of searchTerms) {
       const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      // For short keywords (e.g. java, go, qa, ai, ml), enforce word boundaries
+      const regexPattern = term.length <= 4 && /^[a-z0-9+#.]+$/i.test(term)
+        ? `\\b${escaped}\\b`
+        : escaped;
+
       searchOrConditions.push(
-        { headline: { $regex: escaped, $options: 'i' } },
-        { jobTitle: { $regex: escaped, $options: 'i' } },
-        { requiredSkills: { $regex: `^${escaped}$`, $options: 'i' } }
+        { headline: { $regex: regexPattern, $options: 'i' } },
+        { jobTitle: { $regex: regexPattern, $options: 'i' } }
       );
     }
 
