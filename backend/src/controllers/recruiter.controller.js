@@ -13,9 +13,19 @@ const { paginate, buildPagination } = require('../utils/query');
 const fs = require('fs');
 
 const requireCompany = async (req) => {
-  const company = await Company.findOne({ owner: req.user._id });
+  let company = await Company.findOne({ owner: req.user._id });
   if (!company) {
-    throw new ApiError(400, 'Register your company first before posting jobs.');
+    const compName = (req.body?.companyName || req.user.companyName || `${req.user.name}'s Organization`).trim();
+    company = await Company.create({
+      name: compName,
+      slug: slugify(compName) + '-' + Date.now().toString(36),
+      owner: req.user._id,
+      city: req.body?.city || '',
+      country: req.body?.country || 'India',
+      verified: false,
+    });
+    req.user.company = company._id;
+    await req.user.save();
   }
   return company;
 };

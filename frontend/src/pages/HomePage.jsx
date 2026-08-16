@@ -203,8 +203,8 @@ const SectionHeader = ({ title, subtitle, to }) => (
   </div>
 );
 
-const CTABand = () => (
-  <section className="relative overflow-hidden bg-[#EEF2FF]">
+const CandidateCTABand = () => (
+  <section className="relative overflow-hidden bg-[#EEF2FF] border-t border-slate-200">
     <div
       className="absolute inset-0"
       style={{ background: 'linear-gradient(120deg, #EEF2FF 0%, #E0E7FF 55%, #FFFFFF 100%)' }}
@@ -218,26 +218,25 @@ const CTABand = () => (
       <div className="flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
         <div>
           <h2 className="text-2xl md:text-4xl font-black text-ink tracking-tight leading-tight">
-            Are you <span className="text-glow-yellow">hiring</span>?
+            Ready to find your <span className="text-glow-yellow">next opportunity</span>?
           </h2>
           <p className="text-slate-600 mt-3 max-w-xl text-sm md:text-base leading-relaxed">
-            Post a job on JobHive and reach thousands of active candidates across India and
-            remote worldwide — free for verified companies.
+            Explore thousands of verified jobs matched to your skills, experience, and preferred work mode across top tech companies.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 shrink-0">
           <Link
-            to="/recruiter/post-job"
+            to="/jobs"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent-dark px-8 py-3.5 text-base font-bold text-ink shadow-[0_10px_30px_rgba(250,204,21,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(250,204,21,0.5)]"
           >
-            <FaCirclePlus className="h-5 w-5" />
-            Post a Job
+            <FaMagnifyingGlass className="h-4 w-4" />
+            Explore All Jobs
           </Link>
           <Link
-            to="/jobs"
+            to="/auth/register"
             className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-primary-200 bg-white/70 px-8 py-3.5 text-base font-bold text-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:border-primary-300"
           >
-            Browse Jobs
+            Create Free Profile
           </Link>
         </div>
       </div>
@@ -344,7 +343,7 @@ const HomePage = () => {
         )}
       </div>
 
-      <CTABand />
+      <CandidateCTABand />
     </div>
   );
 };

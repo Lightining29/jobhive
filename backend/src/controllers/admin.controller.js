@@ -302,12 +302,38 @@ const moderateJob = asyncHandler(async (req, res, next) => {
   if (!job) return next(new ApiError(404, 'Job not found.'));
 
   if (req.body.isActive !== undefined) job.isActive = req.body.isActive;
-  if (req.body.isVerified !== undefined) job.isVerified = req.body.isVerified;
+  if (req.body.isVerified !== undefined) {
+    job.isVerified = req.body.isVerified;
+    if (job.isVerified) {
+      job.isActive = true;
+      job.isExpired = false;
+    }
+  }
   if (req.body.isActive === false) job.isExpired = true;
   if (req.body.trendingScore !== undefined) job.trendingScore = req.body.trendingScore;
 
   await job.save();
-  res.json({ success: true, message: 'Job updated.', job });
+
+  // Send real-time notification to recruiter about job verification status
+  if (job.postedBy) {
+    try {
+      await Notification.create({
+        user: job.postedBy,
+        title: job.isVerified ? 'Job Posting Approved ✅' : 'Job Status Updated ⚠️',
+        message: job.isVerified
+          ? `Your job posting "${job.jobTitle}" has been verified and approved by the Admin. It is now live for all candidates!`
+          : `Your job posting "${job.jobTitle}" is currently pending review or has been unverified by the Admin.`,
+        type: 'system',
+        link: `/recruiter/my-jobs`,
+      });
+    } catch (_) {}
+  }
+
+  res.json({
+    success: true,
+    message: `Job ${job.isVerified ? 'approved and published' : 'status updated'}.`,
+    job,
+  });
 });
 
 const toggleFeaturedJob = asyncHandler(async (req, res, next) => {
