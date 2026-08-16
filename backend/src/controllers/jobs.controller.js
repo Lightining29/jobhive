@@ -36,6 +36,11 @@ const buildFilters = (query) => {
   const filter = baseJobFilter();
   const search = (query.search || query.q || '').trim();
 
+  if (query.headline) {
+    const escH = query.headline.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    filter.$and = [...(filter.$and || []), { headline: { $regex: escH, $options: 'i' } }];
+  }
+
   if (query.postedWithinDays) {
     const days = parseInt(query.postedWithinDays, 10);
     if (!isNaN(days) && days > 0) {

@@ -173,6 +173,11 @@ const JobCard = ({ job, match }) => {
             >
               {job.jobTitle}
             </Link>
+            {job.headline && job.headline.trim() && job.headline.trim() !== job.jobTitle.trim() && (
+              <p className="text-[11px] font-medium text-amber-800 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded-md mt-1 line-clamp-1 max-w-full">
+                {job.headline}
+              </p>
+            )}
             <p className="text-sm text-muted flex items-center gap-1 mt-1 min-w-0">
               <FaRegBuilding className="h-3 w-3 shrink-0" />
               <span className="truncate">{job.companyName}</span>
