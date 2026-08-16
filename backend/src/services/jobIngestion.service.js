@@ -210,16 +210,29 @@ const fetchFromProvider = async (provider) => {
   }
 };
 
+const timeoutPromise = (ms, promise, name) => {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Timeout after ${ms}ms for provider ${name}`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+};
+
 const fetchAllJobs = async () => {
   const providers = getProviders();
   const settled = await Promise.allSettled(
     providers.map(async (provider) => {
-      const saved = await fetchFromProvider(provider);
-      return { provider: provider.name, status: 'ok', saved };
+      try {
+        const saved = await timeoutPromise(8000, fetchFromProvider(provider), provider.name);
+        return { provider: provider.name, status: 'ok', saved: saved || 0 };
+      } catch (err) {
+        logger.warn(`[jobs] ${provider.name} timed out or failed: ${err.message}`);
+        return { provider: provider.name, status: 'failed', message: err.message, saved: 0 };
+      }
     })
   );
   return settled.map((r) =>
-    r.status === 'fulfilled' ? r.value : { provider: 'unknown', status: 'failed', message: r.reason?.message }
+    r.status === 'fulfilled' ? r.value : { provider: 'unknown', status: 'failed', message: r.reason?.message, saved: 0 }
   );
 };
 
