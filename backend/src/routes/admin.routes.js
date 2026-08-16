@@ -18,6 +18,10 @@ const {
 // Protect all admin routes
 router.use(protect, authorize('admin'));
 
+// ── Unified Single Endpoint for all Admin Info ─────────────────────────────
+router.get('/', admin.getAllAdminInfo);
+router.get('/all-info', admin.getAllAdminInfo);
+
 // ── 1. Dashboard Overview ──────────────────────────────────────────────────
 router.get('/dashboard', admin.dashboard);
 

@@ -98,6 +98,7 @@ const App = () => (
             </Route>
 
             <Route element={<ProtectedRoute roles={['admin']} />}>
+              <Route path="/admin" element={withSuspense(<AdminDashboardPage />)} />
               <Route path="/admin/dashboard" element={withSuspense(<AdminDashboardPage />)} />
               <Route path="/admin/services" element={withSuspense(<AdminServicesPage />)} />
               <Route path="/admin/plans" element={withSuspense(<AdminPlansPage />)} />

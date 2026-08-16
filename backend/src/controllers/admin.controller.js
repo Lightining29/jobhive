@@ -6,7 +6,10 @@ const Report = require('../models/Report');
 const Notification = require('../models/Notification');
 const Transaction = require('../models/Transaction');
 const Coupon = require('../models/Coupon');
+const Bundle = require('../models/Bundle');
+const Service = require('../models/Service');
 const SubscriptionPlan = require('../models/SubscriptionPlan');
+const SystemSetting = require('../models/SystemSetting');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 const { paginate, buildPagination } = require('../utils/query');
@@ -356,8 +359,125 @@ const resolveReport = asyncHandler(async (req, res, next) => {
   res.json({ success: true, message: 'Report resolved.', report });
 });
 
+const getAllAdminInfo = asyncHandler(async (req, res) => {
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const [
+    totalUsers, totalCandidates, totalRecruiters, totalAdmins,
+    totalJobs, activeJobs, pendingJobs, expiredJobs,
+    totalCompanies, verifiedCompanies,
+    totalApplications, openReports,
+    jobsToday, applicationsToday, usersToday,
+    activeSubscriptions, trialUsers,
+    monthlyRevenueAgg, totalRevenueAgg, couponStatsAgg,
+    jobsByCategory, jobsBySource,
+    recentUsers, recentJobs, recentCompanies, recentPayments,
+    servicesList, plansList, couponsList, bundlesList,
+    adminStaffList, systemSettings,
+  ] = await Promise.all([
+    User.countDocuments(),
+    User.countDocuments({ role: 'candidate' }),
+    User.countDocuments({ role: 'recruiter' }),
+    User.countDocuments({ role: 'admin' }),
+    Job.countDocuments(),
+    Job.countDocuments({ isActive: true, isExpired: false }),
+    Job.countDocuments({ isVerified: false, isExpired: false }),
+    Job.countDocuments({ isExpired: true }),
+    Company.countDocuments(),
+    Company.countDocuments({ verified: true }),
+    Application.countDocuments(),
+    Report.countDocuments({ status: 'open' }),
+    Job.countDocuments({ createdAt: { $gte: dayStart } }),
+    Application.countDocuments({ createdAt: { $gte: dayStart } }),
+    User.countDocuments({ createdAt: { $gte: dayStart } }),
+    User.countDocuments({ 'subscription.status': 'active', 'subscription.isTrial': false }),
+    User.countDocuments({ 'subscription.status': 'trial', 'subscription.isTrial': true }),
+    Transaction.aggregate([
+      { $match: { status: 'succeeded', createdAt: { $gte: monthStart } } },
+      { $group: { _id: null, total: { $sum: '$totalAmount' } } },
+    ]),
+    Transaction.aggregate([
+      { $match: { status: 'succeeded' } },
+      { $group: { _id: null, total: { $sum: '$totalAmount' } } },
+    ]),
+    Coupon.aggregate([
+      { $group: { _id: null, totalUsed: { $sum: '$timesUsed' }, totalDiscount: { $sum: '$totalDiscountGiven' } } },
+    ]),
+    Job.aggregate([{ $group: { _id: '$category', count: { $sum: 1 } } }]),
+    Job.aggregate([{ $group: { _id: '$source', count: { $sum: 1 } } }]),
+
+    User.find().sort({ createdAt: -1 }).limit(15).select('name email role adminRole avatar status subscription credits createdAt').lean(),
+    Job.find().sort({ createdAt: -1 }).limit(15).select('jobTitle companyName category workMode isVerified isActive isFeatured trendingScore postedDate createdAt').lean(),
+    Company.find().sort({ createdAt: -1 }).limit(15).select('name slug logo verified website industry city country activeJobsCount createdAt').lean(),
+    Transaction.find().sort({ createdAt: -1 }).limit(15).populate('user', 'name email role').lean(),
+    Service.find().sort({ sortOrder: 1, createdAt: -1 }).lean(),
+    SubscriptionPlan.find().sort({ sortOrder: 1, price: 1 }).lean(),
+    Coupon.find().sort({ createdAt: -1 }).lean(),
+    Bundle.find().sort({ sortOrder: 1, createdAt: -1 }).lean(),
+    User.find({ role: 'admin' }).select('name email role adminRole permissions avatar createdAt').lean(),
+    SystemSetting.find().lean(),
+  ]);
+
+  const monthlyRevenue = monthlyRevenueAgg[0]?.total || 0;
+  const totalRevenue = totalRevenueAgg[0]?.total || 0;
+  const couponStats = couponStatsAgg[0] || { totalUsed: 0, totalDiscount: 0 };
+
+  res.json({
+    success: true,
+    data: {
+      analytics: {
+        totalUsers,
+        totalCandidates,
+        totalRecruiters,
+        totalAdmins,
+        totalJobs,
+        activeJobs,
+        pendingJobs,
+        expiredJobs,
+        totalCompanies,
+        verifiedCompanies,
+        totalApplications,
+        openReports,
+        today: {
+          jobs: jobsToday,
+          applications: applicationsToday,
+          users: usersToday,
+        },
+        subscriptions: {
+          active: activeSubscriptions,
+          trial: trialUsers,
+        },
+        revenue: {
+          monthly: monthlyRevenue,
+          total: totalRevenue,
+        },
+        coupons: couponStats,
+        jobsByCategory: Object.fromEntries(jobsByCategory.map((c) => [c._id || 'unknown', c.count])),
+        jobsBySource: Object.fromEntries(jobsBySource.map((s) => [s._id || 'unknown', s.count])),
+      },
+      users: recentUsers,
+      jobs: recentJobs,
+      companies: recentCompanies,
+      payments: {
+        recent: recentPayments,
+        totalRevenue,
+        monthlyRevenue,
+      },
+      services: servicesList,
+      plans: plansList,
+      coupons: couponsList,
+      bundles: bundlesList,
+      adminRoles: adminStaffList,
+      settings: systemSettings,
+    },
+  });
+});
+
 module.exports = {
   dashboard,
+  getAllAdminInfo,
   listUsers,
   getUserDetails,
   updateUser,

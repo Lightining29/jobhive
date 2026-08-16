@@ -63,6 +63,8 @@ const recruiterService = {
 };
 
 const adminService = {
+  allInfo: () => api.get('/admin/all-info'),
+  all: () => api.get('/admin'),
   dashboard: () => api.get('/admin/dashboard'),
 
   // Users & Credits
