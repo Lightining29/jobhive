@@ -16,9 +16,8 @@ import CardFront from './CardFront';
 import CardBack from './CardBack';
 import { downloadVCardFile } from '../../utils/vcard';
 
-export default function CardCanvas({ card, theme, onOpenExport, onOpenShare, initialScale = 'large' }) {
+export default function CardCanvas({ card, theme, onOpenExport, onOpenShare }) {
   const [viewMode, setViewMode] = useState('3d-flip'); // '3d-flip' | 'dual-side'
-  const [scaleMode, setScaleMode] = useState(initialScale); // 'standard' | 'large' | 'ultra'
   const [isFlipped, setIsFlipped] = useState(false);
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
@@ -68,29 +67,15 @@ export default function CardCanvas({ card, theme, onOpenExport, onOpenShare, ini
     setTimeout(() => setNfcTapped(false), 1500);
   };
 
-  // Fluid Full-Size & Standard Dimensions (Exact 54mm x 85.6mm Aspect Ratio 1:1.585)
-  const getCardSizeClasses = () => {
-    if (scaleMode === 'ultra') {
-      return isVertical
-        ? 'w-[380px] sm:w-[440px] md:w-[470px] h-[602px] sm:h-[697px] md:h-[745px] max-w-[95vw]'
-        : 'w-[580px] sm:w-[680px] md:w-[760px] h-[366px] sm:h-[429px] md:h-[480px] max-w-[95vw]';
-    }
-    if (scaleMode === 'large') {
-      return isVertical
-        ? 'w-[340px] sm:w-[380px] md:w-[410px] h-[539px] sm:h-[602px] md:h-[650px] max-w-[95vw]'
-        : 'w-[520px] sm:w-[600px] md:w-[660px] h-[328px] sm:h-[378px] md:h-[416px] max-w-[95vw]';
-    }
-    return isVertical 
-      ? 'w-[300px] sm:w-[340px] h-[475px] sm:h-[539px] max-w-[90vw]' 
-      : 'w-[450px] sm:w-[520px] h-[284px] sm:h-[328px] max-w-[90vw]';
-  };
-
-  const cardSizeClasses = getCardSizeClasses();
+  // Standard 100% Dimensions (Exact CR80 ISO 7810 54mm x 85.6mm Aspect Ratio 1:1.585)
+  const cardSizeClasses = isVertical 
+    ? 'w-[320px] sm:w-[350px] h-[507px] sm:h-[555px] max-w-[92vw]' 
+    : 'w-[480px] sm:w-[540px] h-[303px] sm:h-[341px] max-w-[92vw]';
 
   return (
-    <div className="flex flex-col items-center justify-center w-full min-h-[580px] p-2 md:p-6 relative">
+    <div className="flex flex-col items-center justify-center w-full min-h-[540px] p-2 md:p-6 relative">
       {/* Top Action Bar */}
-      <div className="flex flex-wrap items-center justify-between w-full max-w-4xl mb-5 z-10 bg-slate-900/90 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-800 shadow-xl gap-2">
+      <div className="flex flex-wrap items-center justify-between w-full max-w-3xl mb-5 z-10 bg-slate-900/90 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-800 shadow-xl gap-2">
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
           <span className="text-xs font-mono text-slate-200 font-bold uppercase tracking-wider">
@@ -98,40 +83,8 @@ export default function CardCanvas({ card, theme, onOpenExport, onOpenShare, ini
           </span>
         </div>
 
-        {/* View Mode & Scale Controls */}
+        {/* View Mode Controls */}
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Sizing Toggles */}
-          <div className="flex items-center gap-1 bg-slate-950/70 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
-            <button
-              onClick={() => setScaleMode('standard')}
-              className={`px-2.5 py-1 rounded-lg transition-all ${
-                scaleMode === 'standard' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'
-              }`}
-              title="Standard Size"
-            >
-              100%
-            </button>
-            <button
-              onClick={() => setScaleMode('large')}
-              className={`px-2.5 py-1 rounded-lg transition-all ${
-                scaleMode === 'large' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'
-              }`}
-              title="Large Size"
-            >
-              125%
-            </button>
-            <button
-              onClick={() => setScaleMode('ultra')}
-              className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
-                scaleMode === 'ultra' ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'
-              }`}
-              title="Ultra Full Size"
-            >
-              <Maximize2 className="w-3 h-3" />
-              <span>Full Size (150%)</span>
-            </button>
-          </div>
-
           {/* Front / Back / Dual View */}
           <div className="flex items-center gap-1 bg-slate-950/70 p-1 rounded-xl border border-slate-800">
             <button

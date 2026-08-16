@@ -182,7 +182,6 @@ export default function VerifyCardPage() {
               <CardCanvas
                 card={card}
                 theme={activeTheme}
-                initialScale="ultra"
                 onOpenExport={() => downloadVCardFile(card)}
                 onOpenShare={handleShare}
               />

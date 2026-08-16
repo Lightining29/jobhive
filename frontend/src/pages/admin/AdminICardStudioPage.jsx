@@ -305,7 +305,6 @@ export default function AdminICardStudioPage() {
                 <CardCanvas
                   card={card}
                   theme={theme}
-                  initialScale="ultra"
                   onOpenExport={() => setIsExportOpen(true)}
                   onOpenShare={() => {
                     const verifyUrl = `${window.location.origin}/verify-card/${card._id || card.personal?.idNumber}`;
