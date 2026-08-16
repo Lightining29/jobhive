@@ -168,7 +168,13 @@ const userSchema = new mongoose.Schema(
 
 userSchema.pre('save', async function hashPassword() {
   if (!this.isModified('password') || !this.password) return;
-  if (/^\$2[ab]\$\d{2}\$/.test(this.password)) return;
+  if (
+    typeof this.password === 'string' &&
+    (this.password.startsWith('$2a$') || this.password.startsWith('$2b$') || this.password.startsWith('$2y$') || this.password.startsWith('$2x$')) &&
+    this.password.length === 60
+  ) {
+    return;
+  }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });

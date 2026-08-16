@@ -246,7 +246,11 @@ const resendOtp = asyncHandler(async (req, res, next) => {
 
 const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email }).select('+password');
+  if (!email || !password) {
+    return next(new ApiError(400, 'Email and password are required.'));
+  }
+  const normalizedEmail = String(email).toLowerCase().trim();
+  const user = await User.findOne({ email: normalizedEmail }).select('+password');
   if (!user || !(await user.comparePassword(password))) {
     return next(new ApiError(401, 'Invalid email or password.'));
   }
