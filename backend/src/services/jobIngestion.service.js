@@ -1,4 +1,5 @@
 const Job = require('../models/Job');
+const JobSQL = require('../models/sql/Job.sql');
 const JobLog = require('../models/JobLog');
 const logger = require('../config/logger');
 const { getProviders } = require('./providers');
@@ -173,23 +174,63 @@ const fetchFromProvider = async (provider) => {
         },
       }));
       if (ops.length > 0) {
-        const result = await Job.bulkWrite(ops, { ordered: false });
-        logger.info(`[jobs] ${provider.name}: fetched ${jobs.length}, upserted ${result.upsertedCount}`);
-
-        // Maintain maximum 500 external jobs to keep free-tier MongoDB storage clean
-        const total = await Job.countDocuments({ source: { $ne: 'recruiter' } });
-        if (total > 500) {
-          const excess = await Job.find({ source: { $ne: 'recruiter' } })
-            .sort({ createdAt: -1 })
-            .skip(500)
-            .select('_id');
-          if (excess.length > 0) {
-            await Job.deleteMany({ _id: { $in: excess.map((e) => e._id) } });
-            logger.info(`[jobs] Pruned ${excess.length} older jobs to maintain 500 cap`);
-          }
+        // 1. Upsert into MongoDB if connected
+        try {
+          const result = await Job.bulkWrite(ops, { ordered: false });
+          logger.info(`[jobs] ${provider.name}: fetched ${jobs.length}, upserted in Mongo: ${result.upsertedCount}`);
+        } catch (mErr) {
+          logger.warn(`[jobs] Mongo bulkWrite notice: ${mErr.message}`);
         }
 
-        return result.upsertedCount;
+        // 2. Upsert into MySQL (Hostinger)
+        try {
+          for (const doc of docs) {
+            await JobSQL.upsert({
+              jobId: doc.jobId,
+              source: doc.source || 'recruiter',
+              companyName: doc.companyName || 'Company',
+              companyLogo: doc.companyLogo || '',
+              companyWebsite: doc.companyWebsite || '',
+              jobTitle: doc.jobTitle || 'Job Position',
+              headline: doc.headline || '',
+              description: doc.description || '',
+              requiredSkills: doc.requiredSkills || [],
+              category: doc.category || 'technical',
+              subCategory: doc.subCategory || '',
+              experienceMin: doc.experience?.min || 0,
+              experienceMax: doc.experience?.max || 0,
+              experienceLevel: doc.experienceLevel || '',
+              salary: doc.salary || 0,
+              salaryMin: doc.salaryMin || 0,
+              salaryMax: doc.salaryMax || 0,
+              currency: doc.currency || 'USD',
+              salaryPeriod: doc.salaryPeriod || 'yearly',
+              employmentType: doc.employmentType || 'full-time',
+              location: doc.location || '',
+              city: doc.city || '',
+              state: doc.state || '',
+              country: doc.country || '',
+              workMode: doc.workMode || 'onsite',
+              remote: Boolean(doc.remote),
+              hybrid: Boolean(doc.hybrid),
+              onsite: doc.onsite !== undefined ? Boolean(doc.onsite) : true,
+              industry: doc.industry || '',
+              postedDate: doc.postedDate || new Date(),
+              expiresAt: doc.expiresAt || null,
+              applicationUrl: doc.applicationUrl || '',
+              applicationEmail: doc.applicationEmail || '',
+              isActive: true,
+              isVerified: true,
+              isExpired: false,
+              trendingScore: doc.trendingScore || 0,
+            });
+          }
+          logger.info(`[jobs] ${provider.name}: synced ${docs.length} jobs to MySQL`);
+        } catch (sqlErr) {
+          logger.warn(`[jobs] MySQL upsert notice: ${sqlErr.message}`);
+        }
+
+        return docs.length;
       }
       logger.info(`[jobs] ${provider.name}: fetched ${jobs.length}, saved 0`);
       return 0;

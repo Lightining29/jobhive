@@ -28,9 +28,19 @@ Application.belongsTo(User, { foreignKey: 'candidateId', as: 'candidate' });
 User.hasMany(Card, { foreignKey: 'userId', as: 'cards' });
 Card.belongsTo(User, { foreignKey: 'userId', as: 'owner' });
 
+const connectMongoDB = require('./db');
+
 const initDatabases = async () => {
   logger.info('🔌 Initializing MySQL Database Engine (Hostinger/Local)...');
   await connectMySQL();
+
+  if (process.env.MONGO_URI) {
+    try {
+      await connectMongoDB();
+    } catch (err) {
+      logger.warn(`[mongo] Mongo connection notice: ${err.message}`);
+    }
+  }
 };
 
 module.exports = {
