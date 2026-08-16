@@ -23,7 +23,6 @@ const UserSQL = sequelize.define(
       type: DataTypes.STRING(120),
       allowNull: false,
       unique: true,
-      validate: { isEmail: true },
     },
     password: {
       type: DataTypes.STRING(255),
@@ -90,9 +89,33 @@ const UserSQL = sequelize.define(
       type: DataTypes.INTEGER,
       defaultValue: 5,
     },
-    isEmailVerified: {
+    emailVerified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+    verificationOtp: {
+      type: DataTypes.STRING(128),
+      allowNull: true,
+    },
+    verificationOtpExpires: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    verificationToken: {
+      type: DataTypes.STRING(128),
+      allowNull: true,
+    },
+    verificationTokenExpires: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    resetPasswordToken: {
+      type: DataTypes.STRING(128),
+      allowNull: true,
+    },
+    resetPasswordExpires: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
     isActive: {
       type: DataTypes.BOOLEAN,
@@ -109,6 +132,13 @@ const UserSQL = sequelize.define(
     hooks: {
       beforeSave: async (user) => {
         if (user.changed('password') && user.password) {
+          if (
+            typeof user.password === 'string' &&
+            (user.password.startsWith('$2a$') || user.password.startsWith('$2b$') || user.password.startsWith('$2y$')) &&
+            user.password.length === 60
+          ) {
+            return;
+          }
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(user.password, salt);
         }
@@ -120,6 +150,19 @@ const UserSQL = sequelize.define(
 UserSQL.prototype.comparePassword = async function (candidatePassword) {
   if (!this.password) return false;
   return bcrypt.compare(candidatePassword, this.password);
+};
+
+UserSQL.prototype.toSafeJSON = function () {
+  const json = this.toJSON();
+  json._id = String(json.id);
+  delete json.password;
+  delete json.verificationOtp;
+  delete json.verificationOtpExpires;
+  delete json.verificationToken;
+  delete json.verificationTokenExpires;
+  delete json.resetPasswordToken;
+  delete json.resetPasswordExpires;
+  return json;
 };
 
 module.exports = UserSQL;

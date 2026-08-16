@@ -1,5 +1,6 @@
-const User = require('../models/User');
-const PendingUser = require('../models/PendingUser');
+const UserSQL = require('../models/sql/User.sql');
+const PendingUserSQL = require('../models/sql/PendingUser.sql');
+const { Op } = require('sequelize');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 const { setAuthCookie, clearAuthCookie } = require('../middleware/auth');
@@ -10,9 +11,6 @@ const logger = require('../config/logger');
 
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-const getVerificationUrl = (token) =>
-  `${env.clientUrl}/auth/verify-email?token=${token}`;
-
 const getResetUrl = (token) =>
   `${env.clientUrl}/auth/reset-password?token=${token}`;
 
@@ -21,22 +19,22 @@ const register = asyncHandler(async (req, res, next) => {
   const { name, email, password, role } = req.body;
   const normalizedEmail = String(email).toLowerCase().trim();
 
-  // Check if a real registered user already exists
-  const existingUser = await User.findOne({ email: normalizedEmail });
+  // Check if a registered user already exists in MySQL
+  const existingUser = await UserSQL.findOne({ where: { email: normalizedEmail } });
   if (existingUser) {
     if (existingUser.emailVerified) {
       return next(new ApiError(409, 'An account with this email already exists. Please log in.'));
     }
     // If old unverified user exists, remove it so new registration can proceed cleanly
-    await existingUser.deleteOne();
+    await existingUser.destroy();
   }
 
   const otp = generateOtp();
   const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-  // Save/replace pending signup record (NO official User record created yet)
-  await PendingUser.deleteMany({ email: normalizedEmail });
-  await PendingUser.create({
+  // Save/replace pending signup record in MySQL (NO official User record created yet)
+  await PendingUserSQL.destroy({ where: { email: normalizedEmail } });
+  await PendingUserSQL.create({
     name: name.trim(),
     email: normalizedEmail,
     password, // pre-save will hash password
@@ -60,7 +58,7 @@ const register = asyncHandler(async (req, res, next) => {
     });
   } catch (err) {
     logger.error(`[auth] Pre-signup OTP email failed for ${normalizedEmail}: ${err.message}`);
-    await PendingUser.deleteMany({ email: normalizedEmail });
+    await PendingUserSQL.destroy({ where: { email: normalizedEmail } });
     return next(new ApiError(500, `Failed to send verification email: ${err.message}. Please check your email settings or try again.`));
   }
 
@@ -82,10 +80,12 @@ const verifyOtp = asyncHandler(async (req, res, next) => {
   const rawOtp = String(otp).trim();
   const hashedOtp = hashToken(rawOtp);
 
-  // 1. Check PendingUser (pre-registration record)
-  const pending = await PendingUser.findOne({
-    email: normalizedEmail,
-    expiresAt: { $gt: new Date() },
+  // 1. Check PendingUser in MySQL
+  const pending = await PendingUserSQL.findOne({
+    where: {
+      email: normalizedEmail,
+      expiresAt: { [Op.gt]: new Date() },
+    },
   });
 
   if (pending) {
@@ -94,14 +94,14 @@ const verifyOtp = asyncHandler(async (req, res, next) => {
     }
 
     // Ensure user does not already exist
-    const existing = await User.findOne({ email: normalizedEmail });
+    const existing = await UserSQL.findOne({ where: { email: normalizedEmail } });
     if (existing) {
-      await PendingUser.deleteMany({ email: normalizedEmail });
+      await PendingUserSQL.destroy({ where: { email: normalizedEmail } });
       return next(new ApiError(409, 'An account with this email already exists.'));
     }
 
-    // Create the official verified User document
-    const user = await User.create({
+    // Create the official verified User record in MySQL
+    const user = await UserSQL.create({
       name: pending.name,
       email: pending.email,
       password: pending.password, // Already bcrypt hashed
@@ -110,12 +110,12 @@ const verifyOtp = asyncHandler(async (req, res, next) => {
     });
 
     // Delete pending record
-    await PendingUser.deleteMany({ email: normalizedEmail });
+    await PendingUserSQL.destroy({ where: { email: normalizedEmail } });
 
-    logger.info(`[auth] Account successfully created and verified for ${user.email} (ID: ${user._id})`);
+    logger.info(`[auth] Account successfully created and verified for ${user.email} (ID: ${user.id})`);
 
     // Initialize session cookie
-    setAuthCookie(res, user._id);
+    setAuthCookie(res, user.id);
     return res.status(201).json({
       success: true,
       message: 'Account created successfully! Welcome to JobHive.',
@@ -123,22 +123,24 @@ const verifyOtp = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // 2. Fallback: check if existing user with verificationOtp
-  const existingUser = await User.findOne({
-    email: normalizedEmail,
-    verificationOtp: hashedOtp,
-    verificationOtpExpires: { $gt: Date.now() },
+  // 2. Fallback: check if existing user with verificationOtp in MySQL
+  const existingUser = await UserSQL.findOne({
+    where: {
+      email: normalizedEmail,
+      verificationOtp: hashedOtp,
+      verificationOtpExpires: { [Op.gt]: new Date() },
+    },
   });
 
   if (existingUser) {
     existingUser.emailVerified = true;
-    existingUser.verificationOtp = undefined;
-    existingUser.verificationOtpExpires = undefined;
-    existingUser.verificationToken = undefined;
-    existingUser.verificationTokenExpires = undefined;
+    existingUser.verificationOtp = null;
+    existingUser.verificationOtpExpires = null;
+    existingUser.verificationToken = null;
+    existingUser.verificationTokenExpires = null;
     await existingUser.save();
 
-    setAuthCookie(res, existingUser._id);
+    setAuthCookie(res, existingUser.id);
     return res.json({
       success: true,
       message: 'Email verified successfully! Welcome to JobHive.',
@@ -148,14 +150,14 @@ const verifyOtp = asyncHandler(async (req, res, next) => {
 
   // 3. Fallback: If client supplied registration details directly with valid OTP fallback
   if (name && password) {
-    const user = await User.create({
+    const user = await UserSQL.create({
       name,
       email: normalizedEmail,
       password,
       role: role === 'recruiter' ? 'recruiter' : 'candidate',
       emailVerified: true,
     });
-    setAuthCookie(res, user._id);
+    setAuthCookie(res, user.id);
     return res.status(201).json({
       success: true,
       message: 'Account created successfully! Welcome to JobHive.',
@@ -166,7 +168,7 @@ const verifyOtp = asyncHandler(async (req, res, next) => {
   return next(new ApiError(400, 'Verification code is invalid or has expired. Please request a new code.'));
 });
 
-// Resend OTP for either pending signup or existing account
+// Resend OTP for either pending signup or existing account in MySQL
 const resendOtp = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
   if (!email) {
@@ -176,7 +178,7 @@ const resendOtp = asyncHandler(async (req, res, next) => {
   const normalizedEmail = String(email).toLowerCase().trim();
 
   // Check if real user already exists
-  const existingUser = await User.findOne({ email: normalizedEmail });
+  const existingUser = await UserSQL.findOne({ where: { email: normalizedEmail } });
   if (existingUser && existingUser.emailVerified) {
     return res.json({ success: true, message: 'Account is already verified. Please log in.' });
   }
@@ -184,7 +186,7 @@ const resendOtp = asyncHandler(async (req, res, next) => {
   const otp = generateOtp();
   const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-  const pending = await PendingUser.findOne({ email: normalizedEmail });
+  const pending = await PendingUserSQL.findOne({ where: { email: normalizedEmail } });
   if (pending) {
     pending.otp = hashToken(otp);
     pending.expiresAt = otpExpiry;
@@ -250,7 +252,7 @@ const login = asyncHandler(async (req, res, next) => {
     return next(new ApiError(400, 'Email and password are required.'));
   }
   const normalizedEmail = String(email).toLowerCase().trim();
-  const user = await User.findOne({ email: normalizedEmail }).select('+password');
+  const user = await UserSQL.findOne({ where: { email: normalizedEmail } });
   if (!user || !(await user.comparePassword(password))) {
     return next(new ApiError(401, 'Invalid email or password.'));
   }
@@ -258,7 +260,7 @@ const login = asyncHandler(async (req, res, next) => {
     return next(new ApiError(403, 'Your account has been suspended.'));
   }
 
-  setAuthCookie(res, user._id);
+  setAuthCookie(res, user.id);
   res.json({ success: true, message: 'Logged in successfully.', user: user.toSafeJSON() });
 });
 
@@ -270,58 +272,65 @@ const logout = (req, res) => {
 const verifyEmail = asyncHandler(async (req, res, next) => {
   const { token, email, otp } = req.body;
 
-  // Support OTP verification through verifyEmail endpoint as well
   if (email && otp) {
     const hashedOtp = hashToken(String(otp).trim());
-    const user = await User.findOne({
-      email: String(email).toLowerCase().trim(),
-      verificationOtp: hashedOtp,
-      verificationOtpExpires: { $gt: Date.now() },
+    const user = await UserSQL.findOne({
+      where: {
+        email: String(email).toLowerCase().trim(),
+        verificationOtp: hashedOtp,
+        verificationOtpExpires: { [Op.gt]: new Date() },
+      },
     });
     if (!user) return next(new ApiError(400, 'Invalid or expired OTP code.'));
 
     user.emailVerified = true;
-    user.verificationOtp = undefined;
-    user.verificationOtpExpires = undefined;
-    user.verificationToken = undefined;
-    user.verificationTokenExpires = undefined;
+    user.verificationOtp = null;
+    user.verificationOtpExpires = null;
+    user.verificationToken = null;
+    user.verificationTokenExpires = null;
     await user.save();
 
-    setAuthCookie(res, user._id);
+    setAuthCookie(res, user.id);
     return res.json({ success: true, message: 'Email verified successfully.', user: user.toSafeJSON() });
   }
 
   if (!token) return next(new ApiError(400, 'Verification token or OTP is required.'));
 
   const hashed = hashToken(token);
-  const user = await User.findOne({
-    verificationToken: hashed,
-    verificationTokenExpires: { $gt: Date.now() },
+  const user = await UserSQL.findOne({
+    where: {
+      verificationToken: hashed,
+      verificationTokenExpires: { [Op.gt]: new Date() },
+    },
   });
   if (!user) return next(new ApiError(400, 'Invalid or expired verification link.'));
 
   user.emailVerified = true;
-  user.verificationToken = undefined;
-  user.verificationTokenExpires = undefined;
-  user.verificationOtp = undefined;
-  user.verificationOtpExpires = undefined;
+  user.verificationToken = null;
+  user.verificationTokenExpires = null;
+  user.verificationOtp = null;
+  user.verificationOtpExpires = null;
   await user.save();
 
-  setAuthCookie(res, user._id);
+  setAuthCookie(res, user.id);
   res.json({ success: true, message: 'Email verified successfully.', user: user.toSafeJSON() });
 });
 
 const resendVerification = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user?._id) || await User.findOne({ email: req.body.email });
+  const userId = req.user ? req.user.id : null;
+  const user = userId
+    ? await UserSQL.findByPk(userId)
+    : await UserSQL.findOne({ where: { email: req.body.email } });
+
   if (!user) return next(new ApiError(404, 'User not found.'));
   if (user.emailVerified) return res.json({ success: true, message: 'Email already verified.' });
 
   const otp = generateOtp();
   const verificationToken = randomToken(32);
   user.verificationOtp = hashToken(otp);
-  user.verificationOtpExpires = Date.now() + 10 * 60 * 1000;
+  user.verificationOtpExpires = new Date(Date.now() + 10 * 60 * 1000);
   user.verificationToken = hashToken(verificationToken);
-  user.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
+  user.verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
   await user.save();
 
   await sendMail({
@@ -339,11 +348,11 @@ const resendVerification = asyncHandler(async (req, res, next) => {
 
 const forgotPassword = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
-  const user = await User.findOne({ email });
+  const user = await UserSQL.findOne({ where: { email } });
   if (user) {
     const resetToken = randomToken(32);
     user.resetPasswordToken = hashToken(resetToken);
-    user.resetPasswordExpires = Date.now() + 60 * 60 * 1000;
+    user.resetPasswordExpires = new Date(Date.now() + 60 * 60 * 1000);
     await user.save();
 
     await sendMail({
@@ -363,23 +372,28 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
 const resetPassword = asyncHandler(async (req, res, next) => {
   const { token, password } = req.body;
   const hashed = hashToken(token);
-  const user = await User.findOne({
-    resetPasswordToken: hashed,
-    resetPasswordExpires: { $gt: Date.now() },
+  const user = await UserSQL.findOne({
+    where: {
+      resetPasswordToken: hashed,
+      resetPasswordExpires: { [Op.gt]: new Date() },
+    },
   });
   if (!user) return next(new ApiError(400, 'Invalid or expired reset token.'));
 
   user.password = password;
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpires = undefined;
+  user.resetPasswordToken = null;
+  user.resetPasswordExpires = null;
   await user.save();
 
-  setAuthCookie(res, user._id);
+  setAuthCookie(res, user.id);
   res.json({ success: true, message: 'Password reset successfully.', user: user.toSafeJSON() });
 });
 
 const me = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id).populate('company');
+  const user = await UserSQL.findByPk(req.user.id);
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found' });
+  }
   res.json({ success: true, user: user.toSafeJSON() });
 });
 
@@ -405,18 +419,23 @@ const googleLogin = asyncHandler(async (req, res, next) => {
   const { sub: googleId, email, name, picture } = payload;
   if (!email) return next(new ApiError(401, 'Google account has no email.'));
 
-  let user = await User.findOne({ $or: [{ googleId }, { email }] });
+  let user = await UserSQL.findOne({
+    where: {
+      [Op.or]: [{ googleId }, { email }],
+    },
+  });
+
   if (user) {
     if (!user.googleId) user.googleId = googleId;
     if (!user.avatar && picture) user.avatar = picture;
     await user.save();
   } else {
-    user = await User.create({
-      name:          name || email.split('@')[0],
+    user = await UserSQL.create({
+      name: name || email.split('@')[0],
       email,
       googleId,
-      avatar:        picture || '',
-      role:          role === 'recruiter' ? 'recruiter' : 'candidate',
+      avatar: picture || '',
+      role: role === 'recruiter' ? 'recruiter' : 'candidate',
       emailVerified: true,
     });
   }
@@ -425,7 +444,7 @@ const googleLogin = asyncHandler(async (req, res, next) => {
     return next(new ApiError(403, 'Your account has been suspended.'));
   }
 
-  setAuthCookie(res, user._id);
+  setAuthCookie(res, user.id);
   res.json({ success: true, message: 'Logged in with Google.', user: user.toSafeJSON() });
 });
 

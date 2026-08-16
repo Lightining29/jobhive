@@ -31,13 +31,29 @@ const clearAuthCookie = (res) => {
   });
 };
 
+const UserSQL = require('../models/sql/User.sql');
+
+const findUserById = async (id) => {
+  try {
+    const sqlUser = await UserSQL.findByPk(id);
+    if (sqlUser) return sqlUser;
+  } catch (err) {}
+
+  try {
+    if (User.findById) {
+      return await User.findById(id);
+    }
+  } catch (err) {}
+  return null;
+};
+
 const protect = async (req, res, next) => {
   try {
     const token = req.cookies && req.cookies.token;
     if (!token) throw new ApiError(401, 'Not authenticated. Please login.');
 
     const decoded = jwt.verify(token, env.jwt.secret);
-    const user = await User.findById(decoded.id);
+    const user = await findUserById(decoded.id);
     if (!user) throw new ApiError(401, 'Account no longer exists.');
 
     if (user.status === 'suspended') {
@@ -56,7 +72,7 @@ const optionalProtect = async (req, res, next) => {
     const token = req.cookies && req.cookies.token;
     if (!token) return next();
     const decoded = jwt.verify(token, env.jwt.secret);
-    const user = await User.findById(decoded.id);
+    const user = await findUserById(decoded.id);
     if (user && user.status !== 'suspended') req.user = user;
     next();
   } catch {
