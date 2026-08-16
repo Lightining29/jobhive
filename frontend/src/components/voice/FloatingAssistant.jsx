@@ -1,16 +1,15 @@
 /**
  * FloatingAssistant — the global floating button + panel that wraps VoiceAssistant.
- * Renders fixed bottom-right.  Uses the current route to pass page context to AI.
+ * Renders fixed bottom-right. Uses the current route to pass page context to AI.
  */
 import { useState, useCallback, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
-import { FaHexagonNodes, FaXmark } from 'react-icons/fa6';
+import { FaXmark } from 'react-icons/fa6';
 import VoiceAssistant from './VoiceAssistant';
 import Canvas3DBot from './Canvas3DBot';
 
 function derivePageContext(pathname) {
-  // Extract job ID directly from pathname: /jobs/:id
   const jobMatch = pathname.match(/^\/jobs\/([a-f0-9]{24})/i);
   if (jobMatch) {
     return { page: 'job_detail', jobId: jobMatch[1] };
@@ -71,7 +70,7 @@ export default function FloatingAssistant() {
       <div
         className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3"
         role="complementary"
-        aria-label="AI Voice Assistant"
+        aria-label="AI Assistant"
       >
         {/* Expanded assistant panel */}
         <AnimatePresence>
@@ -80,44 +79,30 @@ export default function FloatingAssistant() {
           )}
         </AnimatePresence>
 
-        {/* Floating trigger button with 3D Animated Bot */}
+        {/* Floating trigger button */}
         <AnimatePresence mode="wait">
           {!isOpen ? (
-            <motion.div
+            <motion.button
               key="open"
+              onClick={handleOpen}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-              className="relative flex items-center"
+              className="relative h-16 w-16 rounded-full bg-gradient-to-br from-slate-900 via-primary-950 to-slate-900 text-white shadow-lift border-2 border-primary-500/40 flex items-center justify-center hover:border-primary-400 hover:shadow-glow transition-all group overflow-hidden"
+              aria-label="Open 3D AI Assistant (Ctrl+Shift+A)"
+              title="Job Workplace 3D AI Assistant (Ctrl+Shift+A)"
             >
-              {/* Hindi / English Speech bubble teaser */}
-              <motion.div
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.8 }}
-                onClick={handleOpen}
-                className="hidden sm:flex items-center gap-1.5 mr-3 px-3 py-1.5 bg-surface text-ink text-xs font-semibold rounded-2xl shadow-lift border border-line cursor-pointer hover:border-primary-500/50 transition-all select-none"
-              >
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Job Assistant AI • पूछें कुछ भी!</span>
-              </motion.div>
+              {/* 3D Bot Character */}
+              <Canvas3DBot mode="idle" size={54} interactive={true} />
 
-              <button
-                onClick={handleOpen}
-                className="relative h-16 w-16 rounded-full bg-gradient-to-br from-slate-900 via-primary-950 to-slate-900 text-white shadow-lift border-2 border-primary-500/40 flex items-center justify-center hover:border-primary-400 hover:shadow-glow transition-all group overflow-hidden"
-                aria-label="Open 3D AI Voice Assistant (Ctrl+Shift+A)"
-                title="Job Workplace 3D AI Assistant (Ctrl+Shift+A)"
-              >
-                {/* 3D Bot Character */}
-                <Canvas3DBot mode="idle" size={54} interactive={true} />
-
-                {/* New message / active indicator */}
-                {hasNewMessage && (
-                  <span className="absolute top-1 right-1 h-3.5 w-3.5 rounded-full bg-accent border-2 border-slate-900" />
-                )}
-              </button>
-            </motion.div>
+              {/* New message / active indicator */}
+              {hasNewMessage && (
+                <span className="absolute top-1 right-1 h-3.5 w-3.5 rounded-full bg-accent border-2 border-slate-900" />
+              )}
+            </motion.button>
           ) : (
             <motion.button
               key="close"
@@ -129,7 +114,7 @@ export default function FloatingAssistant() {
               exit={{ scale: 0, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
               className="h-10 w-10 rounded-full bg-white border border-line text-muted hover:text-red-500 hover:border-red-200 shadow-soft flex items-center justify-center transition-colors"
-              aria-label="Close AI Voice Assistant"
+              aria-label="Close AI Assistant"
             >
               <FaXmark className="h-4 w-4" />
             </motion.button>

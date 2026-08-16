@@ -1,42 +1,29 @@
 /**
- * VoiceAssistant — the expanded voice chat panel.
- * Rendered by FloatingAssistant when the panel is open.
+ * VoiceAssistant — clean voice and text assistant panel without TTS audio.
  */
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   FaXmark,
   FaTrash,
-  FaGear,
-  FaVolumeHigh,
-  FaVolumeXmark,
   FaPaperPlane,
   FaWifi,
   FaCircleXmark,
 } from 'react-icons/fa6';
 import { useVoiceSocket } from '../../hooks/useVoiceSocket';
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
-import { useKokoroTTS } from '../../hooks/useKokoroTTS';
 import { useLocalStorage } from '../../hooks/index';
-import AIAvatar from './AIAvatar';
 import Canvas3DBot from './Canvas3DBot';
 import MicButton from './MicButton';
 import VoiceWave from './VoiceWave';
 import ConversationPanel from './ConversationPanel';
-import VoiceSettings from './VoiceSettings';
 
 const DEFAULT_SETTINGS = {
-  autoSpeak: true,
-  rate: 1.0,
-  volume: 1.0,
   lang: 'en-IN',
-  kokoroVoice: 'en-US-Journey-F',
-  ttsFormat: 'mp3',
 };
 
 export default function VoiceAssistant({ onClose, pageContext }) {
   const [textInput, setTextInput] = useState('');
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [settings, setSettings] = useLocalStorage('voice_settings', DEFAULT_SETTINGS);
   const inputRef = useRef(null);
 
@@ -57,34 +44,13 @@ export default function VoiceAssistant({ onClose, pageContext }) {
   // ── Browser Speech Recognition ────────────────────────────────────────────
   const { isSupported: sttSupported, isListening, transcript, start, stop, error: sttError } =
     useSpeechRecognition({
-      lang: settings.lang || 'en-US',
+      lang: settings.lang || 'en-IN',
       onFinalTranscript: (text) => {
         if (text.trim()) {
           sendMessage(text);
-          // Don't keep listening after sending — wait for AI response
-          // The mic button can be clicked again to continue
         }
       },
     });
-
-  // ── Kokoro TTS ────────────────────────────────────────────────────────────
-  const { isSpeaking, isLoading: ttsLoading, speak, cancel: cancelTTS, usingFallback, kokoroAvailable } = useKokoroTTS({
-    voice: settings.kokoroVoice || 'af_heart',
-    speed: settings.rate,
-    volume: settings.volume,
-    format: settings.ttsFormat || 'mp3',
-    lang: settings.lang,
-  });
-
-  // Auto-speak last assistant message — stop mic first
-  useEffect(() => {
-    if (!settings.autoSpeak) return;
-    const last = messages[messages.length - 1];
-    if (last?.role === 'assistant' && last.text) {
-      if (isListening) stop();   // don't speak while mic is open
-      speak(last.text);
-    }
-  }, [messages, settings.autoSpeak, speak, isListening, stop]);
 
   // Set page context whenever it changes
   useEffect(() => {
@@ -94,19 +60,17 @@ export default function VoiceAssistant({ onClose, pageContext }) {
   }, [pageContext, setPageContext]);
 
   // ── Determine AI mode for animations ─────────────────────────────────────
-  const aiMode = isThinking ? 'thinking' : isStreaming ? 'speaking' : isSpeaking || ttsLoading ? 'speaking' : isListening ? 'listening' : 'idle';
+  const aiMode = isThinking ? 'thinking' : isStreaming ? 'speaking' : isListening ? 'listening' : 'idle';
 
-  // ── Send text message — also cancels TTS and mic ────────────────────────
+  // ── Send text message ───────────────────────────────────────────────────
   const handleSend = useCallback(() => {
-    const text = textInput.trim();
-    if (!text) return;
-    // Stop mic and TTS before sending
+    const trimmed = textInput.trim();
+    if (!trimmed) return;
     if (isListening) stop();
-    if (isSpeaking) cancelTTS();
-    sendMessage(text);
+    sendMessage(trimmed);
     setTextInput('');
     inputRef.current?.focus();
-  }, [textInput, sendMessage, isListening, stop, isSpeaking, cancelTTS]);
+  }, [textInput, sendMessage, isListening, stop]);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -115,12 +79,11 @@ export default function VoiceAssistant({ onClose, pageContext }) {
     }
   };
 
-  // ── Mic toggle — cancel TTS when starting mic ────────────────────────────
+  // ── Mic button toggle ─────────────────────────────────────────────────────
   const handleMicToggle = () => {
     if (isListening) {
       stop();
     } else {
-      if (isSpeaking) cancelTTS();  // stop AI speaking when user wants to talk
       start();
     }
   };
@@ -143,7 +106,7 @@ export default function VoiceAssistant({ onClose, pageContext }) {
         <Canvas3DBot mode={aiMode} size={46} interactive={true} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="text-sm font-bold text-ink">Job Workplace AI (3D Bot)</p>
+            <p className="text-sm font-bold text-ink">Job Workplace AI</p>
             <span
               className={`h-1.5 w-1.5 rounded-full ${connected ? 'bg-emerald-400' : 'bg-slate-300'}`}
               title={connected ? 'Connected' : 'Disconnected'}
@@ -152,11 +115,7 @@ export default function VoiceAssistant({ onClose, pageContext }) {
           <div className="flex items-center gap-1.5">
             <VoiceWave mode={aiMode} size="sm" />
             <p className="text-[10px] text-muted capitalize">
-              {ttsLoading
-                ? 'generating Hindi voice…'
-                : isSpeaking
-                ? 'Speaking...'
-                : aiMode === 'idle'
+              {aiMode === 'idle'
                 ? connected ? (settings.lang === 'hi-IN' ? 'हिंदी मोड • सक्रिय' : 'English Mode • Ready') : 'connecting…'
                 : aiMode}
             </p>
@@ -176,29 +135,6 @@ export default function VoiceAssistant({ onClose, pageContext }) {
           >
             {settings.lang === 'hi-IN' ? '🇮🇳 हिन्दी' : '🇮🇳 Eng'}
           </button>
-          {/* TTS toggle */}
-          <button
-            onClick={() => {
-              if (isSpeaking) {
-                cancelTTS();
-              } else {
-                setSettings((s) => ({ ...s, autoSpeak: !s.autoSpeak }));
-              }
-            }}
-            className={`p-2 rounded-xl transition-colors ${
-              settings.autoSpeak || isSpeaking
-                ? 'text-primary-600 bg-primary-50'
-                : 'text-muted hover:bg-slate-100'
-            }`}
-            title={isSpeaking ? 'Stop speaking' : settings.autoSpeak ? 'Disable auto-speak' : 'Enable auto-speak'}
-            aria-label="Toggle speech output"
-          >
-            {settings.autoSpeak || isSpeaking ? (
-              <FaVolumeHigh className="h-4 w-4" />
-            ) : (
-              <FaVolumeXmark className="h-4 w-4" />
-            )}
-          </button>
 
           {/* Reconnect if disconnected */}
           {!connected && (
@@ -212,22 +148,6 @@ export default function VoiceAssistant({ onClose, pageContext }) {
             </button>
           )}
 
-          {/* Settings */}
-          <button
-            onClick={() => setSettingsOpen((o) => !o)}
-            className={`p-2 rounded-xl transition-colors ${settingsOpen ? 'text-primary-600 bg-primary-50' : 'text-muted hover:bg-slate-100'}`}
-            aria-label="Voice settings"
-            aria-expanded={settingsOpen}
-          >
-            <FaGear className="h-4 w-4" />
-          </button>
-          <VoiceSettings
-            isOpen={settingsOpen}
-            onClose={() => setSettingsOpen(false)}
-            settings={settings}
-            onChange={setSettings}
-            kokoroAvailable={kokoroAvailable}
-          />
           {/* Clear */}
           <button
             onClick={clearConversation}
@@ -269,7 +189,7 @@ export default function VoiceAssistant({ onClose, pageContext }) {
         </div>
       )}
 
-      {/* ── Conversation ─────────────────────────────────────────────────────── */}
+      {/* ── Conversation History ────────────────────────────────────────────── */}
       <ConversationPanel
         messages={messages}
         streamingText={streamingText}
@@ -279,27 +199,30 @@ export default function VoiceAssistant({ onClose, pageContext }) {
         className="flex-1"
       />
 
-      {/* ── Input area ──────────────────────────────────────────────────────── */}
+      {/* ── Input bar ───────────────────────────────────────────────────────── */}
       <div className="px-3 pb-3 pt-2 border-t border-line/60 bg-white/60">
-        {/* Suggestion pills — shown when conversation is empty */}
+        {/* Quick query chips on empty state */}
         {messages.length === 0 && (
           <div className="flex flex-wrap gap-1.5 mb-2">
-            {['Java jobs in Delhi', 'Remote React roles', 'Interview tips', 'My resume score'].map(
-              (s) => (
-                <button
-                  key={s}
-                  onClick={() => sendMessage(s)}
-                  className="text-[11px] bg-slate-100 hover:bg-primary-50 hover:text-primary-700 text-slate-600 rounded-full px-2.5 py-1 transition-colors border border-transparent hover:border-primary-200"
-                >
-                  {s}
-                </button>
-              )
-            )}
+            {[
+              'Java jobs in Delhi',
+              'MERN Stack Noida',
+              'Remote React roles',
+              'Interview tips',
+            ].map((chip) => (
+              <button
+                key={chip}
+                onClick={() => sendMessage(chip)}
+                className="text-[11px] bg-slate-100 hover:bg-primary-50 hover:text-primary-700 text-slate-600 rounded-full px-2.5 py-1 transition-colors border border-transparent hover:border-primary-200"
+              >
+                {chip}
+              </button>
+            ))}
           </div>
         )}
 
         <div className="flex items-center gap-2">
-          {/* Mic button */}
+          {/* Push-to-talk mic button */}
           <MicButton
             isListening={isListening}
             isDisabled={!sttSupported || !connected || isThinking || isStreaming}
@@ -315,7 +238,11 @@ export default function VoiceAssistant({ onClose, pageContext }) {
             onChange={(e) => setTextInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={
-              isListening ? 'Listening…' : sttSupported ? 'Type or speak…' : 'Ask anything…'
+              isListening
+                ? 'Listening…'
+                : sttSupported
+                ? 'Type or speak…'
+                : 'Ask anything…'
             }
             disabled={isThinking || isStreaming}
             className="flex-1 input !py-2 !text-sm disabled:opacity-60"
@@ -323,7 +250,7 @@ export default function VoiceAssistant({ onClose, pageContext }) {
             aria-label="Voice assistant text input"
           />
 
-          {/* Send button */}
+          {/* Send text button */}
           <button
             onClick={handleSend}
             disabled={!textInput.trim() || isThinking || isStreaming || !connected}
