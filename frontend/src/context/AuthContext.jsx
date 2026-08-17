@@ -13,12 +13,17 @@ export const AuthProvider = ({ children }) => {
   const refreshUser = useCallback(async () => {
     try {
       const { data } = await authService.me();
-      setUser(data.user);
-      if (data.user?.role === 'candidate') {
-        const saved = await candidateService.saved();
-        setSavedJobs(saved.data.jobs || []);
+      const currentUser = data?.user || null;
+      setUser(currentUser);
+      if (currentUser?.role === 'candidate') {
+        try {
+          const saved = await candidateService.saved();
+          setSavedJobs(saved?.data?.jobs || []);
+        } catch {
+          setSavedJobs([]);
+        }
       }
-      return data.user;
+      return currentUser;
     } catch {
       setUser(null);
       return null;
@@ -26,24 +31,39 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
     (async () => {
       try {
         const u = await refreshUser();
-        if (u) {
-          const { data } = await import('../services').then((m) => m.notificationService.list());
-          setUnreadCount(data.unreadCount || 0);
+        if (u && isMounted) {
+          try {
+            const { data } = await import('../services').then((m) => m.notificationService.list());
+            if (isMounted) setUnreadCount(data?.unreadCount || 0);
+          } catch {
+            // ignore notification fetch errors
+          }
         }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     })();
+    return () => { isMounted = false; };
   }, [refreshUser]);
 
   const login = useCallback(async (credentials) => {
     const { data } = await authService.login(credentials);
-    setUser(data.user);
+    const loggedUser = data?.user || null;
+    setUser(loggedUser);
+    if (loggedUser?.role === 'candidate') {
+      try {
+        const saved = await candidateService.saved();
+        setSavedJobs(saved?.data?.jobs || []);
+      } catch {
+        setSavedJobs([]);
+      }
+    }
     toast.success('Welcome back!');
-    return data.user;
+    return loggedUser;
   }, []);
 
   const register = useCallback(async (payload) => {
