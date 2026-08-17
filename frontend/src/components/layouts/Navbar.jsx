@@ -21,37 +21,51 @@ const Navbar = () => {
   const dashboardPath = user?.role === 'admin' ? '/admin/dashboard' : user?.role === 'recruiter' ? '/recruiter/dashboard' : '/candidate/dashboard';
 
   const mobileMenu = (
-    <div className="md:hidden absolute top-full inset-x-0 bg-white shadow-lift border-b border-line px-4 py-4 space-y-2 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto">
+    <div className={`md:hidden absolute top-full inset-x-0 border-b px-4 py-4 space-y-2 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto shadow-2xl transition-colors duration-300 ${
+      isNeon
+        ? 'bg-[#060c18]/95 backdrop-blur-xl border-cyan-400/60 shadow-[0_15px_35px_rgba(0,240,255,0.35)] text-white'
+        : 'bg-white border-line text-ink shadow-lift'
+    }`}>
       {user ? (
-        <div className="p-3 bg-gradient-to-br from-slate-50 to-primary-50/40 rounded-2xl border border-line mb-3">
+        <div className={`p-3 rounded-2xl border mb-3 transition-colors ${
+          isNeon
+            ? 'bg-slate-900/90 border-cyan-400/60 shadow-[0_0_20px_rgba(0,240,255,0.3)]'
+            : 'bg-gradient-to-br from-slate-50 to-primary-50/40 border-line'
+        }`}>
           <div className="flex items-center gap-3 mb-3">
             {user.avatar ? (
               <img
-                src={user.avatar}
+                src={formatAvatarUrl(user.avatar)}
                 alt=""
-                className="h-11 w-11 rounded-full object-cover border-2 border-accent shrink-0"
+                className={`h-11 w-11 rounded-full object-cover border-2 shrink-0 ${isNeon ? 'border-cyan-400 shadow-[0_0_12px_rgba(0,240,255,0.85)]' : 'border-accent'}`}
                 onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
               />
             ) : null}
-            <span className={`h-11 w-11 rounded-full bg-gradient-to-br from-accent-dark to-ink text-white items-center justify-center text-sm font-bold shrink-0 ${user.avatar ? 'hidden' : 'flex'}`}>
+            <span className={`h-11 w-11 rounded-full items-center justify-center text-sm font-bold shrink-0 ${user.avatar ? 'hidden' : 'flex'} ${
+              isNeon ? 'bg-slate-950 border-2 border-cyan-400 text-cyan-300 shadow-[0_0_10px_rgba(0,240,255,0.7)]' : 'bg-gradient-to-br from-accent-dark to-ink text-white'
+            }`}>
               {initials(user.name)}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold text-ink truncate">{user.name}</p>
-              <p className="text-xs text-muted truncate capitalize">{user.role} • {user.email}</p>
+              <p className={`text-sm font-bold truncate ${isNeon ? 'text-white drop-shadow-[0_0_8px_rgba(0,240,255,0.85)]' : 'text-ink'}`}>{user.name}</p>
+              <p className={`text-xs truncate capitalize font-medium ${isNeon ? 'text-cyan-200/80' : 'text-muted'}`}>{user.role} • {user.email}</p>
             </div>
           </div>
           <Link
             to={dashboardPath}
             onClick={() => setOpen(false)}
-            className="btn-primary w-full !py-2.5 text-xs font-bold justify-center shadow-sm"
+            className={`w-full !py-2.5 text-xs font-extrabold justify-center shadow-sm flex items-center gap-1.5 rounded-xl transition-all ${
+              isNeon
+                ? 'bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 text-white shadow-[0_0_18px_rgba(0,240,255,0.85)] hover:shadow-[0_0_28px_rgba(0,240,255,1)] hover:scale-[1.01]'
+                : 'btn-primary'
+            }`}
           >
             Enter Dashboard →
           </Link>
         </div>
       ) : null}
 
-      <p className="text-[11px] font-bold text-muted uppercase tracking-wider px-3 pt-1">Navigation</p>
+      <p className={`text-[11px] font-bold uppercase tracking-wider px-3 pt-1 ${isNeon ? 'text-cyan-300 drop-shadow-[0_0_6px_rgba(0,240,255,0.8)]' : 'text-muted'}`}>Navigation</p>
       {NAV_LINKS.map((l) => (
         <NavLink
           key={l.to}
@@ -61,10 +75,10 @@ const Navbar = () => {
             `block px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
               isActive
                 ? isNeon
-                  ? 'bg-cyan-500/25 text-white border border-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.7)] font-bold'
+                  ? 'bg-cyan-500/25 text-white border border-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.7)] font-bold drop-shadow-[0_0_8px_rgba(0,240,255,0.9)]'
                   : 'bg-accent/10 text-ink font-semibold'
                 : isNeon
-                  ? 'text-cyan-200/70 hover:bg-cyan-500/10 hover:text-white'
+                  ? 'text-cyan-100/80 hover:bg-cyan-500/15 hover:text-white hover:drop-shadow-[0_0_6px_rgba(0,240,255,0.7)]'
                   : 'text-muted hover:bg-slate-50 hover:text-ink'
             }`
           }
@@ -74,61 +88,71 @@ const Navbar = () => {
       ))}
 
       {user ? (
-        <div className="pt-3 border-t border-line space-y-1">
-          <p className="text-[11px] font-bold text-muted uppercase tracking-wider px-3">Account</p>
+        <div className={`pt-3 border-t space-y-1 ${isNeon ? 'border-cyan-400/30' : 'border-line'}`}>
+          <p className={`text-[11px] font-bold uppercase tracking-wider px-3 ${isNeon ? 'text-cyan-300 drop-shadow-[0_0_6px_rgba(0,240,255,0.8)]' : 'text-muted'}`}>Account</p>
           <Link
             to={dashboardPath}
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium text-ink hover:bg-accent/10 transition-colors"
+            className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+              isNeon ? 'text-cyan-100 hover:bg-cyan-500/15 hover:text-white' : 'text-ink hover:bg-accent/10'
+            }`}
           >
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
             Dashboard
           </Link>
           <Link
             to="/candidate/saved-jobs"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors"
+            className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors ${
+              isNeon ? 'text-cyan-200/80 hover:bg-cyan-500/15 hover:text-white' : 'text-muted hover:bg-slate-50 hover:text-ink'
+            }`}
           >
-            <FaBookmark className="h-3.5 w-3.5 text-muted" />
+            <FaBookmark className={`h-3.5 w-3.5 ${isNeon ? 'text-cyan-300' : 'text-muted'}`} />
             Saved Jobs
           </Link>
           {user.role === 'recruiter' && (
             <Link
               to="/recruiter/post-job"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors"
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors ${
+                isNeon ? 'text-cyan-200/80 hover:bg-cyan-500/15 hover:text-white' : 'text-muted hover:bg-slate-50 hover:text-ink'
+              }`}
             >
-              <FaBriefcase className="h-3.5 w-3.5 text-muted" />
+              <FaBriefcase className={`h-3.5 w-3.5 ${isNeon ? 'text-cyan-300' : 'text-muted'}`} />
               Post a Job
             </Link>
           )}
           <Link
             to="/notifications"
             onClick={() => setOpen(false)}
-            className="flex items-center justify-between px-3 py-2 rounded-xl text-sm text-muted hover:bg-slate-50 hover:text-ink transition-colors"
+            className={`flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-colors ${
+              isNeon ? 'text-cyan-200/80 hover:bg-cyan-500/15 hover:text-white' : 'text-muted hover:bg-slate-50 hover:text-ink'
+            }`}
           >
             <span className="flex items-center gap-2.5">
-              <FaBell className="h-3.5 w-3.5 text-muted" />
+              <FaBell className={`h-3.5 w-3.5 ${isNeon ? 'text-cyan-300' : 'text-muted'}`} />
               Notifications
             </span>
             {unreadCount > 0 && (
-              <span className="badge badge-accent !px-2 !py-0.5 text-[10px]">
+              <span className={`badge !px-2 !py-0.5 text-[10px] ${isNeon ? 'bg-pink-600 text-white shadow-[0_0_8px_rgba(255,0,127,0.8)]' : 'badge-accent'}`}>
                 {unreadCount}
               </span>
             )}
           </Link>
           <button
             onClick={() => { setOpen(false); logout(); }}
-            className="w-full flex items-center gap-2.5 text-left px-3 py-2.5 rounded-xl text-sm text-red-600 font-medium hover:bg-red-50 transition-colors mt-2"
+            className={`w-full flex items-center gap-2.5 text-left px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors mt-2 cursor-pointer ${
+              isNeon ? 'text-pink-400 hover:bg-pink-500/15 hover:text-pink-300 drop-shadow-[0_0_6px_rgba(255,0,127,0.7)]' : 'text-red-600 hover:bg-red-50'
+            }`}
           >
             <FaArrowRightFromBracket className="h-3.5 w-3.5" />
             Logout
           </button>
         </div>
       ) : (
-        <div className="flex gap-2 pt-3 border-t border-line">
-          <Link to="/auth/login" onClick={() => setOpen(false)} className="btn-outline flex-1">Login</Link>
-          <Link to="/auth/register" onClick={() => setOpen(false)} className="btn-primary flex-1">Sign Up</Link>
+        <div className={`flex gap-2 pt-3 border-t ${isNeon ? 'border-cyan-400/30' : 'border-line'}`}>
+          <Link to="/auth/login" onClick={() => setOpen(false)} className={isNeon ? 'btn-outline border-cyan-400 text-cyan-200 flex-1 text-center' : 'btn-outline flex-1'}>Login</Link>
+          <Link to="/auth/register" onClick={() => setOpen(false)} className={isNeon ? 'btn-primary bg-cyan-500 text-slate-950 flex-1 text-center font-bold' : 'btn-primary flex-1'}>Sign Up</Link>
         </div>
       )}
     </div>
@@ -333,31 +357,39 @@ const Navbar = () => {
                 {/* Touching this directly enters Dashboard on mobile */}
                 <Link
                   to={dashboardPath}
-                  className="flex items-center gap-1.5 p-1 pr-2.5 rounded-full bg-slate-100 active:bg-slate-200 border border-slate-200 transition-all shadow-xs"
+                  className={`flex items-center gap-1.5 p-1 pr-2.5 rounded-full transition-all shadow-xs ${
+                    isNeon
+                      ? 'bg-slate-900/90 border border-cyan-400/60 shadow-[0_0_12px_rgba(0,240,255,0.4)] text-cyan-200'
+                      : 'bg-slate-100 active:bg-slate-200 border border-slate-200 text-ink'
+                  }`}
                   title="Touch to enter Dashboard"
                 >
                   {user.avatar ? (
                     <img
-                      src={user.avatar}
+                      src={formatAvatarUrl(user.avatar)}
                       alt={user.name}
-                      className="h-7 w-7 rounded-full object-cover border border-accent shrink-0"
+                      className={`h-7 w-7 rounded-full object-cover shrink-0 border ${isNeon ? 'border-cyan-400 shadow-[0_0_8px_rgba(0,240,255,0.8)]' : 'border-accent'}`}
                       onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
                     />
                   ) : null}
-                  <span className={`h-7 w-7 rounded-full bg-gradient-to-br from-accent-dark to-ink text-white items-center justify-center text-xs font-bold shrink-0 ${user.avatar ? 'hidden' : 'flex'}`}>
+                  <span className={`h-7 w-7 rounded-full items-center justify-center text-xs font-bold shrink-0 ${user.avatar ? 'hidden' : 'flex'} ${
+                    isNeon ? 'bg-slate-950 border border-cyan-400 text-cyan-300' : 'bg-gradient-to-br from-accent-dark to-ink text-white'
+                  }`}>
                     {initials(user.name)}
                   </span>
-                  <span className="text-xs font-bold text-ink">Dashboard</span>
+                  <span className={`text-xs font-bold ${isNeon ? 'text-white drop-shadow-[0_0_6px_rgba(0,240,255,0.8)]' : 'text-ink'}`}>Dashboard</span>
                 </Link>
               </>
             ) : (
-              <Link to="/auth/login" className="btn-outline !py-1 !px-2.5 text-xs">
+              <Link to="/auth/login" className={isNeon ? 'btn-outline border-cyan-400 text-cyan-300 !py-1 !px-2.5 text-xs' : 'btn-outline !py-1 !px-2.5 text-xs'}>
                 Login
               </Link>
             )}
 
             <button
-              className="p-2 rounded-xl text-ink hover:bg-slate-50 transition-colors"
+              className={`p-2 rounded-xl transition-colors ${
+                isNeon ? 'text-cyan-300 hover:bg-cyan-500/20 hover:text-white' : 'text-ink hover:bg-slate-50'
+              }`}
               onClick={() => setOpen((o) => !o)}
               aria-label="Toggle menu"
             >
