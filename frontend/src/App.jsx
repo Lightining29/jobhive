@@ -3,14 +3,16 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { JobProvider } from './context/JobContext';
+import { ThemeProvider } from './context/ThemeContext';
 import MainLayout from './components/layouts/MainLayout';
 import { ProtectedRoute, GuestRoute } from './components/routes/ProtectedRoute';
 import { PageLoader } from './components/ui/States';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 import HomePage from './pages/HomePage';
 import NotificationsPage from './pages/NotificationsPage';
 import NotFoundPage from './pages/NotFoundPage';
 
-const LoginPage = lazy(() => import('./pages/auth/LoginPage').then((m) => ({ default: m.LoginPage })));
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/auth/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('./pages/auth/ResetPasswordPage'));
@@ -53,8 +55,6 @@ const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage'));
 const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'));
 const AdminICardStudioPage = lazy(() => import('./pages/admin/AdminICardStudioPage'));
 const VerifyCardPage = lazy(() => import('./pages/public/VerifyCardPage'));
-import { ThemeProvider } from './context/ThemeContext';
-import ErrorBoundary from './components/ui/ErrorBoundary';
 
 const withSuspense = (el) => <ErrorBoundary><Suspense fallback={<PageLoader />}>{el}</Suspense></ErrorBoundary>;
 
