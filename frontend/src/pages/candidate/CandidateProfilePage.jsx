@@ -80,21 +80,31 @@ const CandidateProfilePage = () => {
     load();
   }, [load]);
 
-  const addSkill = () => {
+  const addSkill = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     const s = (skillInputRef.current?.value || '').trim().toLowerCase();
     if (!s) return;
     if (skills.some((x) => x.toLowerCase() === s)) {
       toast('Skill already added');
       return;
     }
-    setValue('skills', [...skills, s]);
+    setValue('skills', [...skills, s], { shouldDirty: true });
     if (skillInputRef.current) skillInputRef.current.value = '';
   };
 
-  const removeSkill = (idx) => setValue('skills', skills.filter((_, i) => i !== idx));
+  const removeSkill = (idx, e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setValue('skills', skills.filter((_, i) => i !== idx), { shouldDirty: true });
+  };
 
   const uploadResume = async (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
     setUploading('resume');
     try {
@@ -110,15 +120,18 @@ const CandidateProfilePage = () => {
   };
 
   const uploadAvatar = async (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
     setUploading('avatar');
     try {
-      await candidateService.uploadAvatar(file);
-      toast.success('Profile photo updated');
+      const res = await candidateService.uploadAvatar(file);
+      toast.success('Profile photo updated successfully!');
+      if (res?.data?.user?.avatar) {
+        setProfile((prev) => ({ ...prev, avatar: res.data.user.avatar }));
+      }
       await load();
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || 'Failed to update profile photo');
     } finally {
       setUploading(null);
       e.target.value = '';
@@ -304,9 +317,9 @@ const CandidateProfilePage = () => {
         <SubCard title="Skills">
           <div className="flex flex-wrap gap-2 mb-3">
             {skills.map((s, i) => (
-              <span key={`${s}-${i}`} className="badge bg-primary-50 text-yellow-800 border border-accent py-1.5">
+              <span key={`${s}-${i}`} className="badge bg-primary-50 text-yellow-800 border border-accent py-1.5 flex items-center">
                 {s}
-                <button type="button" onClick={() => removeSkill(i)} className="ml-1 hover:text-red-500">
+                <button type="button" onClick={(e) => removeSkill(i, e)} className="ml-1.5 hover:text-red-500 cursor-pointer">
                   <FaXmark className="h-3 w-3" />
                 </button>
               </span>
@@ -314,12 +327,47 @@ const CandidateProfilePage = () => {
             {skills.length === 0 && <span className="text-sm text-muted">Add at least 3 skills for AI matching.</span>}
           </div>
           <div className="flex gap-2">
-            <input ref={skillInputRef} defaultValue="" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())} placeholder="Add a skill..." className="input" />
-            <button type="button" onClick={addSkill} className="btn-outline shrink-0"><FaPlus className="h-4 w-4" /> Add</button>
+            <input
+              ref={skillInputRef}
+              type="text"
+              defaultValue=""
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  addSkill(e);
+                }
+              }}
+              placeholder="Add a skill (e.g. React, Node.js, Python)..."
+              className="input"
+            />
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                addSkill(e);
+              }}
+              className="btn-outline shrink-0 cursor-pointer"
+            >
+              <FaPlus className="h-4 w-4" /> Add
+            </button>
           </div>
           <div className="flex flex-wrap gap-1.5 mt-3">
             {SAMPLE_SKILLS.slice(0, 12).map((s) => (
-              <button key={s} type="button" onClick={() => { setValue('skills', skills.includes(s.toLowerCase()) ? skills : [...skills, s.toLowerCase()]); }} className="badge bg-gray-50 text-muted border border-line hover:border-accent hover:text-primary py-1">
+              <button
+                key={s}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const low = s.toLowerCase();
+                  if (!skills.includes(low)) {
+                    setValue('skills', [...skills, low], { shouldDirty: true });
+                  }
+                }}
+                className="badge bg-gray-50 text-muted border border-line hover:border-accent hover:text-primary py-1 cursor-pointer"
+              >
                 {s}
               </button>
             ))}

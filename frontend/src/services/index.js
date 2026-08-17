@@ -9,7 +9,8 @@ const authService = {
   me: () => api.get('/auth/me'),
   verifyEmail: (token) => api.post('/auth/verify-email', { token }),
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
-  resetPassword: (token, password) => api.post('/auth/reset-password', { token, password }),
+  resetPassword: (tokenOrData, password) =>
+    api.post('/auth/reset-password', typeof tokenOrData === 'object' ? tokenOrData : { token: tokenOrData, password }),
 };
 
 const jobService = {

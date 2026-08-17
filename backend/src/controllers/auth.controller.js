@@ -348,45 +348,104 @@ const resendVerification = asyncHandler(async (req, res, next) => {
 
 const forgotPassword = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
-  const user = await UserSQL.findOne({ where: { email } });
-  if (user) {
-    const resetToken = randomToken(32);
-    user.resetPasswordToken = hashToken(resetToken);
-    user.resetPasswordExpires = new Date(Date.now() + 60 * 60 * 1000);
-    await user.save();
+  if (!email) {
+    return next(new ApiError(400, 'Email address is required.'));
+  }
+  const normalizedEmail = String(email).toLowerCase().trim();
+  const user = await UserSQL.findOne({ where: { email: normalizedEmail } });
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'No account found with this email address.' });
+  }
 
+  const resetToken = randomToken(32);
+  const otp = generateOtp();
+  user.resetPasswordToken = hashToken(resetToken);
+  user.resetPasswordExpires = new Date(Date.now() + 60 * 60 * 1000);
+  user.verificationOtp = hashToken(otp);
+  user.verificationOtpExpires = new Date(Date.now() + 15 * 60 * 1000);
+  await user.save();
+
+  try {
     await sendMail({
       to: user.email,
-      subject: 'Reset your password',
-      html: buildEmailHtml(
-        'Reset your password',
-        '<p>You requested a password reset. This link expires in 1 hour.</p>',
-        'Reset Password',
-        getResetUrl(resetToken)
-      ),
+      toName: user.name,
+      subject: `Reset your JobHive password - Code: ${otp}`,
+      html: `
+        <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden">
+          <div style="background:#FACC15;padding:20px 28px">
+            <span style="font-size:20px;font-weight:800;color:#111827">JobHive</span>
+          </div>
+          <div style="padding:28px">
+            <h2 style="color:#111827;margin:0 0 12px">Reset Your Password</h2>
+            <p style="color:#374151;font-size:15px;line-height:1.6">You requested to reset your password. Use the 6-digit code below or click the reset button:</p>
+            <div style="margin:24px 0;background:#F9FAFB;border:2px dashed #E5E7EB;border-radius:10px;padding:16px;text-align:center">
+              <span style="font-family:monospace;font-size:32px;font-weight:800;letter-spacing:6px;color:#111827">${otp}</span>
+              <p style="margin:6px 0 0;color:#6B7280;font-size:12px">Valid for 15 minutes</p>
+            </div>
+            <div style="margin-top:20px">
+              <a href="${getResetUrl(resetToken)}" style="display:inline-block;background:#FACC15;color:#111827;font-weight:700;padding:12px 24px;border-radius:8px;text-decoration:none">Reset Password via Link</a>
+            </div>
+          </div>
+        </div>
+      `,
     });
+  } catch (err) {
+    logger.error(`[auth] forgotPassword email failed: ${err.message}`);
+    return next(new ApiError(500, `Failed to send password reset email: ${err.message}. Please check email service configuration.`));
   }
-  res.json({ success: true, message: 'If that email exists, a reset link has been sent.' });
+
+  res.json({
+    success: true,
+    message: 'A 6-digit password reset code and link have been sent to your email.',
+    email: normalizedEmail,
+  });
 });
 
 const resetPassword = asyncHandler(async (req, res, next) => {
-  const { token, password } = req.body;
-  const hashed = hashToken(token);
-  const user = await UserSQL.findOne({
-    where: {
-      resetPasswordToken: hashed,
-      resetPasswordExpires: { [Op.gt]: new Date() },
-    },
-  });
-  if (!user) return next(new ApiError(400, 'Invalid or expired reset token.'));
+  const { token, otp, email, password } = req.body;
+  if (!password || password.length < 8) {
+    return next(new ApiError(400, 'Password must be at least 8 characters.'));
+  }
+
+  let user = null;
+
+  // 1. Reset via OTP
+  if (email && otp) {
+    const normalizedEmail = String(email).toLowerCase().trim();
+    const hashedOtp = hashToken(String(otp).trim());
+    user = await UserSQL.findOne({
+      where: {
+        email: normalizedEmail,
+        verificationOtp: hashedOtp,
+        verificationOtpExpires: { [Op.gt]: new Date() },
+      },
+    });
+  }
+
+  // 2. Reset via Token link
+  if (!user && token) {
+    const hashed = hashToken(token);
+    user = await UserSQL.findOne({
+      where: {
+        resetPasswordToken: hashed,
+        resetPasswordExpires: { [Op.gt]: new Date() },
+      },
+    });
+  }
+
+  if (!user) {
+    return next(new ApiError(400, 'Invalid or expired reset code or link. Please request a new code.'));
+  }
 
   user.password = password;
   user.resetPasswordToken = null;
   user.resetPasswordExpires = null;
+  user.verificationOtp = null;
+  user.verificationOtpExpires = null;
   await user.save();
 
   setAuthCookie(res, user.id);
-  res.json({ success: true, message: 'Password reset successfully.', user: user.toSafeJSON() });
+  res.json({ success: true, message: 'Password reset successfully. You are now logged in!', user: user.toSafeJSON() });
 });
 
 const me = asyncHandler(async (req, res) => {

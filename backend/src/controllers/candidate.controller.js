@@ -1,14 +1,17 @@
-const User = require('../models/User');
+const UserSQL = require('../models/sql/User.sql');
+const JobSQL = require('../models/sql/Job.sql');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 const cloudinary = require('../services/cloudinary.service');
 const fs = require('fs');
 const { uploadDir } = require('../middleware/upload');
+const env = require('../config/env');
 
 const getProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id)
-    .populate('company')
-    .populate({ path: 'savedJobs', match: { isActive: true, isExpired: false }, select: 'jobTitle companyName companyLogo salary salaryMax currency location workMode employmentType postedDate' });
+  const user = await UserSQL.findByPk(req.user.id);
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found' });
+  }
 
   const totalFields = 9;
   let completed = 0;
@@ -27,34 +30,45 @@ const getProfile = asyncHandler(async (req, res) => {
 });
 
 const updateProfile = asyncHandler(async (req, res) => {
+  const user = await UserSQL.findByPk(req.user.id);
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found' });
+  }
+
   const allowed = ['name', 'phone', 'headline', 'bio', 'skills', 'education', 'experience', 'certifications', 'socialLinks', 'preferences'];
   allowed.forEach((field) => {
-    if (req.body[field] !== undefined) req.user[field] = req.body[field];
+    if (req.body[field] !== undefined) user[field] = req.body[field];
   });
-  await req.user.save();
-  res.json({ success: true, message: 'Profile updated.', user: req.user.toSafeJSON() });
+  await user.save();
+  res.json({ success: true, message: 'Profile updated.', user: user.toSafeJSON() });
 });
 
 const uploadAvatar = asyncHandler(async (req, res, next) => {
   if (!req.file) return next(new ApiError(400, 'No image uploaded.'));
+  const user = await UserSQL.findByPk(req.user.id);
+  if (!user) return next(new ApiError(404, 'User not found'));
+
   let localPath = null;
   try {
-    let avatar;
+    let avatarUrl = '';
     if (cloudinary.isConfigured()) {
-      avatar = await cloudinary.uploadImage({ filePath: req.file.path });
-      if (req.user.avatar && req.user.avatar.includes('cloudinary')) {
-        const publicId = req.user.avatar.split('/').pop().split('.')[0];
+      const uploaded = await cloudinary.uploadImage({ filePath: req.file.path });
+      avatarUrl = uploaded.url;
+      if (user.avatar && user.avatar.includes('cloudinary')) {
+        const publicId = user.avatar.split('/').pop().split('.')[0];
         await cloudinary.removeByPublicId(`jobhive/${publicId}`);
       }
     } else {
-      avatar = { url: `/uploads/${req.file.filename}`, publicId: '' };
+      // Local static storage
+      const baseUrl = env.baseUrl || '';
+      avatarUrl = `${baseUrl}/uploads/${req.file.filename}`;
       localPath = req.file.path;
     }
-    req.user.avatar = avatar.url;
-    await req.user.save();
-    res.json({ success: true, message: 'Avatar uploaded.', user: req.user.toSafeJSON() });
+    user.avatar = avatarUrl;
+    await user.save();
+    res.json({ success: true, message: 'Avatar uploaded successfully.', user: user.toSafeJSON() });
   } finally {
-    if (cloudinary.isConfigured() && localPath === null) {
+    if (cloudinary.isConfigured() && localPath === null && req.file.path) {
       fs.promises.unlink(req.file.path).catch(() => {});
     }
   }
@@ -62,31 +76,38 @@ const uploadAvatar = asyncHandler(async (req, res, next) => {
 
 const uploadResumeFile = asyncHandler(async (req, res, next) => {
   if (!req.file) return next(new ApiError(400, 'No file uploaded.'));
+  const user = await UserSQL.findByPk(req.user.id);
+  if (!user) return next(new ApiError(404, 'User not found'));
+
   let localPath = null;
   try {
-    let resume;
+    let resumeUrl = '';
+    let publicId = '';
     if (cloudinary.isConfigured()) {
-      resume = await cloudinary.uploadFile({
+      const uploaded = await cloudinary.uploadFile({
         filePath: req.file.path,
         resourceType: 'auto',
       });
+      resumeUrl = uploaded.url;
+      publicId = uploaded.publicId || '';
     } else {
-      resume = { url: `/uploads/${req.file.filename}`, publicId: '' };
+      const baseUrl = env.baseUrl || '';
+      resumeUrl = `${baseUrl}/uploads/${req.file.filename}`;
       localPath = req.file.path;
     }
-    if (req.user.resume && req.user.resume.publicId) {
-      await cloudinary.removeByPublicId(req.user.resume.publicId);
+    if (user.resume && user.resume.publicId && cloudinary.isConfigured()) {
+      await cloudinary.removeByPublicId(user.resume.publicId);
     }
-    req.user.resume = {
-      url: resume.url,
-      publicId: resume.publicId || '',
+    user.resume = {
+      url: resumeUrl,
+      publicId,
       originalName: req.file.originalname,
       uploadedAt: new Date(),
     };
-    await req.user.save();
-    res.json({ success: true, message: 'Resume uploaded.', resume: req.user.resume });
+    await user.save();
+    res.json({ success: true, message: 'Resume uploaded successfully.', resume: user.resume });
   } finally {
-    if (cloudinary.isConfigured() && localPath === null) {
+    if (cloudinary.isConfigured() && localPath === null && req.file.path) {
       fs.promises.unlink(req.file.path).catch(() => {});
     }
   }
@@ -107,33 +128,35 @@ const resumeScore = (profile) => {
 };
 
 const getResumeScore = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
-  const score = resumeScore(user);
+  const user = await UserSQL.findByPk(req.user.id);
+  const score = user ? resumeScore(user) : 0;
   res.json({ success: true, score });
 });
 
 const toggleSavedJob = asyncHandler(async (req, res, next) => {
   const { jobId } = req.params;
-  const user = await User.findById(req.user._id);
-  const index = user.savedJobs.findIndex((id) => id.toString() === jobId);
+  const user = await UserSQL.findByPk(req.user.id);
+  if (!user) return next(new ApiError(404, 'User not found'));
+
+  let savedJobs = Array.isArray(user.preferences?.savedJobs) ? [...user.preferences.savedJobs] : [];
+  const index = savedJobs.indexOf(String(jobId));
   let saved = false;
   if (index > -1) {
-    user.savedJobs.splice(index, 1);
+    savedJobs.splice(index, 1);
   } else {
-    user.savedJobs.push(jobId);
+    savedJobs.push(String(jobId));
     saved = true;
   }
+  user.preferences = { ...(user.preferences || {}), savedJobs };
   await user.save();
   res.json({ success: true, saved, message: saved ? 'Job saved.' : 'Job removed from saved.' });
 });
 
 const getSavedJobs = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id).populate({
-    path: 'savedJobs',
-    match: { isActive: true, isExpired: false },
-    options: { sort: { postedDate: -1 } },
-  });
-  res.json({ success: true, jobs: user.savedJobs || [] });
+  const user = await UserSQL.findByPk(req.user.id);
+  const savedJobIds = Array.isArray(user?.preferences?.savedJobs) ? user.preferences.savedJobs : [];
+  const jobs = savedJobIds.length > 0 ? await JobSQL.findAll({ where: { jobId: savedJobIds, isActive: true } }) : [];
+  res.json({ success: true, jobs });
 });
 
 module.exports = {

@@ -146,12 +146,47 @@ const PostJobPage = ({ editJob }) => {
             ))}
           </div>
           <div className="flex gap-2">
-            <input value={skillInput} onChange={(e) => setSkillInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())} placeholder="Add a skill..." className="input" />
-            <button type="button" onClick={addSkill} className="btn-outline shrink-0">Add</button>
+            <input
+              type="text"
+              value={skillInput}
+              onChange={(e) => setSkillInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  addSkill();
+                }
+              }}
+              placeholder="Add a skill..."
+              className="input"
+            />
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                addSkill();
+              }}
+              className="btn-outline shrink-0 cursor-pointer"
+            >
+              Add
+            </button>
           </div>
           <div className="flex flex-wrap gap-1.5 mt-3">
             {SKILLS.slice(0, 15).map((s) => (
-              <button key={s} type="button" onClick={() => setValue('requiredSkills', skills.includes(s.toLowerCase()) ? skills : [...skills, s.toLowerCase()])} className="badge bg-gray-50 text-muted border border-line hover:border-accent hover:text-primary py-1">
+              <button
+                key={s}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const low = s.toLowerCase();
+                  if (!skills.includes(low)) {
+                    setValue('requiredSkills', [...skills, low]);
+                  }
+                }}
+                className="badge bg-gray-50 text-muted border border-line hover:border-accent hover:text-primary py-1 cursor-pointer"
+              >
                 {s}
               </button>
             ))}
