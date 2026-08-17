@@ -40,6 +40,8 @@ const AdminDashboardPage = () => {
   }, [load]);
 
   const stats = data?.stats || {};
+  const catValues = Object.values(stats.jobsByCategory || {});
+  const maxCategory = catValues.length > 0 ? Math.max(...catValues, 1) : 1;
 
   const mainCards = [
     { label: 'Total Candidates', value: stats.candidates || 0, icon: FaUsers, color: 'text-blue-500 bg-blue-500/10', to: '/admin/users?role=candidate' },
@@ -51,8 +53,6 @@ const AdminDashboardPage = () => {
     { label: 'Monthly Revenue', value: formatCurrency(stats.monthlyRevenue || 0), icon: FaDollarSign, color: 'text-emerald-600 bg-emerald-500/10', to: '/admin/payments' },
     { label: 'Coupon Usage', value: stats.couponUsage || 0, icon: FaTicket, color: 'text-pink-500 bg-pink-500/10', to: '/admin/coupons' },
   ];
-
-  const maxCategory = Math.max(...Object.values(stats.jobsByCategory || {}), 1);
 
   return (
     <DashboardLayout title="Admin Control Center" subtitle="Comprehensive platform management and monetization overview" navItems={adminNavItems}>

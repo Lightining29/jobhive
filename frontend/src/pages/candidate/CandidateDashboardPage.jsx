@@ -34,21 +34,21 @@ const CandidateDashboardPage = () => {
   const load = useCallback(async () => {
     try {
       const [profile, score, recommendedRes, apps, saved] = await Promise.all([
-        candidateService.profile(),
-        candidateService.resumeScore(),
-        jobService.recommendations({ page: 1, limit: 3 }),
-        jobService.myApplications({ page: 1, limit: 1 }),
-        candidateService.saved(),
+        candidateService.profile().catch(() => ({ data: {} })),
+        candidateService.resumeScore().catch(() => ({ data: {} })),
+        jobService.recommendations({ page: 1, limit: 3 }).catch(() => ({ data: { jobs: [] } })),
+        jobService.myApplications({ page: 1, limit: 1 }).catch(() => ({ data: { pagination: { total: 0 } } })),
+        candidateService.saved().catch(() => ({ data: { jobs: [] } })),
       ]);
-      setProfileCompletion(profile.data.profileCompletion);
-      setResumeScore(score.data.score);
-      setRecommended(recommendedRes.data.jobs);
+      setProfileCompletion(profile?.data?.profileCompletion ?? 0);
+      setResumeScore(score?.data?.score ?? 0);
+      setRecommended(recommendedRes?.data?.jobs ?? []);
       setStats({
-        saved: saved.data.jobs.length,
-        applied: apps.data.pagination.total,
+        saved: saved?.data?.jobs?.length ?? 0,
+        applied: apps?.data?.pagination?.total ?? 0,
       });
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || 'Failed to load dashboard');
     }
   }, []);
 
