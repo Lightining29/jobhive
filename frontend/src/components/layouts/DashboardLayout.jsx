@@ -2,7 +2,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Link, NavLink } from 'react-router-dom';
 import { FaBuilding, FaUser, FaShield, FaBolt } from 'react-icons/fa6';
-import { initials } from '../../utils/format';
+import { initials, formatAvatarUrl } from '../../utils/format';
 
 const DashboardLayout = ({ title, subtitle, navItems, children }) => {
   const { user, logout } = useAuth();
@@ -21,7 +21,15 @@ const DashboardLayout = ({ title, subtitle, navItems, children }) => {
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           {user?.avatar ? (
-            <img src={user.avatar} alt={user.name} className={`h-12 w-12 rounded-full object-cover border-2 ${isNeon ? 'border-cyan-400 shadow-[0_0_12px_rgba(0,240,255,0.7)]' : 'border-accent/50'}`} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+            <img
+              src={formatAvatarUrl(user.avatar)}
+              alt={user.name || ''}
+              className={`h-12 w-12 rounded-full object-cover border-2 ${isNeon ? 'border-cyan-400 shadow-[0_0_12px_rgba(0,240,255,0.7)]' : 'border-accent/50'}`}
+              onError={(e) => {
+                e.target.style.display = 'none';
+                if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+              }}
+            />
           ) : null}
           <div className={`h-12 w-12 rounded-full items-center justify-center font-bold text-lg shadow-sm ${user?.avatar ? 'hidden' : 'flex'} ${
             isNeon ? 'bg-gradient-to-br from-cyan-400 to-blue-600 text-white shadow-[0_0_15px_rgba(0,240,255,0.7)]' : 'bg-gradient-to-br from-accent to-accent-dark text-ink'

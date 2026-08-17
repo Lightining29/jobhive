@@ -60,8 +60,7 @@ const uploadAvatar = asyncHandler(async (req, res, next) => {
       }
     } else {
       // Local static storage
-      const baseUrl = env.baseUrl || '';
-      avatarUrl = `${baseUrl}/uploads/${req.file.filename}`;
+      avatarUrl = `/uploads/${req.file.filename}`;
       localPath = req.file.path;
     }
     user.avatar = avatarUrl;

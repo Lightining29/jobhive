@@ -8,6 +8,8 @@ import {
 } from 'react-icons/fa6';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { candidateService } from '../../services';
+import { useAuth } from '../../context/AuthContext';
+import { initials, formatAvatarUrl } from '../../utils/format';
 import { SAMPLE_SKILLS } from '../../utils/constants';
 import AIFillModal from '../../components/voice/AIFillModal';
 
@@ -16,6 +18,7 @@ const initialExperience = { role: '', company: '', startDate: '', endDate: '', c
 const initialCertification = { name: '', issuer: '', year: '' };
 
 const CandidateProfilePage = () => {
+  const { setUser, refreshUser } = useAuth();
   const [profile, setProfile] = useState(null);
   const [completion, setCompletion] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -126,9 +129,14 @@ const CandidateProfilePage = () => {
     try {
       const res = await candidateService.uploadAvatar(file);
       toast.success('Profile photo updated successfully!');
-      if (res?.data?.user?.avatar) {
-        setProfile((prev) => ({ ...prev, avatar: res.data.user.avatar }));
+      const newAvatar = res?.data?.user?.avatar;
+      if (newAvatar) {
+        setProfile((prev) => ({ ...prev, avatar: newAvatar }));
+        if (setUser) {
+          setUser((prev) => prev ? { ...prev, avatar: newAvatar } : prev);
+        }
       }
+      if (refreshUser) await refreshUser();
       await load();
     } catch (err) {
       toast.error(err.message || 'Failed to update profile photo');
@@ -267,12 +275,22 @@ const CandidateProfilePage = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <SubCard title="Basics">
           <div className="flex items-start gap-4 mb-5">
-            <div className="relative">
+            <div className="relative shrink-0">
               {profile?.avatar ? (
-                <img src={profile.avatar} alt="" className="h-20 w-20 rounded-full object-cover border-2 border-accent" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                <img
+                  src={formatAvatarUrl(profile.avatar)}
+                  alt={profile?.name || 'Avatar'}
+                  className="h-20 w-20 rounded-full object-cover border-2 border-accent shadow-md"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
               ) : null}
-              <div className={`h-20 w-20 rounded-full bg-primary-50 items-center justify-center text-2xl font-bold text-primary ${profile?.avatar ? 'hidden' : 'flex'}`}>J</div>
-              <label className="absolute -bottom-1 -right-1 h-7 w-7 rounded-full bg-ink text-white flex items-center justify-center cursor-pointer hover:bg-gray-700">
+              <div className={`h-20 w-20 rounded-full bg-primary-50 items-center justify-center text-2xl font-bold text-primary ${profile?.avatar ? 'hidden' : 'flex'}`}>
+                {initials(profile?.name || 'User')}
+              </div>
+              <label className="absolute -bottom-1 -right-1 h-7 w-7 rounded-full bg-ink text-white flex items-center justify-center cursor-pointer hover:bg-gray-700 shadow-md">
                 <FaPlus className="h-3.5 w-3.5" />
                 <input type="file" accept="image/*" className="hidden" onChange={uploadAvatar} disabled={uploading === 'avatar'} />
               </label>

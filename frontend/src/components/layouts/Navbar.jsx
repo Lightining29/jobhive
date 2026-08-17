@@ -236,7 +236,7 @@ const Navbar = () => {
                     aria-label="User menu"
                   >
                     {user.avatar ? (
-                      <img src={user.avatar} alt="" className="h-9 w-9 rounded-full object-cover border-2 border-accent group-hover:border-accent-dark transition-colors" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                      <img src={formatAvatarUrl(user.avatar)} alt="" className="h-9 w-9 rounded-full object-cover border-2 border-accent group-hover:border-accent-dark transition-colors" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
                     ) : null}
                     <span className={`h-9 w-9 rounded-full bg-gradient-to-br from-accent-dark to-ink text-white items-center justify-center text-sm font-bold shadow-sm group-hover:shadow-md transition-shadow ${user.avatar ? 'hidden' : 'flex'}`}>
                       {initials(user.name)}

@@ -59,7 +59,21 @@ export const initials = (name = '') =>
     .slice(0, 2)
     .map((n) => n[0])
     .join('')
-    .toUpperCase();
+    .toUpperCase() || 'U';
+
+export const formatAvatarUrl = (url) => {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {
+    if (trimmed.includes('localhost:5000/uploads/')) {
+      return trimmed.substring(trimmed.indexOf('/uploads/'));
+    }
+    return trimmed;
+  }
+  if (trimmed.startsWith('/')) return trimmed;
+  return `/${trimmed}`;
+};
 
 const ACRONYMS = {
   'ui/ux': 'UI/UX',
