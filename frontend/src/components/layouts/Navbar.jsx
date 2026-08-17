@@ -58,7 +58,17 @@ const Navbar = () => {
           key={l.to}
           to={l.to}
           onClick={() => setOpen(false)}
-          className={({ isActive }) => `block px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${isActive ? 'bg-accent/10 text-ink font-semibold' : 'text-muted hover:bg-slate-50 hover:text-ink'}`}
+          className={({ isActive }) =>
+            `block px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              isActive
+                ? isNeon
+                  ? 'bg-cyan-500/25 text-white border border-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.7)] font-bold'
+                  : 'bg-accent/10 text-ink font-semibold'
+                : isNeon
+                  ? 'text-cyan-200/70 hover:bg-cyan-500/10 hover:text-white'
+                  : 'text-muted hover:bg-slate-50 hover:text-ink'
+            }`
+          }
         >
           {l.label}
         </NavLink>
@@ -126,38 +136,56 @@ const Navbar = () => {
   );
 
   return (
-    <header className="sticky top-0 z-40 glass border-b border-line/60">
+    <header className={`sticky top-0 z-40 transition-all duration-300 ${
+      isNeon
+        ? 'bg-[#03060a]/20 backdrop-blur-md border-b border-cyan-400/60 shadow-[0_4px_30px_rgba(0,240,255,0.3)]'
+        : 'glass border-b border-line/60'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
             <span className="relative h-10 w-10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <FaHexagonNodes className="h-10 w-10 text-ink drop-shadow-sm" />
+              <FaHexagonNodes className={`h-10 w-10 ${isNeon ? 'text-cyan-400 drop-shadow-[0_0_10px_rgba(0,240,255,0.9)]' : 'text-ink drop-shadow-sm'}`} />
               <span className="absolute inset-0 flex items-center justify-center">
-                <span className="h-4 w-4 rounded-full bg-accent shadow-[0_0_12px_rgba(250,204,21,0.5)]" />
+                <span className={`h-4 w-4 rounded-full ${isNeon ? 'bg-pink-500 shadow-[0_0_15px_rgba(255,0,127,0.9)] animate-pulse' : 'bg-accent shadow-[0_0_12px_rgba(250,204,21,0.5)]'}`} />
               </span>
             </span>
             <div className="flex flex-col leading-tight">
-              <span className="text-lg sm:text-xl font-black tracking-tight text-ink">
+              <span className={`text-lg sm:text-xl font-black tracking-tight ${isNeon ? 'text-white drop-shadow-[0_0_12px_rgba(0,240,255,0.9)]' : 'text-ink'}`}>
                 Job Workplace
               </span>
               <span className="text-xs sm:text-sm font-bold tracking-tight">
-                <span className="text-red-600">Apple</span><span className="text-emerald-600">tree</span> <span className="text-black">infotech</span>
+                <span className={isNeon ? 'text-red-400 drop-shadow-[0_0_8px_rgba(255,50,50,0.9)]' : 'text-red-600'}>Apple</span>
+                <span className={isNeon ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(50,255,150,0.9)]' : 'text-emerald-600'}>tree</span>{' '}
+                <span className={isNeon ? 'text-cyan-300 drop-shadow-[0_0_8px_rgba(0,240,255,0.9)] font-extrabold' : 'text-black'}>infotech</span>
               </span>
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1.5 bg-transparent">
             {NAV_LINKS.map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}
                 end={l.end}
-                className={({ isActive }) => `px-3 py-2 rounded-xl text-sm font-medium transition-all ${isActive ? 'bg-accent/10 text-ink shadow-sm' : 'text-muted hover:bg-slate-50 hover:text-ink'}`}
+                className={({ isActive }) =>
+                  `px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                    isActive
+                      ? isNeon
+                        ? 'bg-cyan-500/20 text-white border border-cyan-400 shadow-[0_0_18px_rgba(0,240,255,0.75)] drop-shadow-[0_0_10px_rgba(0,240,255,0.9)]'
+                        : 'bg-accent/15 text-ink shadow-sm font-bold'
+                      : isNeon
+                        ? 'text-cyan-100/70 hover:text-white hover:bg-cyan-500/10 hover:drop-shadow-[0_0_8px_rgba(0,240,255,0.7)]'
+                        : 'text-muted hover:bg-slate-50 hover:text-ink'
+                  }`
+                }
               >
                 {l.label}
               </NavLink>
             ))}
-          </nav>          {/* Desktop Auth / Action area */}
+          </nav>
+
+          {/* Desktop Auth / Action area */}
           <div className="hidden md:flex items-center gap-3">
             {/* ⚡ Neon Mode Switcher Button */}
             <button
@@ -252,8 +280,26 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link to="/auth/login" className="btn-outline">Login</Link>
-                <Link to="/auth/register" className="btn-primary">Sign Up</Link>
+                <Link
+                  to="/auth/login"
+                  className={
+                    isNeon
+                      ? 'px-4 py-2 rounded-xl text-xs font-black text-cyan-200 border-1.5 border-cyan-400 bg-slate-950/40 backdrop-blur-md shadow-[0_0_15px_rgba(0,240,255,0.4)] hover:bg-cyan-500/20 hover:text-white hover:border-cyan-300 hover:shadow-[0_0_25px_rgba(0,240,255,0.8)] transition-all cursor-pointer'
+                      : 'btn-outline !py-2 text-xs'
+                  }
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/auth/register"
+                  className={
+                    isNeon
+                      ? 'px-4 py-2 rounded-xl text-xs font-black text-white bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 border border-cyan-200 shadow-[0_0_20px_rgba(0,240,255,0.85)] hover:shadow-[0_0_35px_rgba(0,240,255,1)] hover:scale-105 transition-all cursor-pointer'
+                      : 'btn-primary !py-2 text-xs'
+                  }
+                >
+                  Sign Up
+                </Link>
               </>
             )}
           </div>

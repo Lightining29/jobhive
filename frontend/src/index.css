@@ -719,42 +719,35 @@
     inset 0 0 20px rgba(0, 240, 255, 0.2) !important;
 }
 
-/* 🧱 Global Neon Brick Wall Theme */
+/* 🧱 Global Neon 3D Brick Wall Theme */
 html.neon-theme {
   color-scheme: dark;
 }
 
 html.neon-theme body {
-  background-color: #070e1a !important;
+  background-color: #03060a !important;
   color: #f0f9ff !important;
-  /* High-Definition Stylized Midnight Brick Texture */
+  /* Authentic 3D Midnight Blue Brick Texture with Lighting Highlights */
   background-image: 
-    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0, 240, 255, 0.18), transparent 75%),
-    radial-gradient(ellipse 60% 40% at 100% 60%, rgba(0, 180, 255, 0.14), transparent 70%),
-    /* Mortar line horizontal */
-    linear-gradient(rgba(14, 28, 48, 0.9) 3px, transparent 3px),
-    /* Mortar line vertical row 1 */
-    linear-gradient(90deg, rgba(14, 28, 48, 0.9) 3px, transparent 3px),
-    /* Brick shadow 3D effect */
-    linear-gradient(335deg, rgba(0, 0, 0, 0.7) 0px, transparent 8px),
-    linear-gradient(155deg, rgba(0, 0, 0, 0.7) 0px, transparent 8px),
-    /* Base dark midnight brick stone */
-    linear-gradient(to bottom, #091322, #04080e) !important;
-  background-size: 100% 100%, 100% 100%, 100% 36px, 72px 36px, 72px 36px, 72px 36px, 100% 100% !important;
-  background-attachment: fixed;
+    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(0, 240, 255, 0.2), transparent 75%),
+    radial-gradient(ellipse 70% 50% at 100% 50%, rgba(0, 180, 255, 0.15), transparent 70%),
+    url('/brick-wall-dark.svg') !important;
+  background-size: 100% 100%, 100% 100%, 200px 100px !important;
+  background-repeat: no-repeat, no-repeat, repeat !important;
+  background-attachment: fixed !important;
 }
 
-/* 🎴 Transparent Sky Blue Neon Cards */
+/* 🎴 High-Contrast Translucent 3D Sky Blue Neon Cards */
 html.neon-theme .card,
 html.neon-theme .card-premium,
 html.neon-theme .subcard {
-  background: rgba(8, 16, 30, 0.55) !important;
-  border: 1.5px solid rgba(0, 240, 255, 0.5) !important;
+  background: rgba(7, 14, 25, 0.76) !important;
+  border: 1.5px solid rgba(0, 240, 255, 0.6) !important;
   box-shadow: 
-    0 0 20px rgba(0, 240, 255, 0.25),
-    inset 0 0 20px rgba(0, 240, 255, 0.08),
-    0 10px 30px rgba(0, 0, 0, 0.75) !important;
-  backdrop-filter: blur(14px) saturate(160%);
+    0 0 25px rgba(0, 240, 255, 0.25),
+    inset 0 0 20px rgba(0, 240, 255, 0.06),
+    0 12px 36px rgba(0, 0, 0, 0.95) !important;
+  backdrop-filter: blur(14px) saturate(180%);
   color: #f8fafc !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -762,87 +755,166 @@ html.neon-theme .subcard {
 html.neon-theme .card-hover:hover,
 html.neon-theme .card:hover {
   border-color: #00f0ff !important;
+  background: rgba(8, 16, 30, 0.85) !important;
   box-shadow: 
-    0 0 35px rgba(0, 240, 255, 0.75),
-    inset 0 0 25px rgba(0, 240, 255, 0.2),
-    0 16px 45px rgba(0, 0, 0, 0.9) !important;
-  transform: translateY(-4px) scale(1.01);
+    0 0 40px rgba(0, 240, 255, 0.8),
+    inset 0 0 25px rgba(0, 240, 255, 0.15),
+    0 18px 50px rgba(0, 0, 0, 0.98) !important;
+  transform: translateY(-4px) scale(1.015);
 }
 
-/* Neon Card Headings & Text */
+/* ⚡ High-Visibility Glowing Neon Card Headings & Titles */
 html.neon-theme .card h1,
 html.neon-theme .card h2,
 html.neon-theme .card h3,
 html.neon-theme .card h4,
 html.neon-theme .card a {
   color: #ffffff !important;
-  text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+  font-weight: 700 !important;
+  text-shadow: 
+    0 0 2px #00f0ff,
+    0 0 10px rgba(0, 240, 255, 0.9),
+    0 2px 4px rgba(0, 0, 0, 0.9) !important;
 }
 
 html.neon-theme .card a:hover {
   color: #00f0ff !important;
   text-shadow: 
-    0 0 4px #fff,
-    0 0 12px #00f0ff,
-    0 0 24px #00b4d8 !important;
+    0 0 4px #ffffff,
+    0 0 14px #00f0ff,
+    0 0 28px #00b4d8,
+    0 2px 4px rgba(0, 0, 0, 0.95) !important;
+}
+
+/* Glowing Card Paragraphs, Subtitles & Labels (Crisp & High Contrast) */
+html.neon-theme .card p,
+html.neon-theme .card span,
+html.neon-theme .card label,
+html.neon-theme .card div {
+  color: #e0f2fe;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 240, 255, 0.35);
+}
+
+/* Neon Badges on Cards */
+html.neon-theme .card .badge,
+html.neon-theme .badge {
+  background: rgba(0, 240, 255, 0.18) !important;
+  border: 1px solid rgba(0, 240, 255, 0.7) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 8px #00f0ff, 0 1px 2px #000 !important;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.35) !important;
 }
 
 /* ⚡ Sky Blue Neon Buttons */
 html.neon-theme .btn-primary {
   background: linear-gradient(135deg, #00f0ff 0%, #0077b6 100%) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
   box-shadow: 
-    0 0 20px rgba(0, 240, 255, 0.8),
-    0 0 40px rgba(0, 180, 255, 0.4) !important;
+    0 0 25px rgba(0, 240, 255, 0.9),
+    0 0 50px rgba(0, 180, 255, 0.5) !important;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
   font-weight: 800;
 }
 
 html.neon-theme .btn-primary:hover {
   box-shadow: 
-    0 0 30px rgba(0, 240, 255, 1),
-    0 0 60px rgba(0, 180, 255, 0.8),
-    0 0 90px rgba(0, 240, 255, 0.5) !important;
+    0 0 35px rgba(0, 240, 255, 1),
+    0 0 70px rgba(0, 180, 255, 0.85),
+    0 0 100px rgba(0, 240, 255, 0.6) !important;
   transform: translateY(-2px);
 }
 
 html.neon-theme .btn-outline {
-  background: rgba(8, 16, 30, 0.6) !important;
-  border: 1.5px solid rgba(0, 240, 255, 0.6) !important;
+  background: rgba(4, 9, 18, 0.35) !important;
+  border: 1.5px solid rgba(0, 240, 255, 0.7) !important;
   color: #38bdf8 !important;
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3) !important;
-  text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.4) !important;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+  backdrop-filter: blur(8px);
 }
 
 html.neon-theme .btn-outline:hover {
   border-color: #00f0ff !important;
   color: #ffffff !important;
-  box-shadow: 0 0 25px rgba(0, 240, 255, 0.8) !important;
-  background: rgba(0, 240, 255, 0.2) !important;
-  text-shadow: 0 0 10px #00f0ff;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.9) !important;
+  background: rgba(0, 240, 255, 0.25) !important;
+  text-shadow: 0 0 12px #00f0ff;
 }
 
 /* Neon Navbar & Header */
-html.neon-theme nav,
 html.neon-theme header {
-  background: rgba(6, 12, 22, 0.85) !important;
-  border-bottom: 1.5px solid rgba(0, 240, 255, 0.4) !important;
-  box-shadow: 0 4px 30px rgba(0, 240, 255, 0.2) !important;
-  backdrop-filter: blur(20px);
+  background: rgba(3, 6, 12, 0.25) !important;
+  border-bottom: 1.5px solid rgba(0, 240, 255, 0.6) !important;
+  box-shadow: 0 4px 30px rgba(0, 240, 255, 0.35) !important;
+  backdrop-filter: blur(8px) saturate(180%) !important;
+}
+
+html.neon-theme nav {
+  background: transparent !important;
 }
 
 /* Neon Inputs & Search Bar */
 html.neon-theme input,
 html.neon-theme textarea,
 html.neon-theme select {
-  background-color: rgba(8, 16, 30, 0.75) !important;
-  border: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+  background-color: rgba(4, 9, 18, 0.45) !important;
+  border: 1.5px solid rgba(0, 240, 255, 0.5) !important;
   color: #f0f9ff !important;
   box-shadow: 
-    0 0 10px rgba(0, 240, 255, 0.15),
-    inset 0 2px 6px rgba(0, 0, 0, 0.6) !important;
+    0 0 12px rgba(0, 240, 255, 0.2),
+    inset 0 2px 6px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Global Neon Glass & Floating Boxes */
+html.neon-theme .glass-light,
+html.neon-theme .glass {
+  background: rgba(4, 9, 18, 0.28) !important;
+  border: 1.5px solid rgba(0, 240, 255, 0.6) !important;
+  box-shadow: 0 0 22px rgba(0, 240, 255, 0.45), inset 0 0 15px rgba(0, 240, 255, 0.1) !important;
+  backdrop-filter: blur(8px) saturate(180%) !important;
+  color: #ffffff !important;
+}
+
+html.neon-theme .glass-light p,
+html.neon-theme .glass-light span {
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.8) !important;
+}
+
+.neon-auth-card {
+  background: rgba(4, 9, 18, 0.35) !important;
+  border: 2px solid transparent !important;
+  background-image: 
+    linear-gradient(rgba(4, 9, 18, 0.35), rgba(4, 9, 18, 0.35)), 
+    linear-gradient(135deg, #ff007f 0%, #a855f7 50%, #00f0ff 100%) !important;
+  background-origin: border-box !important;
+  background-clip: padding-box, border-box !important;
+  box-shadow: 
+    0 0 35px rgba(255, 0, 127, 0.5),
+    0 0 70px rgba(0, 240, 255, 0.4),
+    inset 0 0 30px rgba(0, 240, 255, 0.15) !important;
+  backdrop-filter: blur(10px) saturate(180%) !important;
+  border-radius: 1.5rem !important;
+}
+
+.neon-btn-auth {
+  background: linear-gradient(135deg, #ff007f 0%, #a855f7 50%, #00f0ff 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 
+    0 0 20px rgba(255, 0, 127, 0.7),
+    0 0 40px rgba(0, 240, 255, 0.5) !important;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.neon-btn-auth:hover {
+  box-shadow: 
+    0 0 30px rgba(255, 0, 127, 0.95),
+    0 0 60px rgba(0, 240, 255, 0.8) !important;
+  transform: translateY(-2px);
 }
 
 html.neon-theme input:focus,

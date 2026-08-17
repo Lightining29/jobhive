@@ -167,55 +167,80 @@ const SearchHero = () => {
         </FadeIn>
       </div>
 
+      {/* Floating Badges */}
       <div className="hidden lg:block absolute left-2 top-28 animate-float rotate-2">
-        <div className="glass-light rounded-2xl px-4 py-3 flex items-center gap-2.5">
-          <span className="h-9 w-9 rounded-xl bg-[rgba(250,204,21,0.2)] flex items-center justify-center shrink-0">
-            <FaGlobe className="h-4 w-4 text-ink" />
+        <div className={`rounded-2xl px-4 py-3 flex items-center gap-2.5 transition-all ${
+          isNeon
+            ? 'bg-slate-950/30 border-1.5 border-cyan-400 shadow-[0_0_22px_rgba(0,240,255,0.45),inset_0_0_15px_rgba(0,240,255,0.1)] backdrop-blur-md'
+            : 'glass-light'
+        }`}>
+          <span className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 ${
+            isNeon ? 'bg-cyan-500/25 border border-cyan-400/60 shadow-[0_0_10px_rgba(0,240,255,0.4)] text-cyan-300' : 'bg-[rgba(250,204,21,0.2)] text-ink'
+          }`}>
+            <FaGlobe className="h-4 w-4" />
           </span>
           <div className="text-left">
-            <p className="text-ink text-sm font-bold leading-tight">Remote OK</p>
-            <p className="text-muted text-xs flex items-center gap-1 mt-0.5">
-              <FaCircleCheck className="h-3 w-3 text-emerald-500" /> verified roles
+            <p className={`text-sm font-black leading-tight ${isNeon ? 'text-white drop-shadow-[0_0_8px_rgba(0,240,255,0.9)]' : 'text-ink'}`}>Remote OK</p>
+            <p className={`text-xs flex items-center gap-1 mt-0.5 ${isNeon ? 'text-cyan-200/80 drop-shadow-[0_0_4px_rgba(0,240,255,0.6)]' : 'text-muted'}`}>
+              <FaCircleCheck className="h-3 w-3 text-emerald-400" /> verified roles
             </p>
           </div>
         </div>
       </div>
 
       <div className="hidden lg:block absolute right-2 top-44 animate-float-2 -rotate-2">
-        <div className="glass-light rounded-2xl px-4 py-3 flex items-center gap-2.5">
-          <span className="h-9 w-9 rounded-xl bg-[rgba(250,204,21,0.2)] flex items-center justify-center shrink-0">
-            <FaSackDollar className="h-4 w-4 text-ink" />
+        <div className={`rounded-2xl px-4 py-3 flex items-center gap-2.5 transition-all ${
+          isNeon
+            ? 'bg-slate-950/30 border-1.5 border-cyan-400 shadow-[0_0_22px_rgba(0,240,255,0.45),inset_0_0_15px_rgba(0,240,255,0.1)] backdrop-blur-md'
+            : 'glass-light'
+        }`}>
+          <span className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 ${
+            isNeon ? 'bg-cyan-500/25 border border-cyan-400/60 shadow-[0_0_10px_rgba(0,240,255,0.4)] text-cyan-300' : 'bg-[rgba(250,204,21,0.2)] text-ink'
+          }`}>
+            <FaSackDollar className="h-4 w-4" />
           </span>
           <div className="text-left">
-            <p className="text-ink text-sm font-bold leading-tight">₹12–20 LPA</p>
-            <p className="text-muted text-xs mt-0.5">avg. top salary</p>
+            <p className={`text-sm font-black leading-tight ${isNeon ? 'text-white drop-shadow-[0_0_8px_rgba(0,240,255,0.9)]' : 'text-ink'}`}>₹12–20 LPA</p>
+            <p className={`text-xs mt-0.5 ${isNeon ? 'text-cyan-200/80 drop-shadow-[0_0_4px_rgba(0,240,255,0.6)]' : 'text-muted'}`}>avg. top salary</p>
           </div>
         </div>
       </div>
 
       <div className="hidden lg:block absolute right-2 top-72 animate-float-3 rotate-1">
-        <div className="glass-light rounded-2xl px-4 py-3 flex items-center gap-2.5">
-          <span className="h-9 w-9 rounded-xl bg-[rgba(250,204,21,0.2)] flex items-center justify-center shrink-0">
-            <FaFire className="h-4 w-4 text-ink" />
+        <div className={`rounded-2xl px-4 py-3 flex items-center gap-2.5 transition-all ${
+          isNeon
+            ? 'bg-slate-950/30 border-1.5 border-cyan-400 shadow-[0_0_22px_rgba(0,240,255,0.45),inset_0_0_15px_rgba(0,240,255,0.1)] backdrop-blur-md'
+            : 'glass-light'
+        }`}>
+          <span className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 ${
+            isNeon ? 'bg-pink-500/25 border border-pink-400/60 shadow-[0_0_10px_rgba(255,0,127,0.4)] text-pink-300' : 'bg-[rgba(250,204,21,0.2)] text-ink'
+          }`}>
+            <FaFire className="h-4 w-4" />
           </span>
           <div className="text-left">
-            <p className="text-ink text-sm font-bold leading-tight">240+ jobs today</p>
-            <p className="text-muted text-xs mt-0.5">freshly posted</p>
+            <p className={`text-sm font-black leading-tight ${isNeon ? 'text-white drop-shadow-[0_0_8px_rgba(255,0,127,0.9)]' : 'text-ink'}`}>240+ jobs today</p>
+            <p className={`text-xs mt-0.5 ${isNeon ? 'text-pink-200/80 drop-shadow-[0_0_4px_rgba(255,0,127,0.6)]' : 'text-muted'}`}>freshly posted</p>
           </div>
         </div>
       </div>
 
       <div className="hidden lg:block absolute left-2 bottom-32 animate-float-4">
-        <div className="glass-light rounded-full pl-2 pr-4 py-2 flex items-center gap-2.5">
+        <div className={`rounded-full pl-2.5 pr-4 py-2 flex items-center gap-2.5 transition-all ${
+          isNeon
+            ? 'bg-slate-950/30 border-1.5 border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.45)] backdrop-blur-md'
+            : 'glass-light'
+        }`}>
           <span className="relative flex h-2.5 w-2.5">
             <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
             <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
           </span>
-          <span className="text-ink text-sm font-semibold">Hiring now</span>
+          <span className={`text-sm font-black ${isNeon ? 'text-white drop-shadow-[0_0_8px_rgba(0,240,255,0.9)]' : 'text-ink'}`}>Hiring now</span>
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#F8FAFC] to-transparent" />
+      {!isNeon && (
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#F8FAFC] to-transparent" />
+      )}
     </section>
   );
 };
