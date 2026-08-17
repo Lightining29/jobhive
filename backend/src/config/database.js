@@ -34,6 +34,24 @@ const initDatabases = async () => {
   logger.info('🔌 Initializing MySQL Database Engine (Hostinger/Local)...');
   await connectMySQL();
 
+  // Auto-seed Super Admin user into MySQL if not present
+  try {
+    const adminEmail = 'brayw433@gmail.com';
+    const existingAdmin = await User.findOne({ where: { email: adminEmail } });
+    if (!existingAdmin) {
+      await User.create({
+        name: 'Manish Kumar',
+        email: adminEmail,
+        password: 'Manish@123', // hooks will bcrypt hash it
+        role: 'admin',
+        emailVerified: true,
+      });
+      logger.info(`✅ Default Super Admin created in MySQL: ${adminEmail}`);
+    }
+  } catch (seedErr) {
+    logger.warn(`[admin-seed] Notice: ${seedErr.message}`);
+  }
+
   if (process.env.MONGO_URI) {
     try {
       await connectMongoDB();
