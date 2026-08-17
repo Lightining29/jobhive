@@ -1,7 +1,8 @@
 import { Link, NavLink } from 'react-router-dom';
-import { FaMagnifyingGlass, FaBell, FaBars, FaXmark, FaHexagonNodes, FaArrowRightFromBracket, FaBookmark, FaGlobe, FaBriefcase, FaShieldHalved } from 'react-icons/fa6';
+import { FaMagnifyingGlass, FaBell, FaBars, FaXmark, FaHexagonNodes, FaArrowRightFromBracket, FaBookmark, FaGlobe, FaBriefcase, FaShieldHalved, FaBolt } from 'react-icons/fa6';
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { initials } from '../../utils/format';
 
 const NAV_LINKS = [
@@ -14,6 +15,7 @@ const NAV_LINKS = [
 
 const Navbar = () => {
   const { user, logout, unreadCount } = useAuth();
+  const { isNeon, toggleNeon } = useTheme();
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
@@ -155,10 +157,23 @@ const Navbar = () => {
                 {l.label}
               </NavLink>
             ))}
-          </nav>
-
-          {/* Desktop Auth / Action area */}
+          </nav>          {/* Desktop Auth / Action area */}
           <div className="hidden md:flex items-center gap-3">
+            {/* ⚡ Neon Mode Switcher Button */}
+            <button
+              type="button"
+              onClick={toggleNeon}
+              className={`group relative inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black transition-all duration-300 shadow-sm cursor-pointer ${
+                isNeon
+                  ? 'bg-gradient-to-r from-pink-600 via-purple-600 to-cyan-500 text-white shadow-[0_0_22px_rgba(255,42,133,0.85)] border border-pink-300 scale-105 animate-pulse'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300'
+              }`}
+              title={isNeon ? 'Switch to Normal Mode' : 'Turn ON Neon Website Mode'}
+            >
+              <FaBolt className={`h-3.5 w-3.5 transition-transform duration-300 ${isNeon ? 'text-yellow-300' : 'text-amber-500 group-hover:scale-125'}`} />
+              <span className="tracking-wider">{isNeon ? '⚡ NEON ON' : '⚡ NEON MODE'}</span>
+            </button>
+
             {user ? (
               <>
                 <Link to="/jobs" className="btn-outline !py-2">
@@ -245,6 +260,19 @@ const Navbar = () => {
 
           {/* Mobile Right Controls: Touch-to-Dashboard Avatar + Menu toggle */}
           <div className="flex md:hidden items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleNeon}
+              className={`p-2 rounded-xl text-xs font-bold transition-all ${
+                isNeon
+                  ? 'bg-pink-600 text-white shadow-[0_0_12px_rgba(255,42,133,0.9)] scale-105'
+                  : 'bg-slate-100 text-slate-700'
+              }`}
+              title="Toggle Neon Mode"
+            >
+              <FaBolt className="h-3.5 w-3.5" />
+            </button>
+
             {user ? (
               <>
                 <Link
@@ -288,7 +316,7 @@ const Navbar = () => {
               onClick={() => setOpen((o) => !o)}
               aria-label="Toggle menu"
             >
-              {open ? <FaXmark className="h-5 w-5" /> : <FaBars className="h-5 w-5" />}
+              {open ? <FaXmark className="h-6 w-6" /> : <FaBars className="h-6 w-6" />}
             </button>
           </div>
         </div>

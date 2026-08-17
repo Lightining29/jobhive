@@ -52,14 +52,16 @@ const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage'));
 const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'));
 const AdminICardStudioPage = lazy(() => import('./pages/admin/AdminICardStudioPage'));
 const VerifyCardPage = lazy(() => import('./pages/public/VerifyCardPage'));
+import { ThemeProvider } from './context/ThemeContext';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 
 const withSuspense = (el) => <ErrorBoundary><Suspense fallback={<PageLoader />}>{el}</Suspense></ErrorBoundary>;
 
 const App = () => (
-  <AuthProvider>
-    <JobProvider>
-      <BrowserRouter>
+  <ThemeProvider>
+    <AuthProvider>
+      <JobProvider>
+        <BrowserRouter>
         <Toaster position="top-right" toastOptions={{ style: { borderRadius: '12px', fontSize: '14px' } }} />
         <Routes>
           <Route element={<MainLayout />}>
@@ -133,6 +135,7 @@ const App = () => (
       </BrowserRouter>
     </JobProvider>
   </AuthProvider>
+</ThemeProvider>
 );
 
 export default App;

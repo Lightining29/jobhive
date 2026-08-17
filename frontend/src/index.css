@@ -673,3 +673,293 @@
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   ⚡ SKY BLUE NEON GLOW THEME & BRICK WALL BACKDROP
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.neon-font {
+  font-family: 'Pacifico', 'Mr Dafoe', 'Caveat', cursive !important;
+}
+
+.neon-glow-cyan,
+.neon-glow-skyblue {
+  color: #ffffff !important;
+  text-shadow: 
+    0 0 4px #ffffff,
+    0 0 10px #00f0ff,
+    0 0 20px #00f0ff,
+    0 0 40px #00b4d8,
+    0 0 80px #0077b6,
+    0 0 120px #0077b6 !important;
+}
+
+.neon-glow-pink {
+  color: #fff !important;
+  text-shadow: 
+    0 0 4px #fff,
+    0 0 10px #ff2a85,
+    0 0 20px #ff2a85,
+    0 0 40px #ff007f,
+    0 0 80px #ff007f !important;
+}
+
+.neon-glow-amber {
+  color: #fff !important;
+  text-shadow: 
+    0 0 4px #fff,
+    0 0 10px #fbbf24,
+    0 0 20px #f59e0b,
+    0 0 40px #d97706 !important;
+}
+
+.neon-glow-box-cyan {
+  border-color: #00f0ff !important;
+  box-shadow: 
+    0 0 20px rgba(0, 240, 255, 0.5),
+    inset 0 0 20px rgba(0, 240, 255, 0.2) !important;
+}
+
+/* 🧱 Global Neon Brick Wall Theme */
+html.neon-theme {
+  color-scheme: dark;
+}
+
+html.neon-theme body {
+  background-color: #070e1a !important;
+  color: #f0f9ff !important;
+  /* High-Definition Stylized Midnight Brick Texture */
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0, 240, 255, 0.18), transparent 75%),
+    radial-gradient(ellipse 60% 40% at 100% 60%, rgba(0, 180, 255, 0.14), transparent 70%),
+    /* Mortar line horizontal */
+    linear-gradient(rgba(14, 28, 48, 0.9) 3px, transparent 3px),
+    /* Mortar line vertical row 1 */
+    linear-gradient(90deg, rgba(14, 28, 48, 0.9) 3px, transparent 3px),
+    /* Brick shadow 3D effect */
+    linear-gradient(335deg, rgba(0, 0, 0, 0.7) 0px, transparent 8px),
+    linear-gradient(155deg, rgba(0, 0, 0, 0.7) 0px, transparent 8px),
+    /* Base dark midnight brick stone */
+    linear-gradient(to bottom, #091322, #04080e) !important;
+  background-size: 100% 100%, 100% 100%, 100% 36px, 72px 36px, 72px 36px, 72px 36px, 100% 100% !important;
+  background-attachment: fixed;
+}
+
+/* 🎴 Transparent Sky Blue Neon Cards */
+html.neon-theme .card,
+html.neon-theme .card-premium,
+html.neon-theme .subcard {
+  background: rgba(8, 16, 30, 0.55) !important;
+  border: 1.5px solid rgba(0, 240, 255, 0.5) !important;
+  box-shadow: 
+    0 0 20px rgba(0, 240, 255, 0.25),
+    inset 0 0 20px rgba(0, 240, 255, 0.08),
+    0 10px 30px rgba(0, 0, 0, 0.75) !important;
+  backdrop-filter: blur(14px) saturate(160%);
+  color: #f8fafc !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html.neon-theme .card-hover:hover,
+html.neon-theme .card:hover {
+  border-color: #00f0ff !important;
+  box-shadow: 
+    0 0 35px rgba(0, 240, 255, 0.75),
+    inset 0 0 25px rgba(0, 240, 255, 0.2),
+    0 16px 45px rgba(0, 0, 0, 0.9) !important;
+  transform: translateY(-4px) scale(1.01);
+}
+
+/* Neon Card Headings & Text */
+html.neon-theme .card h1,
+html.neon-theme .card h2,
+html.neon-theme .card h3,
+html.neon-theme .card h4,
+html.neon-theme .card a {
+  color: #ffffff !important;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+}
+
+html.neon-theme .card a:hover {
+  color: #00f0ff !important;
+  text-shadow: 
+    0 0 4px #fff,
+    0 0 12px #00f0ff,
+    0 0 24px #00b4d8 !important;
+}
+
+/* ⚡ Sky Blue Neon Buttons */
+html.neon-theme .btn-primary {
+  background: linear-gradient(135deg, #00f0ff 0%, #0077b6 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  box-shadow: 
+    0 0 20px rgba(0, 240, 255, 0.8),
+    0 0 40px rgba(0, 180, 255, 0.4) !important;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+  font-weight: 800;
+}
+
+html.neon-theme .btn-primary:hover {
+  box-shadow: 
+    0 0 30px rgba(0, 240, 255, 1),
+    0 0 60px rgba(0, 180, 255, 0.8),
+    0 0 90px rgba(0, 240, 255, 0.5) !important;
+  transform: translateY(-2px);
+}
+
+html.neon-theme .btn-outline {
+  background: rgba(8, 16, 30, 0.6) !important;
+  border: 1.5px solid rgba(0, 240, 255, 0.6) !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3) !important;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+  backdrop-filter: blur(10px);
+}
+
+html.neon-theme .btn-outline:hover {
+  border-color: #00f0ff !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.8) !important;
+  background: rgba(0, 240, 255, 0.2) !important;
+  text-shadow: 0 0 10px #00f0ff;
+}
+
+/* Neon Navbar & Header */
+html.neon-theme nav,
+html.neon-theme header {
+  background: rgba(6, 12, 22, 0.85) !important;
+  border-bottom: 1.5px solid rgba(0, 240, 255, 0.4) !important;
+  box-shadow: 0 4px 30px rgba(0, 240, 255, 0.2) !important;
+  backdrop-filter: blur(20px);
+}
+
+/* Neon Inputs & Search Bar */
+html.neon-theme input,
+html.neon-theme textarea,
+html.neon-theme select {
+  background-color: rgba(8, 16, 30, 0.75) !important;
+  border: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+  color: #f0f9ff !important;
+  box-shadow: 
+    0 0 10px rgba(0, 240, 255, 0.15),
+    inset 0 2px 6px rgba(0, 0, 0, 0.6) !important;
+}
+
+html.neon-theme input:focus,
+html.neon-theme textarea:focus,
+html.neon-theme select:focus {
+  border-color: #00f0ff !important;
+  box-shadow: 
+    0 0 22px rgba(0, 240, 255, 0.7),
+    inset 0 0 12px rgba(0, 240, 255, 0.25) !important;
+  outline: none !important;
+}
+
+/* Neon Badges & Tags */
+html.neon-theme .badge {
+  background: rgba(0, 240, 255, 0.12) !important;
+  border: 1px solid rgba(0, 240, 255, 0.6) !important;
+  color: #7dd3fc !important;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3) !important;
+  text-shadow: 0 0 6px rgba(0, 240, 255, 0.8);
+}
+
+/* Neon Typography & Text Color Classes */
+html.neon-theme .text-ink {
+  color: #ffffff !important;
+}
+
+html.neon-theme .text-muted {
+  color: #94a3b8 !important;
+}
+
+html.neon-theme h1,
+html.neon-theme h2,
+html.neon-theme h3 {
+  color: #ffffff !important;
+}
+
+html.neon-theme .hero-title-highlight {
+  color: #ffffff !important;
+  text-shadow: 
+    0 0 5px #ffffff,
+    0 0 12px #00f0ff,
+    0 0 25px #00f0ff,
+    0 0 50px #00a8ff,
+    0 0 90px #0077b6,
+    0 0 140px #0077b6 !important;
+}
+
+/* Neon Footer */
+html.neon-theme footer {
+  background: rgba(5, 10, 18, 0.95) !important;
+  border-top: 1.5px solid rgba(0, 240, 255, 0.35) !important;
+  box-shadow: 0 -4px 35px rgba(0, 240, 255, 0.15) !important;
+}
+
+/* Pulsing neon animation */
+@keyframes neonFlicker {
+  0%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.85));
+  }
+  50% {
+    opacity: 0.92;
+    filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.5));
+  }
+}
+
+.neon-pulse {
+  animation: neonFlicker 3s infinite ease-in-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   🌑 STANDARD DARK THEME (OBSIDIAN / MODERN DARK)
+   ═══════════════════════════════════════════════════════════════════════════ */
+html.dark-theme {
+  color-scheme: dark;
+}
+
+html.dark-theme body {
+  background-color: #0B0F17 !important;
+  color: #E2E8F0 !important;
+}
+
+html.dark-theme .card,
+html.dark-theme .card-premium,
+html.dark-theme .subcard {
+  background: #131B2A !important;
+  border: 1px solid #1E293B !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  color: #F8FAFC !important;
+}
+
+html.dark-theme nav,
+html.dark-theme header {
+  background: rgba(11, 15, 23, 0.9) !important;
+  border-bottom: 1px solid #1E293B !important;
+}
+
+html.dark-theme input,
+html.dark-theme textarea,
+html.dark-theme select {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+
+html.dark-theme .text-ink {
+  color: #F8FAFC !important;
+}
+
+html.dark-theme .text-muted {
+  color: #94A3B8 !important;
+}
+
+html.dark-theme footer {
+  background: #090D14 !important;
+  border-top: 1px solid #1E293B !important;
+}
+
+
+

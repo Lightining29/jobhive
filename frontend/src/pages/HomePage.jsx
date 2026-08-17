@@ -16,6 +16,7 @@ import {
 } from 'react-icons/fa6';
 import { useJobs } from '../context/JobContext';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import JobCard, { CompanyLogo } from '../components/jobs/JobCard';
 import { FadeIn } from '../components/ui/Motion';
 import { LoadingJobs } from '../components/ui/States';
@@ -38,45 +39,65 @@ const JobRow = ({ jobs, loading, empty, cols = 4 }) => {
 const SearchHero = () => {
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
+  const { isNeon } = useTheme();
 
   const popular = ['Java', 'React', 'Marketing', 'Sales', 'Remote', 'Data Science'];
 
   return (
-    <section className="relative overflow-hidden bg-[#EEF2FF]">
-      <div
-        className="absolute inset-0"
-        style={{ background: 'linear-gradient(180deg, #EEF2FF 0%, #E0E7FF 45%, #FFFFFF 100%)' }}
-      />
+    <section className={`relative overflow-hidden transition-colors duration-500 ${isNeon ? 'bg-transparent' : 'bg-[#EEF2FF]'}`}>
+      {!isNeon && (
+        <>
+          <div
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, #EEF2FF 0%, #E0E7FF 45%, #FFFFFF 100%)' }}
+          />
+          <div
+            className="aurora-blob animate-aurora -top-40 -left-32 h-[480px] w-[480px]"
+            style={{ background: 'radial-gradient(circle at 30% 30%, rgba(250,204,21,0.35) 0%, rgba(250,204,21,0) 65%)' }}
+          />
+          <div
+            className="aurora-blob animate-aurora-2 top-1/4 -right-48 h-[560px] w-[560px]"
+            style={{ background: 'radial-gradient(circle at 60% 40%, rgba(99,102,241,0.15) 0%, rgba(224,231,255,0) 65%)' }}
+          />
+          <div
+            className="aurora-blob animate-aurora-3 bottom-[-12rem] left-1/3 h-[420px] w-[420px]"
+            style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16,185,129,0.16) 0%, rgba(16,185,129,0) 60%)' }}
+          />
+          <div className="hero-grid absolute inset-0" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(255,255,255,0.7)_0%,transparent_70%)]" />
+        </>
+      )}
 
-      <div
-        className="aurora-blob animate-aurora -top-40 -left-32 h-[480px] w-[480px]"
-        style={{ background: 'radial-gradient(circle at 30% 30%, rgba(250,204,21,0.35) 0%, rgba(250,204,21,0) 65%)' }}
-      />
-      <div
-        className="aurora-blob animate-aurora-2 top-1/4 -right-48 h-[560px] w-[560px]"
-        style={{ background: 'radial-gradient(circle at 60% 40%, rgba(99,102,241,0.15) 0%, rgba(224,231,255,0) 65%)' }}
-      />
-      <div
-        className="aurora-blob animate-aurora-3 bottom-[-12rem] left-1/3 h-[420px] w-[420px]"
-        style={{ background: 'radial-gradient(circle at 50% 50%, rgba(16,185,129,0.16) 0%, rgba(16,185,129,0) 60%)' }}
-      />
-
-      <div className="hero-grid absolute inset-0" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(255,255,255,0.7)_0%,transparent_70%)]" />
+      {isNeon && (
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_15%,rgba(0,240,255,0.2)_0%,transparent_75%)] pointer-events-none" />
+      )}
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 md:pt-28 pb-24 md:pb-32 text-center">
         <FadeIn>
-          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 border border-[rgba(250,204,21,0.5)] bg-white/70 backdrop-blur-md shadow-sm">
-            <FaWandMagicSparkles className="h-3.5 w-3.5 text-ink animate-pulse-soft" />
-            <span className="text-sm font-semibold text-ink">AI-powered job matching</span>
+          <div className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 border backdrop-blur-md shadow-sm ${
+            isNeon
+              ? 'border-cyan-400/60 bg-cyan-950/40 text-cyan-200 shadow-[0_0_18px_rgba(0,240,255,0.35)]'
+              : 'border-[rgba(250,204,21,0.5)] bg-white/70 text-ink'
+          }`}>
+            <FaWandMagicSparkles className={`h-3.5 w-3.5 ${isNeon ? 'text-cyan-300 animate-pulse' : 'text-ink animate-pulse-soft'}`} />
+            <span className="text-sm font-semibold">AI-powered job matching</span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight text-ink leading-[1.05]">
-            Find your <span className="text-glow-yellow">dream job</span>
-            <br className="hidden md:block" /> today
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight text-ink leading-[1.08]">
+            Find your{' '}
+            <span
+              className={
+                isNeon
+                  ? 'neon-font neon-glow-skyblue text-5xl md:text-7xl lg:text-8xl inline-block transform -rotate-1 px-3.5 py-1'
+                  : 'text-glow-yellow'
+              }
+            >
+              {isNeon ? 'Neon Light' : 'dream job'}
+            </span>
+            <br className="hidden md:block" /> {isNeon ? 'Opportunities' : 'today'}
           </h1>
 
-          <p className="text-slate-600 text-base md:text-lg mt-6 max-w-2xl mx-auto leading-relaxed">
+          <p className={`text-base md:text-lg mt-6 max-w-2xl mx-auto leading-relaxed ${isNeon ? 'text-cyan-100/80 drop-shadow' : 'text-slate-600'}`}>
             Smart recommendations from the world's best job boards — matched to your skills,
             experience, and preferences. From India to remote worldwide.
           </p>
@@ -85,17 +106,25 @@ const SearchHero = () => {
             onSubmit={(e) => { e.preventDefault(); navigate(`/jobs?search=${encodeURIComponent(query)}`); }}
             className="mt-9 max-w-2xl mx-auto"
           >
-            <div className="flex items-center gap-2 bg-white rounded-2xl p-2 pl-5 border border-slate-200 shadow-[0_20px_50px_rgba(99,102,241,0.12)] transition-all duration-300 focus-within:ring-4 focus-within:ring-[rgba(250,204,21,0.35)] focus-within:shadow-[0_0_45px_rgba(250,204,21,0.35)]">
-              <FaMagnifyingGlass className="h-5 w-5 text-slate-400 shrink-0" />
+            <div className={`flex items-center gap-2 rounded-2xl p-2 pl-5 border transition-all duration-300 ${
+              isNeon
+                ? 'bg-slate-900/65 backdrop-blur-xl border-2 border-cyan-400/70 shadow-[0_0_30px_rgba(0,240,255,0.4),inset_0_0_20px_rgba(0,240,255,0.1)] focus-within:border-cyan-300 focus-within:shadow-[0_0_50px_rgba(0,240,255,0.75)]'
+                : 'bg-white border-slate-200 shadow-[0_20px_50px_rgba(99,102,241,0.12)] focus-within:ring-4 focus-within:ring-[rgba(250,204,21,0.35)] focus-within:shadow-[0_0_45px_rgba(250,204,21,0.35)]'
+            }`}>
+              <FaMagnifyingGlass className={`h-5 w-5 shrink-0 ${isNeon ? 'text-cyan-300' : 'text-slate-400'}`} />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Job title, company, or skill..."
-                className="flex-1 min-w-0 bg-transparent border-0 outline-none py-3 text-base md:text-lg text-ink placeholder:text-slate-400"
+                className={`flex-1 min-w-0 bg-transparent border-0 outline-none py-3 text-base md:text-lg ${isNeon ? 'text-white placeholder:text-cyan-300/50' : 'text-ink placeholder:text-slate-400'}`}
               />
               <button
                 type="submit"
-                className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent-dark px-5 md:px-7 py-3 font-bold text-ink text-sm md:text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(250,204,21,0.45)]"
+                className={`shrink-0 inline-flex items-center gap-2 rounded-xl px-5 md:px-7 py-3 font-extrabold text-sm md:text-base transition-all duration-300 cursor-pointer ${
+                  isNeon
+                    ? 'bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 text-white shadow-[0_0_25px_rgba(0,240,255,0.85)] border border-cyan-200 hover:scale-105'
+                    : 'bg-gradient-to-r from-accent to-accent-dark text-ink hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(250,204,21,0.45)]'
+                }`}
               >
                 <FaMagnifyingGlass className="h-4 w-4" />
                 Search
@@ -104,12 +133,16 @@ const SearchHero = () => {
           </form>
 
           <div className="flex flex-wrap justify-center items-center gap-2 mt-6">
-            <span className="text-sm text-slate-500 font-medium mr-1">Popular:</span>
+            <span className={`text-sm font-medium mr-1 ${isNeon ? 'text-cyan-300/80' : 'text-slate-500'}`}>Popular:</span>
             {popular.map((t) => (
               <Link
                 key={t}
                 to={`/jobs?search=${t}`}
-                className="chip-glass text-slate-600 font-medium text-sm px-4 py-1.5 rounded-full transition-all hover:text-ink hover:bg-[rgba(250,204,21,0.18)] hover:border-[rgba(250,204,21,0.5)]"
+                className={`text-sm px-4 py-1.5 rounded-full transition-all font-medium ${
+                  isNeon
+                    ? 'bg-cyan-950/40 border border-cyan-400/50 text-cyan-200 shadow-[0_0_10px_rgba(0,240,255,0.2)] hover:border-cyan-300 hover:bg-cyan-900/60 hover:text-white hover:shadow-[0_0_20px_rgba(0,240,255,0.6)]'
+                    : 'chip-glass text-slate-600 hover:text-ink hover:bg-[rgba(250,204,21,0.18)] hover:border-[rgba(250,204,21,0.5)]'
+                }`}
               >
                 {t}
               </Link>
@@ -122,11 +155,11 @@ const SearchHero = () => {
               { icon: FaBuilding, value: '500+', label: 'Companies' },
               { icon: FaUsers, value: '2,000+', label: 'Hires' },
             ].map((s, i) => (
-              <div key={s.label} className={`flex items-center gap-3 md:gap-4 px-5 md:px-10 ${i > 0 ? 'border-l border-ink/10' : ''}`}>
-                <s.icon className="h-5 w-5 text-ink shrink-0" />
+              <div key={s.label} className={`flex items-center gap-3 md:gap-4 px-5 md:px-10 ${i > 0 ? (isNeon ? 'border-l border-cyan-400/30' : 'border-l border-ink/10') : ''}`}>
+                <s.icon className={`h-5 w-5 shrink-0 ${isNeon ? 'text-cyan-300 drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]' : 'text-ink'}`} />
                 <div className="text-left">
-                  <p className="text-ink font-black text-lg md:text-2xl leading-none">{s.value}</p>
-                  <p className="text-muted text-xs md:text-sm mt-1">{s.label}</p>
+                  <p className={`font-black text-lg md:text-2xl leading-none ${isNeon ? 'text-white drop-shadow-[0_0_10px_rgba(0,240,255,0.7)]' : 'text-ink'}`}>{s.value}</p>
+                  <p className={`text-xs md:text-sm mt-1 ${isNeon ? 'text-cyan-200/70' : 'text-muted'}`}>{s.label}</p>
                 </div>
               </div>
             ))}
@@ -187,62 +220,89 @@ const SearchHero = () => {
   );
 };
 
-const SectionHeader = ({ title, subtitle, to }) => (
-  <div className="flex items-end justify-between gap-4 mb-6">
-    <div>
-      <span className="block h-1 w-10 rounded-full bg-gradient-to-r from-accent to-accent-dark mb-3" />
-      <h2 className="text-xl md:text-3xl font-black text-ink tracking-tight">{title}</h2>
-      {subtitle && <p className="text-sm text-muted mt-1.5">{subtitle}</p>}
+const SectionHeader = ({ title, subtitle, to }) => {
+  const { isNeon } = useTheme();
+  return (
+    <div className="flex items-end justify-between gap-4 mb-6">
+      <div>
+        <span className={`block h-1 w-12 rounded-full mb-3 ${isNeon ? 'bg-cyan-400 shadow-[0_0_10px_rgba(0,240,255,0.9)]' : 'bg-gradient-to-r from-accent to-accent-dark'}`} />
+        <h2 className={`text-xl md:text-3xl font-black tracking-tight ${isNeon ? 'text-white drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]' : 'text-ink'}`}>{title}</h2>
+        {subtitle && <p className={`text-sm mt-1.5 ${isNeon ? 'text-cyan-200/70' : 'text-muted'}`}>{subtitle}</p>}
+      </div>
+      {to && (
+        <Link to={to} className={`group inline-flex items-center gap-1.5 text-sm font-bold transition-all shrink-0 ${isNeon ? 'text-cyan-300 hover:text-white hover:drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]' : 'text-ink hover:text-ink'}`}>
+          View all
+          <FaArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+        </Link>
+      )}
     </div>
-    {to && (
-      <Link to={to} className="group inline-flex items-center gap-1.5 text-sm font-semibold text-ink hover:text-ink transition-colors shrink-0">
-        View all
-        <FaArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-      </Link>
-    )}
-  </div>
-);
+  );
+};
 
-const CandidateCTABand = () => (
-  <section className="relative overflow-hidden bg-[#EEF2FF] border-t border-slate-200">
-    <div
-      className="absolute inset-0"
-      style={{ background: 'linear-gradient(120deg, #EEF2FF 0%, #E0E7FF 55%, #FFFFFF 100%)' }}
-    />
-    <div
-      className="aurora-blob animate-aurora -top-24 right-1/4 h-72 w-72"
-      style={{ background: 'radial-gradient(circle, rgba(250,204,21,0.3) 0%, rgba(250,204,21,0) 65%)' }}
-    />
-    <div className="hero-grid absolute inset-0 opacity-40" />
-    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
-        <div>
-          <h2 className="text-2xl md:text-4xl font-black text-ink tracking-tight leading-tight">
-            Ready to find your <span className="text-glow-yellow">next opportunity</span>?
-          </h2>
-          <p className="text-slate-600 mt-3 max-w-xl text-sm md:text-base leading-relaxed">
-            Explore thousands of verified jobs matched to your skills, experience, and preferred work mode across top tech companies.
-          </p>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-          <Link
-            to="/jobs"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent-dark px-8 py-3.5 text-base font-bold text-ink shadow-[0_10px_30px_rgba(250,204,21,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(250,204,21,0.5)]"
-          >
-            <FaMagnifyingGlass className="h-4 w-4" />
-            Explore All Jobs
-          </Link>
-          <Link
-            to="/auth/register"
-            className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-primary-200 bg-white/70 px-8 py-3.5 text-base font-bold text-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:border-primary-300"
-          >
-            Create Free Profile
-          </Link>
+const CandidateCTABand = () => {
+  const { isNeon } = useTheme();
+  return (
+    <section className={`relative overflow-hidden border-t transition-colors duration-500 ${
+      isNeon ? 'bg-transparent border-cyan-400/30' : 'bg-[#EEF2FF] border-slate-200'
+    }`}>
+      {!isNeon && (
+        <>
+          <div
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(120deg, #EEF2FF 0%, #E0E7FF 55%, #FFFFFF 100%)' }}
+          />
+          <div
+            className="aurora-blob animate-aurora -top-24 right-1/4 h-72 w-72"
+            style={{ background: 'radial-gradient(circle, rgba(250,204,21,0.3) 0%, rgba(250,204,21,0) 65%)' }}
+          />
+          <div className="hero-grid absolute inset-0 opacity-40" />
+        </>
+      )}
+      {isNeon && (
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_50%,rgba(0,240,255,0.18)_0%,transparent_75%)] pointer-events-none" />
+      )}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
+          <div>
+            <h2 className="text-2xl md:text-4xl font-black text-ink tracking-tight leading-tight">
+              Ready to find your{' '}
+              <span className={isNeon ? 'neon-font neon-glow-skyblue text-3xl md:text-5xl px-2 inline-block' : 'text-glow-yellow'}>
+                next opportunity
+              </span>
+              ?
+            </h2>
+            <p className={`mt-3 max-w-xl text-sm md:text-base leading-relaxed ${isNeon ? 'text-cyan-100/80' : 'text-slate-600'}`}>
+              Explore thousands of verified jobs matched to your skills, experience, and preferred work mode across top tech companies.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+            <Link
+              to="/jobs"
+              className={`inline-flex items-center justify-center gap-2 rounded-xl px-8 py-3.5 text-base font-extrabold transition-all duration-300 ${
+                isNeon
+                  ? 'bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 text-white shadow-[0_0_25px_rgba(0,240,255,0.85)] border border-cyan-200 hover:scale-105'
+                  : 'bg-gradient-to-r from-accent to-accent-dark text-ink shadow-[0_10px_30px_rgba(250,204,21,0.35)] hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(250,204,21,0.5)]'
+              }`}
+            >
+              <FaMagnifyingGlass className="h-4 w-4" />
+              Explore All Jobs
+            </Link>
+            <Link
+              to="/auth/register"
+              className={`inline-flex items-center justify-center gap-2 rounded-xl border-2 px-8 py-3.5 text-base font-bold transition-all duration-300 ${
+                isNeon
+                  ? 'border-cyan-400/70 bg-slate-900/60 text-cyan-200 backdrop-blur-md shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:border-cyan-300 hover:text-white'
+                  : 'border-primary-200 bg-white/70 text-ink hover:-translate-y-0.5 hover:bg-white hover:border-primary-300'
+              }`}
+            >
+              Create Free Profile
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const HomePage = () => {
   const { homeData, homeLoading } = useJobs();
