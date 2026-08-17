@@ -69,10 +69,15 @@ const SearchHero = () => {
       )}
 
       {isNeon && (
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_15%,rgba(0,240,255,0.2)_0%,transparent_75%)] pointer-events-none" />
+        <div className="neon-fog-container">
+          <div className="neon-fog-layer-1" />
+          <div className="neon-fog-layer-2" />
+          <div className="neon-fog-layer-3" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_15%,rgba(0,240,255,0.25)_0%,transparent_75%)] pointer-events-none" />
+        </div>
       )}
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 md:pt-28 pb-24 md:pb-32 text-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 md:pt-28 pb-24 md:pb-32 text-center z-10">
         <FadeIn>
           <div className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 border backdrop-blur-md shadow-sm ${
             isNeon
@@ -83,18 +88,31 @@ const SearchHero = () => {
             <span className="text-sm font-semibold">AI-powered job matching</span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight text-ink leading-[1.08]">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight text-ink leading-[1.08] relative z-10">
             Find your{' '}
             <span
               className={
                 isNeon
-                  ? 'neon-font neon-glow-skyblue text-5xl md:text-7xl lg:text-8xl inline-block transform -rotate-1 px-3.5 py-1'
+                  ? 'neon-font neon-glow-skyblue neon-light-tube neon-flicker-sign text-5xl md:text-7xl lg:text-8xl inline-block transform -rotate-1 px-3.5 py-1'
                   : 'text-glow-yellow'
               }
             >
-              {isNeon ? 'Neon Light' : 'dream job'}
+              {isNeon ? (
+                <>
+                  <span className="neon-flicker-fast">d</span>ream{' '}
+                  <span className="neon-flicker-slow">j</span>ob
+                </>
+              ) : (
+                'dream job'
+              )}
             </span>
-            <br className="hidden md:block" /> {isNeon ? 'Opportunities' : 'today'}
+            <br className="hidden md:block" /> {isNeon ? (
+              <span className="text-white drop-shadow-[0_0_20px_rgba(0,240,255,0.9)]">
+                today
+              </span>
+            ) : (
+              'today'
+            )}
           </h1>
 
           <p className={`text-base md:text-lg mt-6 max-w-2xl mx-auto leading-relaxed ${isNeon ? 'text-cyan-100/80 drop-shadow' : 'text-slate-600'}`}>
@@ -106,21 +124,21 @@ const SearchHero = () => {
             onSubmit={(e) => { e.preventDefault(); navigate(`/jobs?search=${encodeURIComponent(query)}`); }}
             className="mt-9 max-w-2xl mx-auto"
           >
-            <div className={`flex items-center gap-2 rounded-2xl p-2 pl-5 border transition-all duration-300 ${
+            <div className={`flex items-center gap-2 rounded-full p-2 pl-6 border transition-all duration-300 ${
               isNeon
                 ? 'bg-slate-900/65 backdrop-blur-xl border-2 border-cyan-400/70 shadow-[0_0_30px_rgba(0,240,255,0.4),inset_0_0_20px_rgba(0,240,255,0.1)] focus-within:border-cyan-300 focus-within:shadow-[0_0_50px_rgba(0,240,255,0.75)]'
                 : 'bg-white border-slate-200 shadow-[0_20px_50px_rgba(99,102,241,0.12)] focus-within:ring-4 focus-within:ring-[rgba(250,204,21,0.35)] focus-within:shadow-[0_0_45px_rgba(250,204,21,0.35)]'
             }`}>
-              <FaMagnifyingGlass className={`h-5 w-5 shrink-0 ${isNeon ? 'text-cyan-300' : 'text-slate-400'}`} />
+              <FaMagnifyingGlass className={`h-5 w-5 shrink-0 ${isNeon ? 'text-cyan-300 drop-shadow-[0_0_6px_rgba(0,240,255,0.8)]' : 'text-slate-400'}`} />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Job title, company, or skill..."
-                className={`flex-1 min-w-0 bg-transparent border-0 outline-none py-3 text-base md:text-lg ${isNeon ? 'text-white placeholder:text-cyan-300/50' : 'text-ink placeholder:text-slate-400'}`}
+                className={`flex-1 min-w-0 bg-transparent !border-none !outline-none !shadow-none py-3 text-base md:text-lg ${isNeon ? 'text-white placeholder:text-cyan-300/50' : 'text-ink placeholder:text-slate-400'}`}
               />
               <button
                 type="submit"
-                className={`shrink-0 inline-flex items-center gap-2 rounded-xl px-5 md:px-7 py-3 font-extrabold text-sm md:text-base transition-all duration-300 cursor-pointer ${
+                className={`shrink-0 inline-flex items-center gap-2 rounded-full px-6 md:px-8 py-3.5 font-extrabold text-sm md:text-base transition-all duration-300 cursor-pointer ${
                   isNeon
                     ? 'bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 text-white shadow-[0_0_25px_rgba(0,240,255,0.85)] border border-cyan-200 hover:scale-105'
                     : 'bg-gradient-to-r from-accent to-accent-dark text-ink hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(250,204,21,0.45)]'

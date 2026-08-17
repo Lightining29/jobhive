@@ -18,6 +18,7 @@ const VerifyEmailPage = lazy(() => import('./pages/auth/VerifyEmailPage'));
 const JobsPage = lazy(() => import('./pages/JobsPage'));
 const JobDetailPage = lazy(() => import('./pages/JobDetailPage'));
 const RecommendedJobsPage = lazy(() => import('./pages/RecommendedJobsPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
 
 const ResumeAnalyzerPage = lazy(() => import('./pages/candidate/ResumeAnalyzerPage'));
 const CareerNewsPage = lazy(() => import('./pages/CareerNewsPage'));
@@ -74,6 +75,8 @@ const App = () => (
             <Route path="/jobs/onsite" element={withSuspense(<JobsPage key="onsite" />)} />
             <Route path="/jobs/recommended" element={withSuspense(<RecommendedJobsPage />)} />
             <Route path="/jobs/:id" element={withSuspense(<JobDetailPage />)} />
+            <Route path="/about" element={withSuspense(<AboutPage />)} />
+            <Route path="/career-news" element={withSuspense(<CareerNewsPage />)} />
 
             <Route path="/admin/login" element={withSuspense(<AdminLoginPage />)} />
 

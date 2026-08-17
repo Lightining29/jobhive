@@ -6,11 +6,10 @@ import { useTheme } from '../../context/ThemeContext';
 import { initials } from '../../utils/format';
 
 const NAV_LINKS = [
-  { to: '/jobs',         label: 'Browse Jobs',    end: false },
-  { to: '/jobs/technical',     label: 'Technical',      end: false },
-  { to: '/jobs/non-technical', label: 'Non-Technical',  end: false },
-  { to: '/jobs/remote',        label: 'Remote',         end: false },
-  { to: '/career-news',        label: 'Career News',    end: true  },
+  { to: '/',            label: 'Home',        end: true  },
+  { to: '/jobs',        label: 'Browse Jobs', end: false },
+  { to: '/about',       label: 'About',       end: true  },
+  { to: '/career-news', label: 'Career News', end: true  },
 ];
 
 const Navbar = () => {
