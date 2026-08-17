@@ -2,11 +2,11 @@ const { Sequelize } = require('sequelize');
 const logger = require('./logger');
 
 const DB_DIALECT = process.env.DB_DIALECT || 'mysql';
-const DB_HOST = process.env.DB_HOST || 'localhost';
+const DB_HOST = process.env.DB_HOST || '127.0.0.1';
 const DB_PORT = parseInt(process.env.DB_PORT, 10) || 3306;
 const DB_NAME = 'u375016581_ishika';
 const DB_USER = 'u375016581_ishika';
-const DB_PASSWORD = process.env.DB_PASSWORD || 'Ishika@333';
+const DB_PASSWORD = 'Ishika@333';
 
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   host: DB_HOST,
