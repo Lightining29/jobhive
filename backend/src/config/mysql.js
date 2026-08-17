@@ -4,9 +4,17 @@ const logger = require('./logger');
 const DB_DIALECT = process.env.DB_DIALECT || 'mysql';
 const DB_HOST = process.env.DB_HOST || process.env.MYSQL_HOST || 'localhost';
 const DB_PORT = parseInt(process.env.DB_PORT || process.env.MYSQL_PORT, 10) || 3306;
-const DB_NAME = process.env.DB_NAME || process.env.MYSQL_DATABASE || 'jobhive';
-const DB_USER = process.env.DB_USER || process.env.MYSQL_USER || 'root';
-const DB_PASSWORD = process.env.DB_PASSWORD || process.env.MYSQL_PASSWORD || '';
+let DB_NAME = (process.env.DB_NAME || process.env.MYSQL_DATABASE || 'u375016581_ishika').trim();
+let DB_USER = (process.env.DB_USER || process.env.MYSQL_USER || 'u375016581_ishika').trim();
+let DB_PASSWORD = process.env.DB_PASSWORD || process.env.MYSQL_PASSWORD || '';
+
+// Auto-correct dummy placeholder if injected by host panel
+if (DB_NAME.includes('u123456789') || !DB_NAME) {
+  DB_NAME = 'u375016581_ishika';
+}
+if (DB_USER.includes('u123456789') || !DB_USER) {
+  DB_USER = 'u375016581_ishika';
+}
 
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   host: DB_HOST,
