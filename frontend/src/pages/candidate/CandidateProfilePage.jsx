@@ -9,6 +9,7 @@ import {
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { candidateService } from '../../services';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { initials, formatAvatarUrl } from '../../utils/format';
 import { SAMPLE_SKILLS } from '../../utils/constants';
 import AIFillModal from '../../components/voice/AIFillModal';
@@ -18,7 +19,8 @@ const initialExperience = { role: '', company: '', startDate: '', endDate: '', c
 const initialCertification = { name: '', issuer: '', year: '' };
 
 const CandidateProfilePage = () => {
-  const { setUser, refreshUser } = useAuth();
+  const { setUser, refreshUser, user } = useAuth();
+  const { isNeon } = useTheme();
   const [profile, setProfile] = useState(null);
   const [completion, setCompletion] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -125,19 +127,22 @@ const CandidateProfilePage = () => {
   const uploadAvatar = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Instant local preview so photo displays immediately
+    const localUrl = URL.createObjectURL(file);
+    setProfile((prev) => ({ ...prev, avatar: localUrl }));
+    if (setUser) setUser((prev) => prev ? { ...prev, avatar: localUrl } : prev);
+
     setUploading('avatar');
     try {
       const res = await candidateService.uploadAvatar(file);
       toast.success('Profile photo updated successfully!');
-      const newAvatar = res?.data?.user?.avatar;
-      if (newAvatar) {
-        setProfile((prev) => ({ ...prev, avatar: newAvatar }));
-        if (setUser) {
-          setUser((prev) => prev ? { ...prev, avatar: newAvatar } : prev);
-        }
+      const newAvatar = res?.data?.user?.avatar || localUrl;
+      setProfile((prev) => ({ ...prev, avatar: newAvatar }));
+      if (setUser) {
+        setUser((prev) => prev ? { ...prev, avatar: newAvatar } : prev);
       }
       if (refreshUser) await refreshUser();
-      await load();
     } catch (err) {
       toast.error(err.message || 'Failed to update profile photo');
     } finally {
@@ -280,19 +285,41 @@ const CandidateProfilePage = () => {
                 <img
                   src={formatAvatarUrl(profile.avatar)}
                   alt={profile?.name || 'Avatar'}
-                  className="h-20 w-20 rounded-full object-cover border-2 border-accent shadow-md"
+                  className={`h-20 w-20 rounded-full object-cover border-2 ${
+                    isNeon ? 'border-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.7)]' : 'border-accent shadow-md'
+                  }`}
                   onError={(e) => {
                     e.target.style.display = 'none';
                     if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
                   }}
                 />
               ) : null}
-              <div className={`h-20 w-20 rounded-full bg-primary-50 items-center justify-center text-2xl font-bold text-primary ${profile?.avatar ? 'hidden' : 'flex'}`}>
-                {initials(profile?.name || 'User')}
+              <div
+                className={`h-20 w-20 rounded-full items-center justify-center text-2xl font-black ${
+                  profile?.avatar ? 'hidden' : 'flex'
+                } ${
+                  isNeon
+                    ? 'bg-slate-900 border-2 border-cyan-400/80 text-cyan-300 shadow-[0_0_15px_rgba(0,240,255,0.6)]'
+                    : 'bg-primary-50 border-2 border-accent text-primary'
+                }`}
+              >
+                {initials(profile?.name || user?.name || 'User')}
               </div>
-              <label className="absolute -bottom-1 -right-1 h-7 w-7 rounded-full bg-ink text-white flex items-center justify-center cursor-pointer hover:bg-gray-700 shadow-md">
+              <label
+                className={`absolute -bottom-1 -right-1 h-7 w-7 rounded-full flex items-center justify-center cursor-pointer shadow-md transition-transform hover:scale-110 ${
+                  isNeon
+                    ? 'bg-cyan-400 text-slate-950 shadow-[0_0_10px_rgba(0,240,255,0.85)] hover:bg-cyan-300'
+                    : 'bg-ink text-white hover:bg-gray-700'
+                }`}
+              >
                 <FaPlus className="h-3.5 w-3.5" />
-                <input type="file" accept="image/*" className="hidden" onChange={uploadAvatar} disabled={uploading === 'avatar'} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={uploadAvatar}
+                  disabled={uploading === 'avatar'}
+                />
               </label>
             </div>
             <div className="flex-1">

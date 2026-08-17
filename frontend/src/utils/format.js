@@ -65,14 +65,31 @@ export const formatAvatarUrl = (url) => {
   if (!url || typeof url !== 'string') return '';
   const trimmed = url.trim();
   if (!trimmed) return '';
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {
-    if (trimmed.includes('localhost:5000/uploads/')) {
-      return trimmed.substring(trimmed.indexOf('/uploads/'));
-    }
+  if (trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
     return trimmed;
   }
-  if (trimmed.startsWith('/')) return trimmed;
-  return `/${trimmed}`;
+
+  const apiBase = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL)
+    ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '')
+    : '';
+
+  const uploadsIdx = trimmed.indexOf('/uploads/');
+  if (uploadsIdx !== -1) {
+    const rel = trimmed.substring(uploadsIdx);
+    if (apiBase && !apiBase.startsWith('/')) {
+      return `${apiBase}${rel}`;
+    }
+    return rel;
+  }
+
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed;
+  }
+
+  if (trimmed.startsWith('/')) {
+    return apiBase && !apiBase.startsWith('/') ? `${apiBase}${trimmed}` : trimmed;
+  }
+  return apiBase && !apiBase.startsWith('/') ? `${apiBase}/${trimmed}` : `/${trimmed}`;
 };
 
 const ACRONYMS = {
