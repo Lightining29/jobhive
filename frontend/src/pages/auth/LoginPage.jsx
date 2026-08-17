@@ -29,7 +29,7 @@ export const LoginPage = () => {
           <InputWrap icon={FaEnvelope}>
             <input
               type="email"
-              className="input !pl-10 !bg-slate-950/30 backdrop-blur-md !border-cyan-400/50 !text-white placeholder:!text-cyan-300/40 focus:!border-cyan-300 focus:!shadow-[0_0_20px_rgba(0,240,255,0.6)]"
+              className="input !pl-10 !bg-slate-900/90 backdrop-blur-md !border-cyan-400/70 !text-white placeholder:!text-cyan-300/50 focus:!border-cyan-300 focus:!shadow-[0_0_20px_rgba(0,240,255,0.6)]"
               placeholder="Enter your email"
               {...register('email', { required: 'Email is required' })}
             />
@@ -41,7 +41,7 @@ export const LoginPage = () => {
           <InputWrap icon={FaLock} show={showPw} toggle={() => setShowPw((s) => !s)}>
             <input
               type={showPw ? 'text' : 'password'}
-              className="input !pl-10 !pr-10 !bg-slate-950/30 backdrop-blur-md !border-cyan-400/50 !text-white placeholder:!text-cyan-300/40 focus:!border-cyan-300 focus:!shadow-[0_0_20px_rgba(0,240,255,0.6)]"
+              className="input !pl-10 !pr-10 !bg-slate-900/90 backdrop-blur-md !border-cyan-400/70 !text-white placeholder:!text-cyan-300/50 focus:!border-cyan-300 focus:!shadow-[0_0_20px_rgba(0,240,255,0.6)]"
               placeholder="Enter your password"
               {...register('password', { required: 'Password is required' })}
             />
