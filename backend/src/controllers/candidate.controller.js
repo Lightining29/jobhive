@@ -35,11 +35,24 @@ const updateProfile = asyncHandler(async (req, res) => {
     return res.status(404).json({ success: false, message: 'User not found' });
   }
 
-  const allowed = ['name', 'phone', 'headline', 'bio', 'skills', 'education', 'experience', 'certifications', 'socialLinks', 'preferences'];
+  const allowed = ['name', 'phone', 'headline', 'bio', 'skills', 'education', 'experience', 'certifications', 'socialLinks', 'preferences', 'avatar'];
   allowed.forEach((field) => {
-    if (req.body[field] !== undefined) user[field] = req.body[field];
+    if (req.body[field] !== undefined && req.body[field] !== null && req.body[field] !== '') {
+      user[field] = req.body[field];
+    }
   });
   await user.save();
+
+  // Sync Mongo if active
+  try {
+    const UserMongo = require('../models/User');
+    if (UserMongo && req.user.email) {
+      await UserMongo.findOneAndUpdate({ email: req.user.email }, { $set: { ...req.body } });
+    }
+  } catch {
+    // ignore
+  }
+
   res.json({ success: true, message: 'Profile updated.', user: user.toSafeJSON() });
 });
 
@@ -65,7 +78,18 @@ const uploadAvatar = asyncHandler(async (req, res, next) => {
     }
     user.avatar = avatarUrl;
     await user.save();
-    res.json({ success: true, message: 'Avatar uploaded successfully.', user: user.toSafeJSON() });
+
+    // Sync Mongo if active
+    try {
+      const UserMongo = require('../models/User');
+      if (UserMongo && req.user.email) {
+        await UserMongo.findOneAndUpdate({ email: req.user.email }, { $set: { avatar: avatarUrl } });
+      }
+    } catch {
+      // ignore
+    }
+
+    res.json({ success: true, message: 'Avatar uploaded successfully.', user: user.toSafeJSON(), avatar: avatarUrl });
   } finally {
     if (cloudinary.isConfigured() && localPath === null && req.file.path) {
       fs.promises.unlink(req.file.path).catch(() => {});

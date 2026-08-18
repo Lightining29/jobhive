@@ -103,14 +103,22 @@ export const DarkHeroParallaxScene = () => {
             <span className="text-slate-300 hidden sm:inline">340+ Verified Companies Hiring</span>
           </div>
           
-          {/* ── MAIN HEADLINE: ONLY "Dream Job" IS NEON, REST IS WHITE ── */}
+          {/* ── MAIN HEADLINE: ONLY "Dream Job" IS NEON WITH LETTER-BY-LETTER FLICKER, REST IS WHITE ── */}
           <div className="mb-4">
             <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.08]">
               <span className="text-white inline-block mr-3 sm:mr-4">
                 Find Your
               </span>
-              <span className="neon-text-cyan inline-block">
-                Dream Job
+              <span className="inline-block">
+                <span className="neon-letter">D</span>
+                <span className="neon-letter">r</span>
+                <span className="neon-letter neon-letter-flicker-1">e</span>
+                <span className="neon-letter">a</span>
+                <span className="neon-letter">m</span>
+                <span className="inline-block w-2.5 sm:w-4" />
+                <span className="neon-letter">J</span>
+                <span className="neon-letter neon-letter-flicker-2">o</span>
+                <span className="neon-letter">b</span>
               </span>
               <br />
               <span className="text-white font-black text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight mt-2 inline-block">
@@ -133,7 +141,7 @@ export const DarkHeroParallaxScene = () => {
                 onClick={() => handleTabClick(tab)}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ${
                   activeTab === tab.id
-                    ? 'bg-gradient-to-r from-[#ff2d87] to-rose-600 text-white shadow-[0_0_15px_rgba(255,45,135,0.6)] scale-105'
+                    ? 'bg-gradient-to-r from-cyan-400 to-sky-500 text-slate-950 font-black shadow-[0_0_15px_rgba(0,240,255,0.7)] scale-105'
                     : 'bg-[#0b0f1e]/90 text-slate-300 border border-slate-700 hover:border-cyan-400 hover:text-white'
                 }`}
               >
@@ -142,23 +150,23 @@ export const DarkHeroParallaxScene = () => {
             ))}
           </div>
 
-          {/* Wide Glowing Command Search Input Box */}
+          {/* ── Wide Fully Rounded Glowing Command Search Box (Pill Shape) ── */}
           <form onSubmit={handleSearch} className="mt-6 max-w-2xl mx-auto">
-            <div className="relative p-[2px] rounded-2xl bg-gradient-to-r from-[#ff2d87] via-[#a855f7] to-[#00f0ff] shadow-[0_0_35px_rgba(255,45,135,0.45)] transition-all duration-300 focus-within:shadow-[0_0_55px_rgba(0,240,255,0.7)]">
-              <div className="flex items-center gap-2 rounded-[14px] bg-[#050711]/95 backdrop-blur-2xl p-2.5 pl-5">
+            <div className="relative p-[2px] rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 shadow-[0_0_35px_rgba(0,240,255,0.55)] transition-all duration-300 focus-within:shadow-[0_0_55px_rgba(0,240,255,0.95)]">
+              <div className="flex items-center gap-2 rounded-full bg-[#050711]/95 backdrop-blur-2xl p-2 pl-5">
                 <FaMagnifyingGlass className="h-5 w-5 text-cyan-400 shrink-0 drop-shadow-[0_0_10px_#00f0ff]" />
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search Java Developer, Spring Boot, React, Remote, Bengaluru, Pune..."
-                  className="w-full bg-transparent border-none outline-none text-white text-base placeholder:text-slate-400 py-2.5 pr-2 focus:ring-0"
+                  placeholder="Search Java Developer, Spring Boot, React, Remote, Bengaluru..."
+                  className="w-full bg-transparent border-none outline-none text-white text-sm sm:text-base placeholder:text-slate-400 py-2.5 pr-2 focus:ring-0"
                 />
                 <button
                   type="submit"
-                  className="shrink-0 px-7 py-3 rounded-xl font-black text-sm bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:from-pink-400 hover:to-amber-300 text-white shadow-[0_0_25px_rgba(255,45,135,0.7)] transition-all duration-200 cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95"
+                  className="shrink-0 px-7 py-3 rounded-full font-black text-xs sm:text-sm bg-gradient-to-r from-cyan-400 to-sky-400 hover:from-cyan-300 hover:to-sky-300 text-slate-950 shadow-[0_0_20px_rgba(0,240,255,0.8)] transition-all duration-200 cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95"
                 >
-                  <FaBolt className="h-4 w-4" />
+                  <FaBolt className="h-3.5 w-3.5" />
                   Search
                 </button>
               </div>

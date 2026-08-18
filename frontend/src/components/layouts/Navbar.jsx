@@ -61,7 +61,7 @@ const Navbar = () => {
           <Link
             to={dashboardPath}
             onClick={() => setOpen(false)}
-            className="btn-primary w-full !py-2.5 text-xs font-bold justify-center shadow-sm flex items-center gap-1.5"
+            className="w-full py-2.5 rounded-xl text-xs font-black justify-center shadow-md flex items-center gap-1.5 bg-amber-400 text-slate-950 hover:bg-amber-300 dark:bg-transparent dark:text-[#00f0ff] dark:border-2 dark:border-[#00f0ff] dark:shadow-[0_0_15px_rgba(0,240,255,0.6)]"
           >
             Enter Dashboard →
           </Link>
@@ -255,13 +255,16 @@ const Navbar = () => {
                 {user.role === 'admin' ? (
                   <Link
                     to="/admin/dashboard"
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-extrabold text-xs shadow-lift border border-amber-400/50 transition-all hover:scale-105"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber-400 text-slate-950 hover:bg-amber-300 font-extrabold text-xs shadow-md border border-amber-500/40 dark:bg-transparent dark:text-[#00f0ff] dark:border-2 dark:border-[#00f0ff] dark:shadow-[0_0_16px_rgba(0,240,255,0.7),inset_0_0_10px_rgba(0,240,255,0.2)] dark:hover:bg-cyan-500/20 transition-all hover:scale-105"
                   >
-                    <FaShieldHalved className="h-3.5 w-3.5 text-slate-900" />
+                    <FaShieldHalved className="h-3.5 w-3.5" />
                     Admin Panel
                   </Link>
                 ) : (
-                  <Link to={dashboardPath} className="btn-primary !py-2 !px-3.5 text-xs font-semibold flex items-center gap-1.5 shadow-xs">
+                  <Link
+                    to={dashboardPath}
+                    className="px-4 py-2 text-xs font-black rounded-full transition-all duration-300 flex items-center gap-1.5 bg-amber-400 text-slate-950 hover:bg-amber-300 shadow-md border border-amber-500/30 dark:bg-transparent dark:text-[#00f0ff] dark:border-2 dark:border-[#00f0ff] dark:shadow-[0_0_16px_rgba(0,240,255,0.7),inset_0_0_10px_rgba(0,240,255,0.2)] dark:hover:bg-cyan-500/20 dark:hover:shadow-[0_0_26px_rgba(0,240,255,0.95)] hover:scale-105"
+                  >
                     Dashboard
                   </Link>
                 )}
@@ -283,11 +286,12 @@ const Navbar = () => {
                   >
                     {user.avatar ? (
                       <img
+                        key={user.avatar}
                         src={formatAvatarUrl(user.avatar)}
-                        alt={user.name || ''}
+                        alt={user.name || 'User Profile'}
                         referrerPolicy="no-referrer"
-                        className="h-9 w-9 rounded-full object-cover border-2 border-primary-500 transition-colors"
-                        onError={(e) => { e.target.style.display = 'none'; if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex'; }}
+                        className="h-9 w-9 rounded-full object-cover border-2 border-primary-500 transition-colors shadow-sm"
+                        onError={(e) => { e.target.style.display = 'none'; if (e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'flex'; }}
                       />
                     ) : null}
                     <span className={`h-9 w-9 rounded-full bg-primary-600 text-white items-center justify-center text-sm font-bold shadow-sm ${user.avatar ? 'hidden' : 'flex'}`}>

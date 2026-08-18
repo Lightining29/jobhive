@@ -79,43 +79,36 @@ export const CompanyLogo = ({ logo, name, size = 'md', className = '' }) => {
   const sizes = { sm: 'h-9 w-9 rounded-lg', md: 'h-12 w-12 rounded-xl', lg: 'h-16 w-16 rounded-2xl' };
   const textSizes = { sm: 'text-[11px]', md: 'text-sm', lg: 'text-2xl' };
   const [imgError, setImgError] = React.useState(false);
-  const [fallbackAttempted, setFallbackAttempted] = React.useState(false);
 
-  // Clean company name to attempt direct brand logo if custom logo not provided or broken
-  const cleanName = name ? name.trim().toLowerCase().replace(/[^a-z0-9]/g, '') : '';
-  const brandFallbackUrl = cleanName && cleanName.length > 1 ? `https://logo.clearbit.com/${cleanName}.com` : null;
+  // If a valid uploaded custom logo exists and hasn't failed, show image
+  const hasCustomLogo = logo && typeof logo === 'string' && logo.trim().length > 4 && !imgError;
 
-  const currentSrc = !imgError && logo ? logo : (!fallbackAttempted && brandFallbackUrl ? brandFallbackUrl : null);
-
-  if (currentSrc) {
+  if (hasCustomLogo) {
     return (
       <img
-        src={currentSrc}
-        alt={name ? `${name} company logo - Hiring on Job Workplace` : 'Company Logo - Job Workplace'}
+        src={logo}
+        alt={name ? `${name} company logo` : 'Company Logo'}
         loading="lazy"
         referrerPolicy="no-referrer"
-        onError={() => {
-          if (!fallbackAttempted && brandFallbackUrl && currentSrc !== brandFallbackUrl) {
-            setFallbackAttempted(true);
-          } else {
-            setImgError(true);
-          }
-        }}
-        className={`${sizes[size]} object-contain p-1.5 bg-white dark:bg-[#070e24] border border-slate-200 dark:border-2 dark:border-[#00f0ff] dark:shadow-[0_0_12px_rgba(0,240,255,0.6)] shadow-sm ${className}`}
+        onError={() => setImgError(true)}
+        className={`${sizes[size]} object-contain p-1 bg-white dark:bg-[#070e24] border border-slate-200 dark:border-2 dark:border-[#00f0ff] dark:shadow-[0_0_12px_rgba(0,240,255,0.6)] shadow-sm ${className}`}
       />
     );
   }
 
+  // Pure glowing text initials badge (as before - no broken image icon)
   return (
-    <div className={`${sizes[size]} flex items-center justify-center bg-gradient-to-br from-accent/20 to-accent/10 border border-accent/30 dark:bg-[#070e24] dark:border-2 dark:border-[#00f0ff] dark:shadow-[0_0_14px_rgba(0,240,255,0.6)] ${className}`}>
+    <div className={`${sizes[size]} flex items-center justify-center bg-gradient-to-br from-cyan-500/20 to-blue-600/10 border border-slate-200 dark:bg-[#070e24] dark:border-2 dark:border-[#00f0ff] dark:shadow-[0_0_14px_rgba(0,240,255,0.6)] ${className}`}>
       {name ? (
-        <span className={`${textSizes[size]} font-black text-ink dark:text-[#00f0ff] dark:neon-text-cyan leading-none`}>{initials(name)}</span>
+        <span className={`${textSizes[size]} font-black text-slate-900 dark:text-[#00f0ff] dark:neon-text-cyan leading-none`}>{initials(name)}</span>
       ) : (
-        <FaBuilding className={size === 'lg' ? 'h-6 w-6 text-ink dark:text-[#00f0ff]' : 'h-4 w-4 text-ink dark:text-[#00f0ff]'} />
+        <FaBuilding className={size === 'lg' ? 'h-6 w-6 text-slate-700 dark:text-[#00f0ff]' : 'h-4 w-4 text-slate-700 dark:text-[#00f0ff]'} />
       )}
     </div>
   );
 };
+
+
 
 const WORK_MODE_BADGES = {
   remote: { label: 'Remote', icon: FaGlobe, cls: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },

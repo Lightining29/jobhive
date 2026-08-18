@@ -129,16 +129,16 @@ const CandidateProfilePage = () => {
     // Instant local preview so photo displays immediately
     const localUrl = URL.createObjectURL(file);
     setProfile((prev) => ({ ...prev, avatar: localUrl }));
-    if (setUser) setUser((prev) => prev ? { ...prev, avatar: localUrl } : prev);
+    if (setUser) setUser((prev) => prev ? { ...prev, avatar: localUrl } : { avatar: localUrl });
 
     setUploading('avatar');
     try {
       const res = await candidateService.uploadAvatar(file);
       toast.success('Profile photo updated successfully!');
-      const newAvatar = res?.data?.user?.avatar || localUrl;
+      const newAvatar = res?.data?.avatar || res?.data?.user?.avatar || localUrl;
       setProfile((prev) => ({ ...prev, avatar: newAvatar }));
       if (setUser) {
-        setUser((prev) => prev ? { ...prev, avatar: newAvatar } : prev);
+        setUser((prev) => prev ? { ...prev, avatar: newAvatar } : { avatar: newAvatar });
       }
       if (refreshUser) await refreshUser();
     } catch (err) {
@@ -154,6 +154,7 @@ const CandidateProfilePage = () => {
     try {
       const cleaned = {
         ...values,
+        avatar: profile?.avatar || undefined,
         skills: values.skills.filter(Boolean).map((s) => s.toLowerCase()),
         education: values.education.filter((e) => e.institution || e.degree),
         experience: values.experience.filter((e) => e.role || e.company),
@@ -163,9 +164,13 @@ const CandidateProfilePage = () => {
           preferredSalary: values.preferences.preferredSalary ? Number(values.preferences.preferredSalary) : null,
         },
       };
-      await candidateService.updateProfile(cleaned);
+      const res = await candidateService.updateProfile(cleaned);
+      if (res?.data?.user && setUser) {
+        setUser((prev) => ({ ...prev, ...res.data.user }));
+      }
       toast.success('Profile updated');
       await load();
+      if (refreshUser) await refreshUser();
     } catch (err) {
       toast.error(err.message);
     } finally {
