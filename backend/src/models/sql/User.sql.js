@@ -50,7 +50,7 @@ const UserSQL = sequelize.define(
       allowNull: true,
     },
     avatar: {
-      type: DataTypes.TEXT,
+      type: DataTypes.TEXT('long'),
       allowNull: true,
     },
     skills: {

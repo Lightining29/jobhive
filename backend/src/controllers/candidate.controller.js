@@ -37,7 +37,8 @@ const updateProfile = asyncHandler(async (req, res) => {
 
   const allowed = ['name', 'phone', 'headline', 'bio', 'skills', 'education', 'experience', 'certifications', 'socialLinks', 'preferences', 'avatar'];
   allowed.forEach((field) => {
-    if (req.body[field] !== undefined && req.body[field] !== null && req.body[field] !== '') {
+    if (req.body[field] !== undefined && req.body[field] !== null) {
+      if (field === 'avatar' && req.body[field] === '') return;
       user[field] = req.body[field];
     }
   });
@@ -47,7 +48,9 @@ const updateProfile = asyncHandler(async (req, res) => {
   try {
     const UserMongo = require('../models/User');
     if (UserMongo && req.user.email) {
-      await UserMongo.findOneAndUpdate({ email: req.user.email }, { $set: { ...req.body } });
+      const updateData = { ...req.body };
+      if (!updateData.avatar) delete updateData.avatar;
+      await UserMongo.findOneAndUpdate({ email: req.user.email }, { $set: updateData });
     }
   } catch {
     // ignore
@@ -64,18 +67,36 @@ const uploadAvatar = asyncHandler(async (req, res, next) => {
   let localPath = null;
   try {
     let avatarUrl = '';
+
+    // Create database-persisted Base64 data URL so server reboots/ephemeral disks never lose the photo
+    let base64DataUrl = '';
+    try {
+      if (req.file.path && fs.existsSync(req.file.path)) {
+        const fileBuffer = fs.readFileSync(req.file.path);
+        const mimeType = req.file.mimetype || 'image/jpeg';
+        base64DataUrl = `data:${mimeType};base64,${fileBuffer.toString('base64')}`;
+      }
+    } catch {
+      // ignore
+    }
+
     if (cloudinary.isConfigured()) {
-      const uploaded = await cloudinary.uploadImage({ filePath: req.file.path });
-      avatarUrl = uploaded.url;
-      if (user.avatar && user.avatar.includes('cloudinary')) {
-        const publicId = user.avatar.split('/').pop().split('.')[0];
-        await cloudinary.removeByPublicId(`jobhive/${publicId}`);
+      try {
+        const uploaded = await cloudinary.uploadImage({ filePath: req.file.path });
+        avatarUrl = uploaded.url;
+        if (user.avatar && user.avatar.includes('cloudinary')) {
+          const publicId = user.avatar.split('/').pop().split('.')[0];
+          await cloudinary.removeByPublicId(`jobhive/${publicId}`).catch(() => {});
+        }
+      } catch {
+        avatarUrl = base64DataUrl || `/uploads/${req.file.filename}`;
       }
     } else {
-      // Local static storage
-      avatarUrl = `/uploads/${req.file.filename}`;
+      // Store Base64 Data URL directly in the database for 100% permanent persistence
+      avatarUrl = base64DataUrl || `/uploads/${req.file.filename}`;
       localPath = req.file.path;
     }
+
     user.avatar = avatarUrl;
     await user.save();
 
@@ -89,7 +110,20 @@ const uploadAvatar = asyncHandler(async (req, res, next) => {
       // ignore
     }
 
-    res.json({ success: true, message: 'Avatar uploaded successfully.', user: user.toSafeJSON(), avatar: avatarUrl });
+    // Sync Portfolio if active
+    try {
+      const Portfolio = require('../models/Portfolio');
+      if (Portfolio) {
+        await Portfolio.findOneAndUpdate(
+          { userId: String(user.id) },
+          { $set: { 'hero.avatar': avatarUrl } }
+        );
+      }
+    } catch {
+      // ignore
+    }
+
+    res.json({ success: true, message: 'Avatar uploaded successfully and saved in database.', user: user.toSafeJSON(), avatar: avatarUrl });
   } finally {
     if (cloudinary.isConfigured() && localPath === null && req.file.path) {
       fs.promises.unlink(req.file.path).catch(() => {});

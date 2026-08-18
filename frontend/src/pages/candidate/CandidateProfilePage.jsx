@@ -285,10 +285,10 @@ const CandidateProfilePage = () => {
         <SubCard title="Basics">
           <div className="flex items-start gap-4 mb-5">
             <div className="relative shrink-0">
-              {profile?.avatar ? (
+              {profile?.avatar || user?.avatar ? (
                 <img
-                  src={formatAvatarUrl(profile.avatar)}
-                  alt={profile?.name || 'Avatar'}
+                  src={formatAvatarUrl(profile?.avatar || user?.avatar)}
+                  alt={profile?.name || user?.name || 'Avatar'}
                   referrerPolicy="no-referrer"
                   className="h-20 w-20 rounded-full object-cover border-2 border-primary-500 shadow-md"
                   onError={(e) => {
@@ -299,7 +299,7 @@ const CandidateProfilePage = () => {
               ) : null}
               <div
                 className={`h-20 w-20 rounded-full items-center justify-center text-2xl font-black bg-primary-50 border-2 border-primary-300 text-primary-700 ${
-                  profile?.avatar ? 'hidden' : 'flex'
+                  profile?.avatar || user?.avatar ? 'hidden' : 'flex'
                 }`}
               >
                 {initials(profile?.name || user?.name || 'User')}
