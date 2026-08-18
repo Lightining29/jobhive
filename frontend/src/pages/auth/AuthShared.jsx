@@ -12,12 +12,12 @@ export const AuthLayout = ({ title, subtitle, children }) => {
           <div className="hidden lg:flex lg:col-span-6 flex-col justify-between space-y-8 pr-4">
             <div>
               <Link to="/" className="inline-flex items-center gap-2.5 mb-6 group">
-                <span className="relative h-11 w-11 flex items-center justify-center bg-primary-600 rounded-xl text-white shadow-md group-hover:scale-105 transition-transform duration-300">
-                  <FaHexagonNodes className="h-6 w-6" />
+                <span className="relative h-11 w-11 flex items-center justify-center bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-500 rounded-xl text-slate-950 shadow-md border border-amber-300 group-hover:scale-105 transition-transform duration-300">
+                  <FaHexagonNodes className="h-6 w-6 text-slate-950" />
                 </span>
                 <div className="flex flex-col leading-tight">
                   <span className="text-2xl font-black text-slate-900 tracking-wide">JobHive</span>
-                  <span className="text-[11px] font-bold text-primary-600 tracking-widest uppercase">Career Portal</span>
+                  <span className="text-[11px] font-bold text-amber-600 tracking-widest uppercase">Career Portal</span>
                 </div>
               </Link>
 
@@ -54,8 +54,8 @@ export const AuthLayout = ({ title, subtitle, children }) => {
             {/* Mobile Header */}
             <div className="flex lg:hidden justify-center mb-6">
               <Link to="/" className="inline-flex items-center gap-2 group">
-                <span className="h-10 w-10 flex items-center justify-center bg-primary-600 rounded-xl text-white shadow-md">
-                  <FaHexagonNodes className="h-5 w-5" />
+                <span className="h-10 w-10 flex items-center justify-center bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-500 rounded-xl text-slate-950 shadow-md border border-amber-300">
+                  <FaHexagonNodes className="h-5 w-5 text-slate-950" />
                 </span>
                 <span className="text-2xl font-black text-slate-900">JobHive</span>
               </Link>

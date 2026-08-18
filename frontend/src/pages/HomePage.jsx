@@ -96,9 +96,9 @@ const SearchHero = () => {
               />
               <button
                 type="submit"
-                className="shrink-0 inline-flex items-center gap-2 rounded-full px-6 md:px-8 py-3.5 font-extrabold text-sm md:text-base btn-primary hover:-translate-y-0.5 transition-all duration-300 cursor-pointer shadow-md"
+                className="shrink-0 inline-flex items-center gap-2 rounded-full px-6 md:px-8 py-3.5 font-extrabold text-sm md:text-base bg-amber-400 hover:bg-amber-300 text-slate-950 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer shadow-md border border-amber-300"
               >
-                <FaMagnifyingGlass className="h-4 w-4" />
+                <FaMagnifyingGlass className="h-4 w-4 text-slate-950" />
                 Search
               </button>
             </div>

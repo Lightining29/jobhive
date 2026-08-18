@@ -133,8 +133,8 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-            <span className="relative h-10 w-10 flex items-center justify-center bg-primary-600 text-white rounded-xl shadow-sm group-hover:scale-105 transition-transform duration-300">
-              <FaHexagonNodes className="h-5 w-5" />
+            <span className="relative h-10 w-10 flex items-center justify-center bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-500 text-slate-950 rounded-xl shadow-md border border-amber-300 group-hover:scale-105 transition-transform duration-300">
+              <FaHexagonNodes className="h-5 w-5 text-slate-950" />
             </span>
             <div className="flex flex-col leading-tight">
               <span className="text-lg sm:text-xl font-black tracking-tight text-slate-900">

@@ -8,11 +8,8 @@ const Footer = () => (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
         <div className="col-span-2 md:col-span-1">
           <Link to="/" className="flex items-center gap-2.5 group">
-            <span className="relative h-8 w-8 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <FaHexagonNodes className="h-8 w-8 text-ink drop-shadow-sm" />
-              <span className="absolute inset-0 flex items-center justify-center">
-                <span className="h-3 w-3 rounded-full bg-accent shadow-[0_0_10px_rgba(250,204,21,0.4)]" />
-              </span>
+            <span className="relative h-9 w-9 flex items-center justify-center bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-500 rounded-xl text-slate-950 shadow-sm border border-amber-300 group-hover:scale-105 transition-transform duration-300">
+              <FaHexagonNodes className="h-5 w-5 text-slate-950" />
             </span>
             <div className="flex flex-col leading-tight">
               <span className="text-base font-black text-ink">Job Workplace</span>
