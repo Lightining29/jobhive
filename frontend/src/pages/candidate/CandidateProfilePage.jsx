@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { useForm, useFieldArray } from 'react-hook-form';
 import {
   FaUser, FaBriefcase, FaRegBookmark, FaWandMagicSparkles, FaGaugeHigh,
-  FaPlus, FaXmark, FaFileArrowUp, FaCircleCheck, FaGraduationCap, FaAward, FaGlobe,
+  FaPlus, FaXmark, FaFileArrowUp, FaCircleCheck, FaGraduationCap, FaAward, FaGlobe, FaBolt,
 } from 'react-icons/fa6';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { candidateService } from '../../services';
