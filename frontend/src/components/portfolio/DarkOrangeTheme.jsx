@@ -59,6 +59,11 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
     setContactSent(true);
   };
 
+  const rawSkills = skills || [];
+  const normalizedSkills = Array.isArray(rawSkills) && rawSkills.length
+    ? (typeof rawSkills[0] === 'string' ? [{ name: 'Technical Stack & Specialties', skills: rawSkills }] : rawSkills)
+    : [];
+
   return (
     <div className="min-h-screen bg-[#070503] text-orange-50 font-sans selection:bg-orange-500 selection:text-black relative overflow-x-hidden">
       {/* Ambient Ember Glow Background Lighting */}
@@ -83,7 +88,7 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
 
           <nav className="hidden lg:flex items-center gap-6 text-xs font-black uppercase tracking-wider text-orange-200/80">
             {about.summary && <a href="#about" className="hover:text-orange-400 transition-colors">About</a>}
-            {skills.length > 0 && <a href="#skills" className="hover:text-orange-400 transition-colors">Skills</a>}
+            {normalizedSkills.length > 0 && <a href="#skills" className="hover:text-orange-400 transition-colors">Skills</a>}
             {experience.length > 0 && <a href="#experience" className="hover:text-orange-400 transition-colors">Experience</a>}
             {projects.length > 0 && <a href="#projects" className="hover:text-orange-400 transition-colors">Projects</a>}
             {services.length > 0 && <a href="#services" className="hover:text-orange-400 transition-colors">Services</a>}
@@ -122,7 +127,7 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
         {mobileMenuOpen && (
           <div className="lg:hidden px-6 py-4 bg-[#0e0a06]/95 backdrop-blur-2xl border-b border-orange-500/30 space-y-3 text-sm font-bold">
             {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block text-orange-200 hover:text-orange-400">About</a>}
-            {skills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block text-orange-200 hover:text-orange-400">Skills</a>}
+            {normalizedSkills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block text-orange-200 hover:text-orange-400">Skills</a>}
             {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block text-orange-200 hover:text-orange-400">Experience</a>}
             {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block text-orange-200 hover:text-orange-400">Projects</a>}
             {services.length > 0 && <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block text-orange-200 hover:text-orange-400">Services</a>}
@@ -132,44 +137,45 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
       </header>
 
       {/* Main Content Container */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 relative z-10 space-y-24 w-full max-w-full overflow-hidden">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-16 relative z-10 space-y-20 sm:space-y-24 w-full max-w-full overflow-hidden">
         
         {/* ── 1. HERO SECTION ── */}
-        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
-          <div className="flex-1 text-center lg:text-left space-y-5 min-w-0 w-full">
+        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-6 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
+          <div className="flex-1 text-center lg:text-left space-y-4 min-w-0 w-full">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-300 text-xs font-black shadow-[0_0_15px_rgba(249,115,22,0.2)]">
               <FaFire className="h-3 w-3 text-orange-400 animate-pulse" />
               <span>{hero.title || 'Software Engineer'}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-white tracking-tight leading-[1.08] break-words">
-              Hi, I'm <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-red-500 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(249,115,22,0.4)]">{hero.name}</span>
+            <h1 className="text-2xl sm:text-4xl lg:text-6xl font-black text-white tracking-tight leading-tight">
+              <span className="block sm:inline">Hi, I'm </span>
+              <span className="inline-block bg-gradient-to-r from-orange-400 via-amber-400 to-red-500 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(249,115,22,0.4)]">{hero.name}</span>
             </h1>
 
-            <p className="text-sm sm:text-lg font-medium text-orange-100/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-xs sm:text-sm font-medium text-orange-100/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               {hero.tagline || hero.bioShort || 'Building scalable applications and high-impact digital experiences.'}
             </p>
 
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm text-black bg-gradient-to-r from-orange-500 via-amber-400 to-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.7)] hover:scale-105 transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl font-black text-xs sm:text-sm text-black bg-gradient-to-r from-orange-500 via-amber-400 to-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.7)] hover:scale-105 transition-all"
               >
-                <FaRocket className="h-4 w-4" /> {hero.ctaHire || 'Hire Me'}
+                <FaRocket className="h-3.5 w-3.5" /> {hero.ctaHire || 'Hire Me'}
               </a>
 
               {projects.length > 0 && (
                 <a
                   href="#projects"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white bg-[#150e09] border border-orange-500/40 hover:border-orange-400 hover:shadow-[0_0_15px_rgba(249,115,22,0.3)] transition-all"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl font-bold text-xs sm:text-sm text-white bg-[#150e09] border border-orange-500/40 hover:border-orange-400 hover:shadow-[0_0_15px_rgba(249,115,22,0.3)] transition-all"
                 >
-                  <FaCode className="h-4 w-4 text-orange-400" /> {hero.ctaWork || 'View My Work'}
+                  <FaCode className="h-3.5 w-3.5 text-orange-400" /> {hero.ctaWork || 'View My Work'}
                 </a>
               )}
             </div>
 
             {/* Social & Location Badges */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-8 pt-6 border-t border-orange-950 text-xs font-semibold text-orange-300/70">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 mt-6 pt-5 border-t border-orange-950 text-xs font-semibold text-orange-300/70">
               {hero.location && (
                 <span className="flex items-center gap-1.5 text-orange-200">
                   <FaLocationDot className="h-3 w-3 text-orange-400" /> {hero.location}
@@ -188,9 +194,9 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
             </div>
           </div>
 
-          {/* Profile Photo with Big Circular Dark Orange Neon Ring */}
-          <div className="relative shrink-0 flex items-center justify-center my-4 lg:my-0">
-            <div className="relative h-44 w-44 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-full p-2 bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 shadow-[0_0_45px_rgba(249,115,22,0.65)]">
+          {/* Profile Photo with Sleek Circular Dark Orange Neon Ring */}
+          <div className="relative shrink-0 flex items-center justify-center my-2 lg:my-0">
+            <div className="relative h-32 w-32 sm:h-48 sm:w-48 lg:h-64 lg:w-64 rounded-full p-1.5 sm:p-2 bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 shadow-[0_0_35px_rgba(249,115,22,0.65)]">
               <div className="h-full w-full rounded-full overflow-hidden bg-[#100a06] flex items-center justify-center border-2 border-orange-500/50">
                 {hero.avatar ? (
                   <img
@@ -204,15 +210,15 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
                     }}
                   />
                 ) : null}
-                <span className={`text-5xl sm:text-7xl lg:text-8xl font-black text-orange-400 drop-shadow-[0_0_20px_#f97316] ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`text-4xl sm:text-6xl lg:text-7xl font-black text-orange-400 drop-shadow-[0_0_20px_#f97316] ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : 'D'}
                 </span>
               </div>
             </div>
 
             {about.experienceYears > 0 && (
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-0 px-3.5 py-1.5 rounded-full bg-[#120a06] border-2 border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.8)] flex items-center gap-1.5 text-xs font-black text-white shrink-0 whitespace-nowrap">
-                <FaFire className="h-3.5 w-3.5 text-amber-400" />
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-0 px-3 py-1 rounded-full bg-[#120a06] border border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.8)] flex items-center gap-1.5 text-[11px] font-black text-white shrink-0 whitespace-nowrap">
+                <FaFire className="h-3 w-3 text-amber-400" />
                 <span>{about.experienceYears}+ YRS EXP</span>
               </div>
             )}
@@ -221,13 +227,13 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
 
         {/* ── 2. ABOUT ME SECTION ── */}
         {about.summary && (
-          <section id="about" className="pt-8">
-            <div className="p-8 sm:p-10 rounded-[32px] bg-[#100a06]/90 border-2 border-orange-500/40 shadow-[0_0_30px_rgba(249,115,22,0.15)] relative overflow-hidden backdrop-blur-xl">
-              <div className="flex items-center gap-2.5 mb-4">
+          <section id="about" className="pt-4 sm:pt-8">
+            <div className="p-6 sm:p-10 rounded-2xl sm:rounded-[32px] bg-[#100a06]/90 border border-orange-500/40 shadow-[0_0_30px_rgba(249,115,22,0.15)] relative overflow-hidden backdrop-blur-xl">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
                 <span className="text-xs font-black text-orange-400 uppercase tracking-widest">01 / ABOUT ME</span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl font-black text-white mb-6">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white mb-4 sm:mb-6">
                 Passionate engineering with focus & velocity
               </h2>
 
@@ -236,10 +242,10 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
               </p>
 
               {about.highlights?.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-orange-950">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 sm:mt-8 pt-6 border-t border-orange-950">
                   {about.highlights.map((h, i) => (
-                    <div key={i} className="p-4 rounded-2xl bg-orange-950/20 border border-orange-500/20 flex items-start gap-3">
-                      <FaCheck className="h-4 w-4 text-orange-400 mt-0.5 shrink-0" />
+                    <div key={i} className="p-3.5 sm:p-4 rounded-xl bg-orange-950/20 border border-orange-500/20 flex items-start gap-2.5">
+                      <FaCheck className="h-3.5 w-3.5 text-orange-400 mt-0.5 shrink-0" />
                       <span className="text-xs font-bold text-orange-200">{h}</span>
                     </div>
                   ))}
@@ -250,25 +256,25 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
         )}
 
         {/* ── 3. SKILLS SECTION ── */}
-        {skills.length > 0 && (
-          <section id="skills" className="space-y-8">
+        {normalizedSkills.length > 0 && (
+          <section id="skills" className="space-y-6 sm:space-y-8 pt-4">
             <div>
               <span className="text-xs font-black text-orange-400 uppercase tracking-widest">02 / COMPETENCIES</span>
-              <h2 className="text-3xl sm:text-4xl font-black text-white mt-1">Technical Stack</h2>
+              <h2 className="text-xl sm:text-3xl font-black text-white mt-1">Technical Stack & Specialties</h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {skills.map((category, idx) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {normalizedSkills.map((category, idx) => (
                 <div
                   key={idx}
-                  className="p-6 rounded-[24px] bg-[#100a06]/90 border border-orange-500/30 shadow-lg hover:border-orange-400 hover:shadow-[0_0_20px_rgba(249,115,22,0.3)] transition-all"
+                  className="p-5 sm:p-6 rounded-2xl bg-[#100a06]/90 border border-orange-500/30 shadow-lg hover:border-orange-400 hover:shadow-[0_0_20px_rgba(249,115,22,0.3)] transition-all"
                 >
-                  <h3 className="text-sm font-black text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <h3 className="text-xs sm:text-sm font-black text-white uppercase tracking-wider mb-3.5 flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-orange-400 shadow-[0_0_8px_#f97316]" />
                     {category.name}
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {category.skills.map((skill, sIdx) => (
+                    {(category.skills || []).map((skill, sIdx) => (
                       <span
                         key={sIdx}
                         className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#1a0f08] border border-orange-500/20 text-orange-200 hover:text-white hover:border-orange-400 hover:shadow-[0_0_10px_rgba(249,115,22,0.4)] transition-all"
@@ -282,6 +288,7 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
             </div>
           </section>
         )}
+
 
         {/* ── 4. PROJECTS SECTION ── */}
         {projects.length > 0 && (

@@ -61,36 +61,39 @@ export const ModernTechTheme = ({ portfolio = {}, isPreview = false }) => {
     setContactSent(true);
   };
 
+  const rawSkills = skills || [];
+  const normalizedSkills = Array.isArray(rawSkills) && rawSkills.length
+    ? (typeof rawSkills[0] === 'string' ? [{ name: 'Technical Stack & Specialties', skills: rawSkills }] : rawSkills)
+    : [];
+
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans selection:bg-cyan-500 selection:text-black relative overflow-x-hidden w-full max-w-full">
-      {/* Ambient Cyber Neon Background Lighting */}
+    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans selection:bg-cyan-500 selection:text-black relative overflow-x-hidden">
+      {/* Background Subtle Cyber Glows */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-cyan-500/10 blur-[130px]" />
-        <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] rounded-full bg-blue-600/10 blur-[150px]" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[500px] h-[500px] rounded-full bg-emerald-500/10 blur-[140px]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00f0ff07_1px,transparent_1px),linear-gradient(to_bottom,#00f0ff07_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[550px] h-[550px] rounded-full bg-cyan-500/10 blur-[150px]" />
+        <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] rounded-full bg-blue-600/10 blur-[160px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b0a_1px,transparent_1px),linear-gradient(to_bottom,#1e293b0a_1px,transparent_1px)] bg-[size:3rem_3rem]" />
       </div>
 
-      {/* Sticky Glass Navbar */}
-      <header className="sticky top-0 z-40 bg-[#030712]/80 backdrop-blur-xl border-b border-cyan-500/20 shadow-[0_4px_30px_rgba(0,240,255,0.08)]">
+      {/* Sticky Neon Cyber Header */}
+      <header className="sticky top-0 z-40 bg-[#030712]/85 backdrop-blur-xl border-b border-cyan-500/20 shadow-[0_4px_30px_rgba(0,240,255,0.08)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
-          <a href="#hero" className="flex items-center gap-2.5 group shrink-0 min-w-0">
-            <span className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 text-black flex items-center justify-center font-black text-sm shadow-[0_0_12px_rgba(0,240,255,0.7)] group-hover:scale-110 transition-transform shrink-0">
-              &lt;/&gt;
+          <a href="#hero" className="flex items-center gap-2 group shrink-0 min-w-0">
+            <span className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-black text-xs text-black shadow-[0_0_15px_rgba(0,240,255,0.6)] group-hover:scale-110 transition-transform shrink-0">
+              ⚡
             </span>
-            <span className="font-black text-sm sm:text-base text-white tracking-tight group-hover:text-cyan-400 transition-colors truncate">
+            <span className="font-black text-sm sm:text-base text-white tracking-tight group-hover:text-cyan-300 transition-colors truncate">
               {hero.name || 'Developer'}
             </span>
           </a>
 
-          {/* Desktop Menu */}
           <nav className="hidden lg:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-slate-300">
-            {about.summary && <a href="#about" className="hover:text-cyan-400 transition-colors">About</a>}
-            {skills.length > 0 && <a href="#skills" className="hover:text-cyan-400 transition-colors">Skills</a>}
-            {experience.length > 0 && <a href="#experience" className="hover:text-cyan-400 transition-colors">Experience</a>}
-            {projects.length > 0 && <a href="#projects" className="hover:text-cyan-400 transition-colors">Projects</a>}
-            {services.length > 0 && <a href="#services" className="hover:text-cyan-400 transition-colors">Services</a>}
-            <a href="#contact" className="hover:text-cyan-400 transition-colors">Contact</a>
+            {about.summary && <a href="#about" className="hover:text-cyan-300 transition-colors">About</a>}
+            {normalizedSkills.length > 0 && <a href="#skills" className="hover:text-cyan-300 transition-colors">Skills</a>}
+            {experience.length > 0 && <a href="#experience" className="hover:text-cyan-300 transition-colors">Experience</a>}
+            {projects.length > 0 && <a href="#projects" className="hover:text-cyan-300 transition-colors">Projects</a>}
+            {services.length > 0 && <a href="#services" className="hover:text-cyan-300 transition-colors">Services</a>}
+            <a href="#contact" className="hover:text-cyan-300 transition-colors">Contact</a>
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
@@ -99,83 +102,80 @@ export const ModernTechTheme = ({ portfolio = {}, isPreview = false }) => {
                 href={hero.resumeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 border border-slate-700 text-slate-200 hover:border-cyan-400 hover:text-white transition-all shadow-sm"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 border border-slate-700 text-slate-200 hover:border-cyan-400 hover:text-cyan-300 transition-all shadow-xs"
               >
                 <FaFileArrowDown className="h-3 w-3 text-cyan-400" /> Resume
               </a>
             )}
             <a
               href="#contact"
-              className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-black bg-gradient-to-r from-cyan-400 to-sky-400 text-slate-950 shadow-[0_0_15px_rgba(0,240,255,0.6)] hover:scale-105 transition-all"
+              className="inline-flex items-center px-3.5 sm:px-4 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-cyan-400 to-sky-400 text-slate-950 shadow-[0_0_15px_rgba(0,240,255,0.5)] hover:scale-105 transition-all"
             >
-              Hire Me <FaArrowRight className="h-2.5 w-2.5" />
+              Get in Touch
             </a>
-
-            {/* Mobile Hamburger Button */}
             <button
               type="button"
-              onClick={() => setMobileMenuOpen((o) => !o)}
-              className="lg:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-lg bg-slate-900 border border-slate-700 text-cyan-400"
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <FaXmark className="h-5 w-5" /> : <FaBars className="h-5 w-5" />}
+              {mobileMenuOpen ? <FaXmark className="h-4 w-4" /> : <FaBars className="h-4 w-4" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Nav Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-cyan-500/20 bg-[#030712]/95 backdrop-blur-2xl px-6 py-4 space-y-3">
-            {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-bold text-slate-200 hover:text-cyan-400">About</a>}
-            {skills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-bold text-slate-200 hover:text-cyan-400">Skills</a>}
-            {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-bold text-slate-200 hover:text-cyan-400">Experience</a>}
-            {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-bold text-slate-200 hover:text-cyan-400">Projects</a>}
-            {services.length > 0 && <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-bold text-slate-200 hover:text-cyan-400">Services</a>}
-            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-bold text-slate-200 hover:text-cyan-400">Contact</a>
+          <div className="lg:hidden px-6 py-4 bg-[#050b1c]/95 backdrop-blur-2xl border-b border-cyan-500/30 space-y-3 text-xs font-bold uppercase tracking-wider">
+            {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-300 hover:text-cyan-300">About</a>}
+            {normalizedSkills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-300 hover:text-cyan-300">Skills</a>}
+            {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-300 hover:text-cyan-300">Experience</a>}
+            {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-300 hover:text-cyan-300">Projects</a>}
+            {services.length > 0 && <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-300 hover:text-cyan-300">Services</a>}
+            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-300 hover:text-cyan-300">Contact</a>
           </div>
         )}
       </header>
 
-      {/* Main Content Sections */}
-      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 space-y-24">
+      {/* Main Content Container */}
+      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-16 space-y-20 sm:space-y-24 w-full max-w-full overflow-hidden">
         
         {/* ── 1. HERO SECTION ── */}
-        <section id="hero" className="pt-4 sm:pt-10 flex flex-col-reverse lg:flex-row items-center justify-between gap-8 sm:gap-14 w-full max-w-full overflow-hidden">
+        <section id="hero" className="pt-2 sm:pt-8 flex flex-col-reverse lg:flex-row items-center justify-between gap-6 sm:gap-12 w-full max-w-full overflow-hidden">
           <div className="flex-1 text-center lg:text-left min-w-0 w-full">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs font-bold mb-5 backdrop-blur-md shadow-[0_0_15px_rgba(0,240,255,0.15)]">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs font-bold mb-3 sm:mb-5 backdrop-blur-md shadow-[0_0_15px_rgba(0,240,255,0.15)]">
               <FaTerminal className="h-3 w-3 text-cyan-400" />
               <span>&lt;developer.portfolio active /&gt;</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tight leading-[1.08] text-white break-words">
-              Hi, I'm <br className="hidden sm:inline" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 drop-shadow-[0_0_25px_rgba(0,240,255,0.4)]">
+            <h1 className="text-2xl sm:text-4xl lg:text-6xl font-black tracking-tight leading-tight text-white">
+              <span className="block sm:inline">Hi, I'm </span>
+              <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 drop-shadow-[0_0_25px_rgba(0,240,255,0.4)]">
                 {hero.name || 'Software Engineer'}
               </span>
             </h1>
 
-            <p className="text-base sm:text-xl font-bold text-cyan-400/90 mt-3 flex items-center justify-center lg:justify-start gap-2">
+            <p className="text-sm sm:text-lg font-bold text-cyan-400/90 mt-2 sm:mt-3 flex items-center justify-center lg:justify-start gap-1.5">
               <span>✦</span> {hero.title || 'Full Stack Developer'}
             </p>
 
-            <p className="text-xs sm:text-base text-slate-300 mt-4 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 mt-3 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               {hero.tagline || hero.bioShort || 'Building scalable, user-focused digital solutions with modern technologies and clean architecture.'}
             </p>
 
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 mt-8">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mt-6">
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 shadow-[0_0_20px_rgba(0,240,255,0.7)] hover:scale-105 transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl font-black text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 shadow-[0_0_20px_rgba(0,240,255,0.7)] hover:scale-105 transition-all cursor-pointer"
               >
-                <FaRocket className="h-4 w-4" /> {hero.ctaHire || 'Hire Me'}
+                <FaRocket className="h-3.5 w-3.5" /> {hero.ctaHire || 'Hire Me'}
               </a>
 
               {projects.length > 0 && (
                 <a
                   href="#projects"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white bg-slate-900/80 border border-slate-700 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all cursor-pointer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl font-bold text-xs sm:text-sm text-white bg-slate-900/80 border border-slate-700 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all cursor-pointer"
                 >
-                  <FaCode className="h-4 w-4 text-cyan-400" /> {hero.ctaWork || 'View My Work'}
+                  <FaCode className="h-3.5 w-3.5 text-cyan-400" /> {hero.ctaWork || 'View My Work'}
                 </a>
               )}
 
@@ -184,15 +184,15 @@ export const ModernTechTheme = ({ portfolio = {}, isPreview = false }) => {
                   href={hero.resumeUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm text-slate-300 bg-slate-900/50 border border-slate-800 hover:border-slate-600 hover:text-white transition-all"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm text-slate-300 bg-slate-900/50 border border-slate-800 hover:border-slate-600 hover:text-white transition-all"
                 >
-                  <FaFileArrowDown className="h-4 w-4 text-amber-400" /> Resume
+                  <FaFileArrowDown className="h-3.5 w-3.5 text-amber-400" /> Resume
                 </a>
               )}
             </div>
 
             {/* Social & Location Badges */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-8 pt-6 border-t border-slate-800 text-xs font-semibold text-slate-400">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 mt-6 pt-5 border-t border-slate-800 text-xs font-semibold text-slate-400">
               {hero.location && (
                 <span className="flex items-center gap-1.5 text-slate-300">
                   <FaLocationDot className="h-3 w-3 text-cyan-400" /> {hero.location}
@@ -211,9 +211,9 @@ export const ModernTechTheme = ({ portfolio = {}, isPreview = false }) => {
             </div>
           </div>
 
-          {/* Profile Photo with Big Circular Radiant Neon Ring */}
-          <div className="relative shrink-0 flex items-center justify-center my-4 lg:my-0">
-            <div className="relative h-44 w-44 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-full p-2 bg-gradient-to-br from-cyan-400 via-sky-500 to-blue-600 shadow-[0_0_45px_rgba(0,240,255,0.65)]">
+          {/* Profile Photo with Sleek Circular Radiant Neon Ring */}
+          <div className="relative shrink-0 flex items-center justify-center my-2 lg:my-0">
+            <div className="relative h-32 w-32 sm:h-48 sm:w-48 lg:h-64 lg:w-64 rounded-full p-1.5 sm:p-2 bg-gradient-to-br from-cyan-400 via-sky-500 to-blue-600 shadow-[0_0_35px_rgba(0,240,255,0.65)]">
               <div className="h-full w-full rounded-full overflow-hidden bg-[#070e24] flex items-center justify-center border-2 border-cyan-400/50">
                 {hero.avatar ? (
                   <img
@@ -227,7 +227,7 @@ export const ModernTechTheme = ({ portfolio = {}, isPreview = false }) => {
                     }}
                   />
                 ) : null}
-                <span className={`text-5xl sm:text-7xl lg:text-8xl font-black text-cyan-400 drop-shadow-[0_0_20px_#00f0ff] ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`text-4xl sm:text-6xl lg:text-7xl font-black text-cyan-400 drop-shadow-[0_0_20px_#00f0ff] ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : 'D'}
                 </span>
               </div>
@@ -235,8 +235,8 @@ export const ModernTechTheme = ({ portfolio = {}, isPreview = false }) => {
 
             {/* Floating Experience Badge */}
             {about.experienceYears > 0 && (
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-0 px-3.5 py-1.5 rounded-full bg-[#040816] border-2 border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.8)] flex items-center gap-1.5 text-xs font-black text-white shrink-0 whitespace-nowrap">
-                <FaBolt className="h-3.5 w-3.5 text-amber-400" />
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-0 px-3 py-1 rounded-full bg-[#040816] border border-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.8)] flex items-center gap-1.5 text-[11px] font-black text-white shrink-0 whitespace-nowrap">
+                <FaBolt className="h-3 w-3 text-amber-400" />
                 <span>{about.experienceYears}+ YRS EXP</span>
               </div>
             )}
@@ -245,26 +245,26 @@ export const ModernTechTheme = ({ portfolio = {}, isPreview = false }) => {
 
         {/* ── 2. ABOUT ME SECTION ── */}
         {about.summary && (
-          <section id="about" className="pt-8">
-            <div className="p-8 sm:p-10 rounded-[32px] bg-[#040816]/90 border-2 border-cyan-500/40 shadow-[0_0_30px_rgba(0,240,255,0.15)] relative overflow-hidden backdrop-blur-xl">
-              <div className="flex items-center gap-2.5 mb-4">
+          <section id="about" className="pt-4 sm:pt-8">
+            <div className="p-6 sm:p-10 rounded-2xl sm:rounded-[32px] bg-[#040816]/90 border border-cyan-500/40 shadow-[0_0_30px_rgba(0,240,255,0.15)] relative overflow-hidden backdrop-blur-xl">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
                 <span className="text-xs font-black text-cyan-400 uppercase tracking-widest">01 / ABOUT ME</span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl font-black text-white mb-6">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white mb-4 sm:mb-6">
                 Engineering with purpose, precision & speed
               </h2>
 
-              <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
                 {about.summary}
               </p>
 
               {about.highlights && about.highlights.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-8 border-t border-slate-800">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 sm:mt-8 pt-6 border-t border-slate-800">
                   {about.highlights.map((h, i) => (
-                    <div key={i} className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-start gap-3">
-                      <span className="h-6 w-6 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 mt-0.5">
-                        <FaCheck className="h-3 w-3" />
+                    <div key={i} className="flex items-start gap-2.5">
+                      <span className="h-5 w-5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-400 flex items-center justify-center shrink-0 mt-0.5">
+                        <FaCheck className="h-2.5 w-2.5" />
                       </span>
                       <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{h}</p>
                     </div>
@@ -276,28 +276,28 @@ export const ModernTechTheme = ({ portfolio = {}, isPreview = false }) => {
         )}
 
         {/* ── 3. SKILLS SECTION (CATEGORIZED) ── */}
-        {skills.length > 0 && (
-          <section id="skills" className="pt-8">
-            <div className="flex items-center gap-2.5 mb-3">
+        {normalizedSkills.length > 0 && (
+          <section id="skills" className="pt-4 sm:pt-8">
+            <div className="flex items-center gap-2 mb-2 sm:mb-3">
               <span className="text-xs font-black text-cyan-400 uppercase tracking-widest">02 / CAPABILITIES</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-white mb-8">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white mb-6">
               Technical Stack & Specialties
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {skills.map((cat, idx) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+              {normalizedSkills.map((cat, idx) => (
                 <div
                   key={idx}
-                  className="p-6 rounded-[24px] bg-[#040816]/90 border border-cyan-500/30 hover:border-cyan-400 hover:shadow-[0_0_25px_rgba(0,240,255,0.3)] transition-all duration-300"
+                  className="p-5 sm:p-6 rounded-2xl bg-[#040816]/90 border border-cyan-500/30 hover:border-cyan-400 hover:shadow-[0_0_25px_rgba(0,240,255,0.3)] transition-all duration-300"
                 >
-                  <h3 className="text-sm font-black text-cyan-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <h3 className="text-xs sm:text-sm font-black text-cyan-300 uppercase tracking-wider mb-3.5 flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#00f0ff]" />
                     {cat.name}
                   </h3>
 
                   <div className="flex flex-wrap gap-2">
-                    {cat.skills.map((skill, sIdx) => (
+                    {(cat.skills || []).map((skill, sIdx) => (
                       <span
                         key={sIdx}
                         className="text-xs font-bold px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 hover:border-cyan-400 hover:text-white transition-all shadow-xs"

@@ -59,30 +59,34 @@ export const LightPinkTheme = ({ portfolio, isPreview = false }) => {
     setContactSent(true);
   };
 
+  const rawSkills = skills || [];
+  const normalizedSkills = Array.isArray(rawSkills) && rawSkills.length
+    ? (typeof rawSkills[0] === 'string' ? [{ name: 'Technical Stack & Specialties', skills: rawSkills }] : rawSkills)
+    : [];
+
   return (
-    <div className="min-h-screen bg-[#FFF5F8] text-slate-900 font-sans selection:bg-pink-300 selection:text-pink-950 relative overflow-x-hidden">
-      {/* Soft Pastel Sakura Background Ambient Lighting */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-50">
-        <div className="absolute top-[-10%] left-[-10%] w-[550px] h-[550px] rounded-full bg-pink-200/70 blur-[140px]" />
-        <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] rounded-full bg-rose-200/60 blur-[160px]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f43f5e08_1px,transparent_1px),linear-gradient(to_bottom,#f43f5e08_1px,transparent_1px)] bg-[size:3.5rem_3.5rem]" />
+    <div className="min-h-screen bg-[#fff5f8] text-slate-900 font-sans selection:bg-pink-300 selection:text-pink-950 relative overflow-x-hidden">
+      {/* Soft Pastel Background Elements */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[550px] h-[550px] rounded-full bg-pink-200/40 blur-[140px]" />
+        <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] rounded-full bg-rose-200/30 blur-[150px]" />
       </div>
 
-      {/* Sticky Sakura Glass Navbar */}
-      <header className="sticky top-0 z-40 bg-[#FFF5F8]/85 backdrop-blur-xl border-b border-pink-200/70 shadow-xs">
+      {/* Sticky Clean Pastel Navbar */}
+      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-pink-200 shadow-xs">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
           <a href="#hero" className="flex items-center gap-2 group shrink-0 min-w-0">
-            <span className="h-8 w-8 rounded-lg bg-gradient-to-br from-pink-400 via-rose-400 to-pink-500 text-white flex items-center justify-center font-black text-sm shadow-sm group-hover:scale-110 transition-transform shrink-0">
-              <FaHeart className="h-4 w-4 text-white" />
+            <span className="h-8 w-8 rounded-lg bg-pink-100 border border-pink-300 text-pink-600 flex items-center justify-center font-bold text-sm shadow-xs group-hover:scale-110 transition-transform shrink-0">
+              <FaHeart className="h-4 w-4 text-pink-500" />
             </span>
-            <span className="font-black text-sm sm:text-base text-slate-900 tracking-tight group-hover:text-pink-600 transition-colors truncate">
+            <span className="font-bold text-sm sm:text-base text-slate-900 tracking-tight group-hover:text-pink-600 transition-colors truncate">
               {hero.name || 'Developer'}
             </span>
           </a>
 
-          <nav className="hidden lg:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-pink-950/70">
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-slate-700">
             {about.summary && <a href="#about" className="hover:text-pink-600 transition-colors">About</a>}
-            {skills.length > 0 && <a href="#skills" className="hover:text-pink-600 transition-colors">Skills</a>}
+            {normalizedSkills.length > 0 && <a href="#skills" className="hover:text-pink-600 transition-colors">Skills</a>}
             {experience.length > 0 && <a href="#experience" className="hover:text-pink-600 transition-colors">Experience</a>}
             {projects.length > 0 && <a href="#projects" className="hover:text-pink-600 transition-colors">Projects</a>}
             {services.length > 0 && <a href="#services" className="hover:text-pink-600 transition-colors">Services</a>}
@@ -95,21 +99,21 @@ export const LightPinkTheme = ({ portfolio, isPreview = false }) => {
                 href={hero.resumeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-pink-200 text-pink-800 hover:bg-pink-100/60 transition-all shadow-xs"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white border border-pink-300 text-pink-700 hover:bg-pink-50 transition-all shadow-xs"
               >
-                <FaFileArrowDown className="h-3 w-3 text-pink-600" /> Resume
+                <FaFileArrowDown className="h-3 w-3 text-pink-500" /> Resume
               </a>
             )}
             <a
               href="#contact"
-              className="inline-flex items-center px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-sm hover:scale-105 transition-all"
+              className="inline-flex items-center px-3.5 sm:px-4 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-sm hover:scale-105 transition-all"
             >
               Get in Touch
             </a>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl bg-pink-100 border border-pink-200 text-pink-800"
+              className="lg:hidden p-2 rounded-lg bg-pink-50 border border-pink-200 text-pink-700"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <FaXmark className="h-4 w-4" /> : <FaBars className="h-4 w-4" />}
@@ -118,56 +122,57 @@ export const LightPinkTheme = ({ portfolio, isPreview = false }) => {
         </div>
 
         {mobileMenuOpen && (
-          <div className="lg:hidden px-6 py-4 bg-white/95 backdrop-blur-2xl border-b border-pink-200 space-y-3 text-sm font-bold">
-            {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block text-slate-800 hover:text-pink-600">About</a>}
-            {skills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block text-slate-800 hover:text-pink-600">Skills</a>}
-            {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block text-slate-800 hover:text-pink-600">Experience</a>}
-            {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block text-slate-800 hover:text-pink-600">Projects</a>}
-            {services.length > 0 && <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block text-slate-800 hover:text-pink-600">Services</a>}
-            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block text-slate-800 hover:text-pink-600">Contact</a>
+          <div className="lg:hidden px-6 py-4 bg-white/95 backdrop-blur-2xl border-b border-pink-200 space-y-3 text-xs font-bold uppercase tracking-wider">
+            {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 hover:text-pink-600">About</a>}
+            {normalizedSkills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 hover:text-pink-600">Skills</a>}
+            {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 hover:text-pink-600">Experience</a>}
+            {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 hover:text-pink-600">Projects</a>}
+            {services.length > 0 && <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 hover:text-pink-600">Services</a>}
+            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 hover:text-pink-600">Contact</a>
           </div>
         )}
       </header>
 
       {/* Main Content Container */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 relative z-10 space-y-24 w-full max-w-full overflow-hidden">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-16 relative z-10 space-y-20 sm:space-y-24 w-full max-w-full overflow-hidden">
         
         {/* ── 1. HERO SECTION ── */}
-        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
-          <div className="flex-1 text-center lg:text-left space-y-5 min-w-0 w-full">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pink-100 border border-pink-300 text-pink-700 text-xs font-bold shadow-xs">
+        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-6 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
+          <div className="flex-1 text-center lg:text-left space-y-4 min-w-0 w-full">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-100 border border-pink-300 text-pink-700 text-xs font-bold shadow-xs">
               <FaHeart className="h-3 w-3 text-pink-500" />
               <span>{hero.title || 'Software Engineer'}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-slate-950 tracking-tight leading-[1.08] break-words">
-              Hi, I'm <span className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 bg-clip-text text-transparent">{hero.name}</span>
+            <h1 className="text-2xl sm:text-4xl lg:text-6xl font-black text-slate-950 tracking-tight leading-tight">
+              <span className="block sm:inline">Hi, I'm </span>
+              <span className="inline-block bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 bg-clip-text text-transparent">{hero.name}</span>
             </h1>
 
-            <p className="text-sm sm:text-lg font-medium text-pink-950/70 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-xs sm:text-sm font-medium text-pink-950/70 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               {hero.tagline || hero.bioShort || 'Building scalable applications and high-impact digital experiences.'}
             </p>
 
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 shadow-md hover:scale-105 transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 shadow-md hover:scale-105 transition-all"
               >
-                <FaHeart className="h-4 w-4" /> {hero.ctaHire || 'Hire Me'}
+                <FaHeart className="h-3.5 w-3.5" /> {hero.ctaHire || 'Hire Me'}
               </a>
 
               {projects.length > 0 && (
                 <a
                   href="#projects"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-pink-900 bg-white border border-pink-300 hover:bg-pink-50 shadow-xs transition-all"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl font-bold text-xs sm:text-sm text-pink-900 bg-white border border-pink-300 hover:bg-pink-50 shadow-xs transition-all"
                 >
-                  <FaCode className="h-4 w-4 text-pink-500" /> {hero.ctaWork || 'View My Work'}
+                  <FaCode className="h-3.5 w-3.5 text-pink-500" /> {hero.ctaWork || 'View My Work'}
                 </a>
               )}
             </div>
 
             {/* Social & Location Badges */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-8 pt-6 border-t border-pink-200 text-xs font-semibold text-pink-950/60">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 mt-6 pt-5 border-t border-pink-200 text-xs font-semibold text-pink-950/60">
               {hero.location && (
                 <span className="flex items-center gap-1.5 text-pink-900">
                   <FaLocationDot className="h-3 w-3 text-pink-500" /> {hero.location}
@@ -187,8 +192,8 @@ export const LightPinkTheme = ({ portfolio, isPreview = false }) => {
           </div>
 
           {/* Profile Photo with Soft Rose Gold Circular Ring */}
-          <div className="relative shrink-0 flex items-center justify-center my-4 lg:my-0">
-            <div className="relative h-44 w-44 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-full p-2 bg-gradient-to-br from-pink-300 via-rose-300 to-pink-500 shadow-[0_0_35px_rgba(244,114,182,0.45)]">
+          <div className="relative shrink-0 flex items-center justify-center my-2 lg:my-0">
+            <div className="relative h-32 w-32 sm:h-48 sm:w-48 lg:h-64 lg:w-64 rounded-full p-1.5 sm:p-2 bg-gradient-to-br from-pink-300 via-rose-300 to-pink-500 shadow-[0_0_30px_rgba(244,114,182,0.45)]">
               <div className="h-full w-full rounded-full overflow-hidden bg-white flex items-center justify-center border-2 border-pink-200">
                 {hero.avatar ? (
                   <img
@@ -202,15 +207,15 @@ export const LightPinkTheme = ({ portfolio, isPreview = false }) => {
                     }}
                   />
                 ) : null}
-                <span className={`text-5xl sm:text-7xl lg:text-8xl font-black text-pink-400 ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`text-4xl sm:text-6xl lg:text-7xl font-black text-pink-400 ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : 'D'}
                 </span>
               </div>
             </div>
 
             {about.experienceYears > 0 && (
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-0 px-3.5 py-1.5 rounded-full bg-white border border-pink-300 shadow-sm flex items-center gap-1.5 text-xs font-black text-pink-800 shrink-0 whitespace-nowrap">
-                <FaHeart className="h-3.5 w-3.5 text-pink-500" />
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-0 px-3 py-1 rounded-full bg-white border border-pink-300 shadow-xs flex items-center gap-1.5 text-[11px] font-black text-pink-800 shrink-0 whitespace-nowrap">
+                <FaHeart className="h-3 w-3 text-pink-500" />
                 <span>{about.experienceYears}+ YRS EXP</span>
               </div>
             )}
@@ -219,13 +224,13 @@ export const LightPinkTheme = ({ portfolio, isPreview = false }) => {
 
         {/* ── 2. ABOUT ME SECTION ── */}
         {about.summary && (
-          <section id="about" className="pt-8">
-            <div className="p-8 sm:p-10 rounded-[32px] bg-white border border-pink-200 shadow-md relative overflow-hidden">
-              <div className="flex items-center gap-2.5 mb-4">
+          <section id="about" className="pt-4 sm:pt-8">
+            <div className="p-6 sm:p-10 rounded-2xl sm:rounded-[32px] bg-white border border-pink-200 shadow-md relative overflow-hidden">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
                 <span className="text-xs font-bold text-pink-600 uppercase tracking-widest">01 / ABOUT ME</span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-6">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 mb-4 sm:mb-6">
                 Thoughtful craftsmanship and elegant digital experiences
               </h2>
 
@@ -234,10 +239,10 @@ export const LightPinkTheme = ({ portfolio, isPreview = false }) => {
               </p>
 
               {about.highlights?.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-pink-100">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 sm:mt-8 pt-6 border-t border-pink-100">
                   {about.highlights.map((h, i) => (
-                    <div key={i} className="p-4 rounded-2xl bg-pink-50/70 border border-pink-200/60 flex items-start gap-3">
-                      <FaCheck className="h-4 w-4 text-pink-600 mt-0.5 shrink-0" />
+                    <div key={i} className="p-3.5 sm:p-4 rounded-xl bg-pink-50/70 border border-pink-200/60 flex items-start gap-2.5">
+                      <FaCheck className="h-3.5 w-3.5 text-pink-600 mt-0.5 shrink-0" />
                       <span className="text-xs font-bold text-pink-950">{h}</span>
                     </div>
                   ))}
@@ -248,25 +253,25 @@ export const LightPinkTheme = ({ portfolio, isPreview = false }) => {
         )}
 
         {/* ── 3. SKILLS SECTION ── */}
-        {skills.length > 0 && (
-          <section id="skills" className="space-y-8">
+        {normalizedSkills.length > 0 && (
+          <section id="skills" className="space-y-6 sm:space-y-8 pt-4">
             <div>
               <span className="text-xs font-bold text-pink-600 uppercase tracking-widest">02 / COMPETENCIES</span>
-              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mt-1">Technical Stack</h2>
+              <h2 className="text-xl sm:text-3xl font-black text-slate-900 mt-1">Technical Stack & Specialties</h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {skills.map((category, idx) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+              {normalizedSkills.map((category, idx) => (
                 <div
                   key={idx}
-                  className="p-6 rounded-[24px] bg-white border border-pink-200 shadow-xs hover:shadow-md hover:border-pink-300 transition-all"
+                  className="p-5 sm:p-6 rounded-2xl bg-white border border-pink-200 shadow-xs hover:shadow-md hover:border-pink-300 transition-all"
                 >
-                  <h3 className="text-sm font-black text-pink-950 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <h3 className="text-xs sm:text-sm font-black text-pink-950 uppercase tracking-wider mb-3.5 flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-pink-500" />
                     {category.name}
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {category.skills.map((skill, sIdx) => (
+                    {(category.skills || []).map((skill, sIdx) => (
                       <span
                         key={sIdx}
                         className="px-3 py-1.5 rounded-xl text-xs font-bold bg-pink-50 border border-pink-200 text-pink-900 hover:bg-pink-100 hover:text-pink-950 transition-all"

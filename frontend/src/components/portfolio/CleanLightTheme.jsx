@@ -59,34 +59,38 @@ export const CleanLightTheme = ({ portfolio, isPreview = false }) => {
     setContactSent(true);
   };
 
+  const rawSkills = skills || [];
+  const normalizedSkills = Array.isArray(rawSkills) && rawSkills.length
+    ? (typeof rawSkills[0] === 'string' ? [{ name: 'Technical Stack & Specialties', skills: rawSkills }] : rawSkills)
+    : [];
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans selection:bg-slate-900 selection:text-white relative overflow-x-hidden">
-      {/* Subtle Grid Pattern Background */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-40">
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-blue-100/60 blur-[130px]" />
-        <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] rounded-full bg-slate-200/60 blur-[150px]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a08_1px,transparent_1px),linear-gradient(to_bottom,#0f172a08_1px,transparent_1px)] bg-[size:3rem_3rem]" />
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-blue-200 selection:text-blue-950 relative overflow-x-hidden">
+      {/* Subtle Background Glows */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[550px] h-[550px] rounded-full bg-blue-100/60 blur-[140px]" />
+        <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] rounded-full bg-slate-200/50 blur-[150px]" />
       </div>
 
-      {/* Sticky Clean Light Navbar */}
-      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200/80 shadow-xs">
+      {/* Sticky Clean Navbar */}
+      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200 shadow-xs">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
           <a href="#hero" className="flex items-center gap-2 group shrink-0 min-w-0">
-            <span className="h-8 w-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-black text-sm group-hover:bg-blue-600 transition-colors shadow-sm shrink-0">
-              &lt;/&gt;
+            <span className="h-8 w-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-sm group-hover:scale-110 transition-transform shrink-0">
+              ⚡
             </span>
-            <span className="font-black text-sm sm:text-base text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors truncate">
+            <span className="font-bold text-sm sm:text-base text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors truncate">
               {hero.name || 'Developer'}
             </span>
           </a>
 
-          <nav className="hidden lg:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-slate-600">
-            {about.summary && <a href="#about" className="hover:text-slate-900 transition-colors">About</a>}
-            {skills.length > 0 && <a href="#skills" className="hover:text-slate-900 transition-colors">Skills</a>}
-            {experience.length > 0 && <a href="#experience" className="hover:text-slate-900 transition-colors">Experience</a>}
-            {projects.length > 0 && <a href="#projects" className="hover:text-slate-900 transition-colors">Projects</a>}
-            {services.length > 0 && <a href="#services" className="hover:text-slate-900 transition-colors">Services</a>}
-            <a href="#contact" className="hover:text-slate-900 transition-colors">Contact</a>
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-slate-700">
+            {about.summary && <a href="#about" className="hover:text-blue-600 transition-colors">About</a>}
+            {normalizedSkills.length > 0 && <a href="#skills" className="hover:text-blue-600 transition-colors">Skills</a>}
+            {experience.length > 0 && <a href="#experience" className="hover:text-blue-600 transition-colors">Experience</a>}
+            {projects.length > 0 && <a href="#projects" className="hover:text-blue-600 transition-colors">Projects</a>}
+            {services.length > 0 && <a href="#services" className="hover:text-blue-600 transition-colors">Services</a>}
+            <a href="#contact" className="hover:text-blue-600 transition-colors">Contact</a>
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
@@ -95,21 +99,21 @@ export const CleanLightTheme = ({ portfolio, isPreview = false }) => {
                 href={hero.resumeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-950 transition-all shadow-xs"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 transition-all shadow-xs"
               >
                 <FaFileArrowDown className="h-3 w-3 text-blue-600" /> Resume
               </a>
             )}
             <a
               href="#contact"
-              className="inline-flex items-center px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-sm"
+              className="inline-flex items-center px-3.5 sm:px-4 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-sm hover:bg-blue-700 transition-all"
             >
               Get in Touch
             </a>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700"
+              className="lg:hidden p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-800"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <FaXmark className="h-4 w-4" /> : <FaBars className="h-4 w-4" />}
@@ -118,56 +122,57 @@ export const CleanLightTheme = ({ portfolio, isPreview = false }) => {
         </div>
 
         {mobileMenuOpen && (
-          <div className="lg:hidden px-6 py-4 bg-white/95 backdrop-blur-2xl border-b border-slate-200 space-y-3 text-sm font-bold">
-            {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-blue-600">About</a>}
-            {skills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-blue-600">Skills</a>}
-            {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-blue-600">Experience</a>}
-            {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-blue-600">Projects</a>}
-            {services.length > 0 && <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-blue-600">Services</a>}
-            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-blue-600">Contact</a>
+          <div className="lg:hidden px-6 py-4 bg-white/95 backdrop-blur-2xl border-b border-slate-200 space-y-3 text-xs font-bold uppercase tracking-wider">
+            {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 hover:text-blue-600">About</a>}
+            {normalizedSkills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 hover:text-blue-600">Skills</a>}
+            {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 hover:text-blue-600">Experience</a>}
+            {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 hover:text-blue-600">Projects</a>}
+            {services.length > 0 && <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 hover:text-blue-600">Services</a>}
+            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-800 hover:text-blue-600">Contact</a>
           </div>
         )}
       </header>
 
       {/* Main Content Container */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 relative z-10 space-y-24 w-full max-w-full overflow-hidden">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-16 relative z-10 space-y-20 sm:space-y-24 w-full max-w-full overflow-hidden">
         
         {/* ── 1. HERO SECTION ── */}
-        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
-          <div className="flex-1 text-center lg:text-left space-y-5 min-w-0 w-full">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-bold shadow-xs">
+        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-6 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
+          <div className="flex-1 text-center lg:text-left space-y-4 min-w-0 w-full">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-bold shadow-xs">
               <span className="h-2 w-2 rounded-full bg-blue-600" />
               <span>{hero.title || 'Software Engineer'}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-slate-950 tracking-tight leading-[1.08] break-words">
-              Hi, I'm <span className="text-blue-600">{hero.name}</span>
+            <h1 className="text-2xl sm:text-4xl lg:text-6xl font-black text-slate-950 tracking-tight leading-tight">
+              <span className="block sm:inline">Hi, I'm </span>
+              <span className="inline-block text-blue-600">{hero.name}</span>
             </h1>
 
-            <p className="text-sm sm:text-lg font-medium text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-xs sm:text-sm font-medium text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               {hero.tagline || hero.bioShort || 'Building scalable applications and high-impact digital experiences.'}
             </p>
 
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white bg-slate-900 hover:bg-slate-800 shadow-md hover:scale-105 transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl font-bold text-xs sm:text-sm text-white bg-slate-900 hover:bg-slate-800 shadow-md hover:scale-105 transition-all"
               >
-                <FaRocket className="h-4 w-4" /> {hero.ctaHire || 'Hire Me'}
+                <FaRocket className="h-3.5 w-3.5" /> {hero.ctaHire || 'Hire Me'}
               </a>
 
               {projects.length > 0 && (
                 <a
                   href="#projects"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-slate-800 bg-white border border-slate-300 hover:bg-slate-50 hover:border-slate-400 shadow-xs transition-all"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl font-bold text-xs sm:text-sm text-slate-800 bg-white border border-slate-300 hover:bg-slate-50 hover:border-slate-400 shadow-xs transition-all"
                 >
-                  <FaCode className="h-4 w-4 text-blue-600" /> {hero.ctaWork || 'View My Work'}
+                  <FaCode className="h-3.5 w-3.5 text-blue-600" /> {hero.ctaWork || 'View My Work'}
                 </a>
               )}
             </div>
 
             {/* Social & Location Badges */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-8 pt-6 border-t border-slate-200 text-xs font-semibold text-slate-500">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 mt-6 pt-5 border-t border-slate-200 text-xs font-semibold text-slate-500">
               {hero.location && (
                 <span className="flex items-center gap-1.5 text-slate-700">
                   <FaLocationDot className="h-3 w-3 text-blue-600" /> {hero.location}
@@ -187,8 +192,8 @@ export const CleanLightTheme = ({ portfolio, isPreview = false }) => {
           </div>
 
           {/* Profile Photo with Big Circular Slate Blue Ring */}
-          <div className="relative shrink-0 flex items-center justify-center my-4 lg:my-0">
-            <div className="relative h-44 w-44 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-full p-2 bg-gradient-to-br from-blue-400 via-indigo-400 to-slate-400 shadow-xl">
+          <div className="relative shrink-0 flex items-center justify-center my-2 lg:my-0">
+            <div className="relative h-32 w-32 sm:h-48 sm:w-48 lg:h-64 lg:w-64 rounded-full p-1.5 sm:p-2 bg-gradient-to-br from-blue-400 via-indigo-400 to-slate-400 shadow-xl">
               <div className="h-full w-full rounded-full overflow-hidden bg-white flex items-center justify-center border-2 border-slate-200">
                 {hero.avatar ? (
                   <img
@@ -202,15 +207,15 @@ export const CleanLightTheme = ({ portfolio, isPreview = false }) => {
                     }}
                   />
                 ) : null}
-                <span className={`text-5xl sm:text-7xl lg:text-8xl font-black text-blue-600 ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`text-4xl sm:text-6xl lg:text-7xl font-black text-blue-600 ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : 'D'}
                 </span>
               </div>
             </div>
 
             {about.experienceYears > 0 && (
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-0 px-3.5 py-1.5 rounded-full bg-slate-900 shadow-sm flex items-center gap-1.5 text-xs font-black text-white shrink-0 whitespace-nowrap">
-                <FaBolt className="h-3.5 w-3.5 text-amber-400" />
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-0 px-3 py-1 rounded-full bg-slate-900 shadow-xs flex items-center gap-1.5 text-[11px] font-black text-white shrink-0 whitespace-nowrap">
+                <FaBolt className="h-3 w-3 text-amber-400" />
                 <span>{about.experienceYears}+ YRS EXP</span>
               </div>
             )}
@@ -219,13 +224,13 @@ export const CleanLightTheme = ({ portfolio, isPreview = false }) => {
 
         {/* ── 2. ABOUT ME SECTION ── */}
         {about.summary && (
-          <section id="about" className="pt-8">
-            <div className="p-8 sm:p-10 rounded-[32px] bg-white border border-slate-200 shadow-md relative overflow-hidden">
-              <div className="flex items-center gap-2.5 mb-4">
+          <section id="about" className="pt-4 sm:pt-8">
+            <div className="p-6 sm:p-10 rounded-2xl sm:rounded-[32px] bg-white border border-slate-200 shadow-md relative overflow-hidden">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
                 <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">01 / ABOUT ME</span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-6">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 mb-4 sm:mb-6">
                 Engineering reliable, scalable & modern solutions
               </h2>
 
@@ -234,10 +239,10 @@ export const CleanLightTheme = ({ portfolio, isPreview = false }) => {
               </p>
 
               {about.highlights?.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-slate-100">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 sm:mt-8 pt-6 border-t border-slate-100">
                   {about.highlights.map((h, i) => (
-                    <div key={i} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/60 flex items-start gap-3">
-                      <FaCheck className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <div key={i} className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200/60 flex items-start gap-2.5">
+                      <FaCheck className="h-3.5 w-3.5 text-emerald-600 mt-0.5 shrink-0" />
                       <span className="text-xs font-bold text-slate-800">{h}</span>
                     </div>
                   ))}
@@ -248,25 +253,25 @@ export const CleanLightTheme = ({ portfolio, isPreview = false }) => {
         )}
 
         {/* ── 3. SKILLS SECTION ── */}
-        {skills.length > 0 && (
-          <section id="skills" className="space-y-8">
+        {normalizedSkills.length > 0 && (
+          <section id="skills" className="space-y-6 sm:space-y-8 pt-4">
             <div>
               <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">02 / COMPETENCIES</span>
-              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mt-1">Technical Stack</h2>
+              <h2 className="text-xl sm:text-3xl font-black text-slate-900 mt-1">Technical Stack & Specialties</h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {skills.map((category, idx) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+              {normalizedSkills.map((category, idx) => (
                 <div
                   key={idx}
-                  className="p-6 rounded-[24px] bg-white border border-slate-200 shadow-xs hover:shadow-md hover:border-blue-400 transition-all"
+                  className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-xs hover:shadow-md hover:border-blue-400 transition-all"
                 >
-                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <h3 className="text-xs sm:text-sm font-black text-slate-900 uppercase tracking-wider mb-3.5 flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-blue-600" />
                     {category.name}
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {category.skills.map((skill, sIdx) => (
+                    {(category.skills || []).map((skill, sIdx) => (
                       <span
                         key={sIdx}
                         className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 border border-slate-200 text-slate-800 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-all"

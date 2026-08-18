@@ -407,9 +407,10 @@ const getPublicPortfolio = asyncHandler(async (req, res, next) => {
   }
 
   // 3. Fallback: match by partial slug or user name/email/id
+  let matchedUser = null;
   if (!portfolio) {
     try {
-      const user = await UserSQL.findOne({
+      matchedUser = await UserSQL.findOne({
         where: {
           [Op.or]: [
             { name: { [Op.like]: `%${cleanSlug}%` } },
@@ -418,104 +419,178 @@ const getPublicPortfolio = asyncHandler(async (req, res, next) => {
           ],
         },
       });
-      if (user) {
-        portfolio = await PortfolioSQL.findOne({ where: { userId: user.id } });
+      if (!matchedUser) {
+        matchedUser = await UserMongo.findOne({
+          $or: [
+            { name: new RegExp(cleanSlug, 'i') },
+            { email: new RegExp(`^${cleanSlug}`, 'i') },
+          ],
+        });
+      }
+      if (matchedUser) {
+        portfolio = await PortfolioSQL.findOne({ where: { userId: matchedUser.id } });
         if (!portfolio) {
-          portfolio = await PortfolioMongo.findOne({ user: String(user.id) });
+          portfolio = await PortfolioMongo.findOne({ user: String(matchedUser.id || matchedUser._id) });
         }
       }
     } catch (e) {}
   }
 
-  // 4. If still not found, check if a user with this name exists and generate their verified portfolio
-  if (!portfolio) {
-    try {
-      const user = await UserSQL.findOne({
-        where: {
-          [Op.or]: [
-            { name: { [Op.like]: cleanSlug } },
-            { email: { [Op.like]: `${cleanSlug}%` } },
-          ],
-        },
-      });
-      if (user) {
-        const rawUser = typeof user.toJSON === 'function' ? user.toJSON() : user;
-        const name = rawUser.name || 'Developer';
-        const headline = rawUser.headline || 'Software Engineer';
-        const bio = rawUser.bio || `Passionate ${headline} dedicated to engineering reliable, scalable, and user-centric software solutions.`;
-        const skillsList = Array.isArray(rawUser.skills) ? rawUser.skills : [];
-        const categorizedSkills = categorizeSkills(skillsList);
-
-        const portfolioPayload = {
-          userId: user.id,
-          slug: cleanSlug,
-          theme: 'modern_tech',
-          isPublished: true,
-          hero: {
-            name,
-            title: headline,
-            tagline: bio,
-            bioShort: bio,
-            location: rawUser.preferences?.preferredLocations?.[0] || 'Global / Remote',
-            avatar: rawUser.avatar || '',
-            github: rawUser.socialLinks?.github || '',
-            linkedin: rawUser.socialLinks?.linkedin || '',
-            email: rawUser.email || '',
-            ctaHire: 'Get in Touch',
-            ctaWork: 'Explore Projects',
-          },
-          about: {
-            summary: bio,
-            experienceYears: 2,
-            highlights: [
-              'Clean code architecture & modern design patterns',
-              'High-performance full-stack web applications',
-              'Agile engineering and cross-functional team collaboration',
-            ],
-          },
-          skills: categorizedSkills,
-          projects: [],
-          experience: [],
-          education: [],
-          certifications: [],
-          services: deriveServices(skillsList, headline),
-          seo: {
-            title: `${name} | ${headline} Portfolio`,
-            metaDescription: `${name} is a ${headline} specializing in ${skillsList.slice(0, 5).join(', ')}.`,
-            keywords: [name, headline, ...skillsList],
-          },
-        };
-
+  // Find user associated with this portfolio for latest live sync
+  if (!matchedUser && portfolio) {
+    const uId = portfolio.userId || portfolio.user;
+    if (uId) {
+      try {
+        matchedUser = await UserSQL.findByPk(uId);
+      } catch (e) {}
+      if (!matchedUser) {
         try {
-          portfolio = await PortfolioSQL.create(portfolioPayload);
-        } catch (err) {
-          portfolio = portfolioPayload;
-        }
+          matchedUser = await UserMongo.findById(uId);
+        } catch (e) {}
       }
-    } catch (e) {}
+    }
+    if (!matchedUser && portfolio.hero?.email) {
+      try {
+        matchedUser = await UserSQL.findOne({ where: { email: portfolio.hero.email } });
+      } catch (e) {}
+      if (!matchedUser) {
+        try {
+          matchedUser = await UserMongo.findOne({ email: portfolio.hero.email });
+        } catch (e) {}
+      }
+    }
+  }
+
+  // 4. If still not found, check if a user with this name exists and generate their verified portfolio
+  if (!portfolio && matchedUser) {
+    const rawUser = typeof matchedUser.toJSON === 'function' ? matchedUser.toJSON() : matchedUser;
+    const name = rawUser.name || 'Developer';
+    const headline = rawUser.headline || 'Software Engineer';
+    const bio = rawUser.bio || `Passionate ${headline} dedicated to engineering reliable, scalable, and user-centric software solutions.`;
+    const skillsList = Array.isArray(rawUser.skills) ? rawUser.skills : [];
+    const categorizedSkills = categorizeSkills(skillsList);
+    const expList = Array.isArray(rawUser.experience) ? rawUser.experience : [];
+    const formattedExperience = expList.map((exp) => ({
+      role: exp.role || headline,
+      company: exp.company || 'Technology Company',
+      duration: exp.current ? 'Present' : (exp.startDate && exp.endDate ? `${new Date(exp.startDate).getFullYear()} - ${new Date(exp.endDate).getFullYear()}` : 'Past'),
+      startDate: exp.startDate,
+      endDate: exp.endDate,
+      current: !!exp.current,
+      location: exp.location || '',
+      description: exp.description || '',
+      bullets: generateActionBullets(exp.role, exp.company, exp.description, skillsList),
+      technologies: skillsList.slice(0, 4),
+    }));
+
+    const portfolioPayload = {
+      userId: matchedUser.id || matchedUser._id,
+      slug: cleanSlug,
+      theme: 'modern_tech',
+      isPublished: true,
+      hero: {
+        name,
+        title: headline,
+        tagline: bio,
+        bioShort: bio,
+        location: rawUser.preferences?.preferredLocations?.[0] || 'Global / Remote',
+        avatar: rawUser.avatar || '',
+        github: rawUser.socialLinks?.github || '',
+        linkedin: rawUser.socialLinks?.linkedin || '',
+        email: rawUser.email || '',
+        ctaHire: 'Get in Touch',
+        ctaWork: 'Explore Projects',
+      },
+      about: {
+        summary: bio,
+        experienceYears: Math.max(1, expList.length * 2),
+        highlights: [
+          'Clean code architecture & modern design patterns',
+          'High-performance full-stack web applications',
+          'Agile engineering and cross-functional team collaboration',
+        ],
+      },
+      skills: categorizedSkills,
+      projects: [],
+      experience: formattedExperience,
+      education: Array.isArray(rawUser.education) ? rawUser.education : [],
+      certifications: Array.isArray(rawUser.certifications) ? rawUser.certifications : [],
+      services: deriveServices(skillsList, headline),
+      seo: {
+        title: `${name} | ${headline} Portfolio`,
+        metaDescription: `${name} is a ${headline} specializing in ${skillsList.slice(0, 5).join(', ')}.`,
+        keywords: [name, headline, ...skillsList],
+      },
+    };
+
+    try {
+      portfolio = await PortfolioSQL.create(portfolioPayload);
+    } catch (err) {
+      portfolio = portfolioPayload;
+    }
   }
 
   if (!portfolio) {
     return next(new ApiError(404, 'Portfolio not found.'));
   }
 
-  if (portfolio.isPublished === false) {
+  // Convert portfolio to plain object if needed
+  let finalPortfolio = typeof portfolio.toJSON === 'function' ? portfolio.toJSON() : JSON.parse(JSON.stringify(portfolio));
+
+  // Sync profile details if portfolio has empty skills/experience/avatar
+  if (matchedUser) {
+    const rawUser = typeof matchedUser.toJSON === 'function' ? matchedUser.toJSON() : matchedUser;
+    const skillsList = Array.isArray(rawUser.skills) ? rawUser.skills : [];
+    
+    // Auto-populate avatar if missing in portfolio
+    if ((!finalPortfolio.hero?.avatar || finalPortfolio.hero?.avatar === '') && rawUser.avatar) {
+      finalPortfolio.hero = { ...finalPortfolio.hero, avatar: rawUser.avatar };
+    }
+
+    // Auto-populate skills if missing or not categorized
+    if (!finalPortfolio.skills || !finalPortfolio.skills.length) {
+      finalPortfolio.skills = categorizeSkills(skillsList);
+    } else if (typeof finalPortfolio.skills[0] === 'string') {
+      finalPortfolio.skills = categorizeSkills(finalPortfolio.skills);
+    }
+
+    // Auto-populate experience if missing
+    if ((!finalPortfolio.experience || !finalPortfolio.experience.length) && Array.isArray(rawUser.experience) && rawUser.experience.length) {
+      finalPortfolio.experience = rawUser.experience.map((exp) => ({
+        role: exp.role || rawUser.headline || 'Software Engineer',
+        company: exp.company || 'Company',
+        duration: exp.current ? 'Present' : (exp.startDate && exp.endDate ? `${new Date(exp.startDate).getFullYear()} - ${new Date(exp.endDate).getFullYear()}` : 'Past'),
+        startDate: exp.startDate,
+        endDate: exp.endDate,
+        current: !!exp.current,
+        location: exp.location || '',
+        description: exp.description || '',
+        bullets: generateActionBullets(exp.role, exp.company, exp.description, skillsList),
+        technologies: skillsList.slice(0, 4),
+      }));
+    }
+
+    // Auto-populate education if missing
+    if ((!finalPortfolio.education || !finalPortfolio.education.length) && Array.isArray(rawUser.education) && rawUser.education.length) {
+      finalPortfolio.education = rawUser.education;
+    }
+
+    // Auto-populate certifications if missing
+    if ((!finalPortfolio.certifications || !finalPortfolio.certifications.length) && Array.isArray(rawUser.certifications) && rawUser.certifications.length) {
+      finalPortfolio.certifications = rawUser.certifications;
+    }
+  }
+
+  if (finalPortfolio.isPublished === false) {
     return res.status(403).json({
       success: false,
       message: 'This portfolio is currently private by the author.',
     });
   }
 
-  try {
-    if (typeof portfolio.save === 'function') {
-      portfolio.views = (portfolio.views || 0) + 1;
-      await portfolio.save().catch(() => {});
-    }
-  } catch (e) {}
-
   res.json({
     success: true,
-    portfolio,
+    portfolio: finalPortfolio,
   });
 });
 

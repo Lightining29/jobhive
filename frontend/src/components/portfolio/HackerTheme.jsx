@@ -59,36 +59,39 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
     setContactSent(true);
   };
 
+  const rawSkills = skills || [];
+  const normalizedSkills = Array.isArray(rawSkills) && rawSkills.length
+    ? (typeof rawSkills[0] === 'string' ? [{ name: 'Installed Dependencies', skills: rawSkills }] : rawSkills)
+    : [];
+
   return (
-    <div className="min-h-screen bg-[#020a04] text-emerald-100 font-mono selection:bg-emerald-500 selection:text-black relative overflow-x-hidden">
-      {/* Matrix CRT Scanline & Phosphor Ambient Background */}
+    <div className="min-h-screen bg-[#020b05] text-emerald-100 font-mono selection:bg-emerald-500 selection:text-black relative overflow-x-hidden">
+      {/* Ambient Matrix Glows */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[550px] h-[550px] rounded-full bg-emerald-500/10 blur-[150px]" />
-        <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] rounded-full bg-green-500/10 blur-[160px]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b9810d_1px,transparent_1px),linear-gradient(to_bottom,#10b9810d_1px,transparent_1px)] bg-[size:2.5rem_2.5rem]" />
-        {/* CRT Scanline Overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] bg-[size:100%_4px] pointer-events-none opacity-30" />
+        <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] rounded-full bg-green-600/10 blur-[160px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b9810a_1px,transparent_1px),linear-gradient(to_bottom,#10b9810a_1px,transparent_1px)] bg-[size:3rem_3rem]" />
       </div>
 
-      {/* Terminal Command Header */}
-      <header className="sticky top-0 z-40 bg-[#031006]/90 backdrop-blur-xl border-b border-emerald-500/30 shadow-[0_4px_30px_rgba(16,185,129,0.15)]">
+      {/* Sticky Hacker Terminal Navbar */}
+      <header className="sticky top-0 z-40 bg-[#020b05]/85 backdrop-blur-xl border-b border-emerald-500/25 shadow-[0_4px_30px_rgba(16,185,129,0.1)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
           <a href="#hero" className="flex items-center gap-2 group shrink-0 min-w-0">
-            <span className="h-8 w-8 rounded-lg bg-emerald-500 text-black flex items-center justify-center font-black text-xs shadow-[0_0_15px_rgba(16,185,129,0.7)] group-hover:scale-110 transition-transform shrink-0">
+            <span className="h-8 w-8 rounded-lg bg-emerald-950 border border-emerald-400 text-emerald-400 flex items-center justify-center font-black text-xs shadow-[0_0_12px_rgba(16,185,129,0.5)] group-hover:scale-110 transition-transform shrink-0">
               &gt;_
             </span>
-            <span className="font-bold text-xs sm:text-sm text-emerald-400 tracking-tight group-hover:text-emerald-300 transition-colors truncate">
-              root@{hero.name?.toLowerCase().replace(/\s+/g, '') || 'developer'}:~#
+            <span className="font-bold text-sm sm:text-base text-emerald-300 tracking-tight group-hover:text-emerald-100 transition-colors truncate">
+              {hero.name || 'root@usr'}
             </span>
           </a>
 
           <nav className="hidden lg:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-emerald-400/80">
-            {about.summary && <a href="#about" className="hover:text-emerald-300 transition-colors hover:underline">/about</a>}
-            {skills.length > 0 && <a href="#skills" className="hover:text-emerald-300 transition-colors hover:underline">/skills</a>}
-            {experience.length > 0 && <a href="#experience" className="hover:text-emerald-300 transition-colors hover:underline">/history</a>}
-            {projects.length > 0 && <a href="#projects" className="hover:text-emerald-300 transition-colors hover:underline">/projects</a>}
-            {services.length > 0 && <a href="#services" className="hover:text-emerald-300 transition-colors hover:underline">/services</a>}
-            <a href="#contact" className="hover:text-emerald-300 transition-colors hover:underline">/contact</a>
+            {about.summary && <a href="#about" className="hover:text-emerald-200 transition-colors">&gt; about</a>}
+            {normalizedSkills.length > 0 && <a href="#skills" className="hover:text-emerald-200 transition-colors">&gt; skills</a>}
+            {experience.length > 0 && <a href="#experience" className="hover:text-emerald-200 transition-colors">&gt; history</a>}
+            {projects.length > 0 && <a href="#projects" className="hover:text-emerald-200 transition-colors">&gt; projects</a>}
+            {services.length > 0 && <a href="#services" className="hover:text-emerald-200 transition-colors">&gt; services</a>}
+            <a href="#contact" className="hover:text-emerald-200 transition-colors">&gt; contact</a>
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
@@ -97,21 +100,21 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
                 href={hero.resumeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#061c0b] border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500 hover:text-black transition-all shadow-[0_0_10px_rgba(16,185,129,0.3)]"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#041909] border border-emerald-500/40 text-emerald-300 hover:bg-emerald-400 hover:text-black hover:shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all"
               >
-                <FaFileArrowDown className="h-3 w-3" /> cat resume.pdf
+                <FaFileArrowDown className="h-3 w-3 text-emerald-400" /> RESUME.PDF
               </a>
             )}
             <a
               href="#contact"
-              className="px-3.5 sm:px-4 py-1.5 rounded-lg text-xs font-black bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.7)] hover:bg-emerald-400 transition-all"
+              className="inline-flex items-center px-3.5 sm:px-4 py-1.5 rounded-lg text-xs font-bold bg-emerald-400 text-black shadow-[0_0_15px_rgba(16,185,129,0.6)] hover:bg-emerald-300 transition-all"
             >
-              $ ./connect
+              PING ME
             </a>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg bg-emerald-950/50 border border-emerald-500/40 text-emerald-400"
+              className="lg:hidden p-2 rounded-lg bg-emerald-950/50 border border-emerald-500/30 text-emerald-400"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <FaXmark className="h-4 w-4" /> : <FaBars className="h-4 w-4" />}
@@ -120,9 +123,9 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
         </div>
 
         {mobileMenuOpen && (
-          <div className="lg:hidden px-6 py-4 bg-[#041508]/95 backdrop-blur-2xl border-b border-emerald-500/40 space-y-3 text-xs font-bold">
+          <div className="lg:hidden px-6 py-4 bg-[#020b05]/95 backdrop-blur-2xl border-b border-emerald-500/30 space-y-3 text-xs font-bold uppercase tracking-wider">
             {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-emerald-300 hover:text-emerald-100">&gt; cd /about</a>}
-            {skills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-emerald-300 hover:text-emerald-100">&gt; cd /skills</a>}
+            {normalizedSkills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-emerald-300 hover:text-emerald-100">&gt; cd /skills</a>}
             {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-emerald-300 hover:text-emerald-100">&gt; cd /history</a>}
             {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-emerald-300 hover:text-emerald-100">&gt; cd /projects</a>}
             {services.length > 0 && <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-emerald-300 hover:text-emerald-100">&gt; cd /services</a>}
@@ -132,45 +135,46 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
       </header>
 
       {/* Main Content Container */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 relative z-10 space-y-24 w-full max-w-full overflow-hidden">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-16 relative z-10 space-y-20 sm:space-y-24 w-full max-w-full overflow-hidden">
         
         {/* ── 1. HERO SECTION ── */}
-        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
-          <div className="flex-1 text-center lg:text-left space-y-5 min-w-0 w-full">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-xs font-bold shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-6 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
+          <div className="flex-1 text-center lg:text-left space-y-4 min-w-0 w-full">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-xs font-bold shadow-[0_0_15px_rgba(16,185,129,0.2)]">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
               <span>STATUS: ONLINE &bull; {hero.title || 'SYSTEM ENGINEER'}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight break-words">
-              <span className="text-emerald-400 font-normal">&gt;</span> <span className="text-emerald-300 drop-shadow-[0_0_20px_#10b981]">{hero.name}</span>
-              <span className="inline-block w-3 h-8 bg-emerald-400 ml-2 animate-pulse" />
+            <h1 className="text-2xl sm:text-4xl lg:text-6xl font-black text-white tracking-tight leading-tight">
+              <span className="text-emerald-400 font-normal">&gt; </span>
+              <span className="text-emerald-300 drop-shadow-[0_0_20px_#10b981]">{hero.name}</span>
+              <span className="inline-block w-2.5 h-6 sm:h-8 bg-emerald-400 ml-1.5 animate-pulse" />
             </h1>
 
-            <p className="text-xs sm:text-base font-normal text-emerald-200/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-xs sm:text-sm font-normal text-emerald-200/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               // {hero.tagline || hero.bioShort || 'Building scalable applications and high-impact digital experiences.'}
             </p>
 
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-black text-xs sm:text-sm text-black bg-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.7)] hover:bg-emerald-300 hover:scale-105 transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-black text-xs sm:text-sm text-black bg-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.7)] hover:bg-emerald-300 hover:scale-105 transition-all cursor-pointer"
               >
-                <FaTerminal className="h-4 w-4" /> {hero.ctaHire || 'INITIATE_CONTACT'}
+                <FaTerminal className="h-3.5 w-3.5" /> {hero.ctaHire || 'INITIATE_CONTACT'}
               </a>
 
               {projects.length > 0 && (
                 <a
                   href="#projects"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-xs sm:text-sm text-emerald-300 bg-[#041909] border border-emerald-500/40 hover:border-emerald-300 hover:shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-bold text-xs sm:text-sm text-emerald-300 bg-[#041909] border border-emerald-500/40 hover:border-emerald-300 hover:shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all"
                 >
-                  <FaCode className="h-4 w-4 text-emerald-400" /> {hero.ctaWork || 'LS_PROJECTS'}
+                  <FaCode className="h-3.5 w-3.5 text-emerald-400" /> {hero.ctaWork || 'LS_PROJECTS'}
                 </a>
               )}
             </div>
 
             {/* Social & Location Badges */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-8 pt-6 border-t border-emerald-950 text-xs font-bold text-emerald-400/80">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 mt-6 pt-5 border-t border-emerald-950 text-xs font-bold text-emerald-400/80">
               {hero.location && (
                 <span className="flex items-center gap-1.5 text-emerald-300">
                   <FaLocationDot className="h-3 w-3 text-emerald-400" /> LOC: {hero.location}
@@ -190,8 +194,8 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
           </div>
 
           {/* Profile Photo Circular Terminal Box */}
-          <div className="relative shrink-0 flex items-center justify-center my-4 lg:my-0">
-            <div className="relative h-44 w-44 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-full p-2 bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600 shadow-[0_0_45px_rgba(16,185,129,0.65)]">
+          <div className="relative shrink-0 flex items-center justify-center my-2 lg:my-0">
+            <div className="relative h-32 w-32 sm:h-48 sm:w-48 lg:h-64 lg:w-64 rounded-full p-1.5 sm:p-2 bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600 shadow-[0_0_35px_rgba(16,185,129,0.65)]">
               <div className="h-full w-full rounded-full overflow-hidden bg-[#020b05] flex items-center justify-center border-2 border-emerald-500/50">
                 {hero.avatar ? (
                   <img
@@ -205,14 +209,14 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
                     }}
                   />
                 ) : null}
-                <span className={`text-5xl sm:text-7xl lg:text-8xl font-black text-emerald-400 drop-shadow-[0_0_20px_#10b981] ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`text-4xl sm:text-6xl lg:text-7xl font-black text-emerald-400 drop-shadow-[0_0_20px_#10b981] ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : '01'}
                 </span>
               </div>
             </div>
 
             {about.experienceYears > 0 && (
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-0 px-3.5 py-1.5 rounded-full bg-[#041a09] border border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.8)] flex items-center gap-1.5 text-xs font-black text-emerald-300 shrink-0 whitespace-nowrap">
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-0 px-3 py-1 rounded-full bg-[#041a09] border border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.8)] flex items-center gap-1.5 text-[11px] font-black text-emerald-300 shrink-0 whitespace-nowrap">
                 <FaBolt className="h-3 w-3 text-emerald-400" />
                 <span>UPTIME: {about.experienceYears}Y</span>
               </div>
@@ -222,13 +226,13 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
 
         {/* ── 2. ABOUT ME SECTION ── */}
         {about.summary && (
-          <section id="about" className="pt-8">
+          <section id="about" className="pt-4 sm:pt-8">
             <div className="p-6 sm:p-8 rounded-2xl bg-[#041408]/90 border border-emerald-500/40 shadow-[0_0_25px_rgba(16,185,129,0.15)] relative overflow-hidden backdrop-blur-xl">
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
                 <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">$ cat /proc/system/bio.txt</span>
               </div>
 
-              <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
+              <h2 className="text-lg sm:text-2xl font-bold text-white mb-3 sm:mb-4">
                 // SYSTEM PROFILE OVERVIEW
               </h2>
 
@@ -251,15 +255,15 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
         )}
 
         {/* ── 3. SKILLS SECTION ── */}
-        {skills.length > 0 && (
-          <section id="skills" className="space-y-6">
+        {normalizedSkills.length > 0 && (
+          <section id="skills" className="space-y-6 pt-4">
             <div>
               <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">$ system --list-modules</span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">Installed Dependencies</h2>
+              <h2 className="text-xl sm:text-3xl font-black text-white mt-1">Installed Dependencies</h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {skills.map((category, idx) => (
+              {normalizedSkills.map((category, idx) => (
                 <div
                   key={idx}
                   className="p-5 rounded-2xl bg-[#041408]/90 border border-emerald-500/30 hover:border-emerald-400 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all"

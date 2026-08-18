@@ -103,43 +103,34 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
           </div>
         </div>
 
-        {mobileMenuOpen && (
-          <div className="lg:hidden px-6 py-4 bg-white/95 backdrop-blur-2xl border-b border-slate-200 space-y-3 text-xs uppercase tracking-wider font-bold">
-            {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Overview</a>}
-            {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Experience</a>}
-            {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Projects</a>}
-            {skills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Competencies</a>}
-            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Inquire</a>
-          </div>
-        )}
       </header>
 
-      {/* Main Container */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 space-y-24 w-full max-w-full overflow-hidden">
-
-        {/* ── 1. HERO / EXECUTIVE SUMMARY ── */}
-        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
+      {/* Main Content Container */}
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-16 space-y-20 sm:space-y-24 w-full max-w-full overflow-hidden">
+        
+        {/* ── 1. HERO PROFILE SECTION ── */}
+        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-6 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
           <div className="flex-1 text-center lg:text-left min-w-0 w-full">
-            <div className="inline-block px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-bold uppercase tracking-widest mb-4">
-              Verified Candidate Portfolio
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold mb-3 sm:mb-4">
+              <span>Verified Executive</span>
             </div>
 
-            <h2 className="font-serif text-3xl sm:text-5xl font-black text-slate-950 leading-tight break-words">
+            <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-black text-slate-950 leading-tight">
               {hero.name || 'Professional Candidate'}
             </h2>
 
-            <p className="text-base sm:text-lg font-bold text-slate-600 mt-2">
+            <p className="text-sm sm:text-lg font-bold text-slate-600 mt-2">
               {hero.title || 'Senior Software Engineer'}
             </p>
 
-            <p className="text-sm sm:text-base text-slate-600 mt-4 leading-relaxed max-w-xl mx-auto lg:mx-0">
+            <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed max-w-xl mx-auto lg:mx-0">
               {hero.tagline || hero.bioShort || 'Driving enterprise digital strategy and building scalable, user-centric software architectures.'}
             </p>
 
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-8">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mt-6">
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-white bg-slate-950 hover:bg-slate-800 transition-all shadow-md"
+                className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl font-bold text-xs uppercase tracking-wider text-white bg-slate-950 hover:bg-slate-800 transition-all shadow-md"
               >
                 {hero.ctaHire || 'Contact Executive'} <FaArrowRight className="h-3 w-3" />
               </a>
@@ -147,14 +138,14 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
               {projects.length > 0 && (
                 <a
                   href="#projects"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-800 bg-white border border-slate-300 hover:bg-slate-50 transition-all shadow-xs"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-800 bg-white border border-slate-300 hover:bg-slate-50 transition-all shadow-xs"
                 >
                   {hero.ctaWork || 'Selected Works'}
                 </a>
               )}
             </div>
 
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 mt-8 pt-6 border-t border-slate-200 text-xs font-semibold text-slate-500">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-6 pt-5 border-t border-slate-200 text-xs font-semibold text-slate-500">
               {hero.location && (
                 <span className="flex items-center gap-1.5 text-slate-700">
                   <FaLocationDot className="h-3 w-3 text-slate-400" /> {hero.location}
@@ -162,20 +153,20 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
               )}
               {hero.linkedin && (
                 <a href={hero.linkedin.startsWith('http') ? hero.linkedin : `https://${hero.linkedin}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-950">
-                  <FaLinkedin className="h-3.5 w-3.5 text-blue-700" /> LinkedIn Profile
+                  <FaLinkedin className="h-3.5 w-3.5 text-blue-700" /> LinkedIn
                 </a>
               )}
               {hero.github && (
                 <a href={hero.github.startsWith('http') ? hero.github : `https://${hero.github}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-slate-700 hover:text-slate-950">
-                  <FaGithub className="h-3.5 w-3.5" /> GitHub Repositories
+                  <FaGithub className="h-3.5 w-3.5" /> GitHub
                 </a>
               )}
             </div>
           </div>
 
           {/* Big Circular Portrait Photo */}
-          <div className="relative shrink-0 flex items-center justify-center my-4 lg:my-0">
-            <div className="h-44 w-44 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-full p-2 bg-gradient-to-br from-slate-300 via-slate-100 to-amber-200 shadow-xl border border-slate-200">
+          <div className="relative shrink-0 flex items-center justify-center my-2 lg:my-0">
+            <div className="h-32 w-32 sm:h-48 sm:w-48 lg:h-64 lg:w-64 rounded-full p-1.5 sm:p-2 bg-gradient-to-br from-slate-300 via-slate-100 to-amber-200 shadow-xl border border-slate-200">
               <div className="h-full w-full rounded-full overflow-hidden bg-slate-100 flex items-center justify-center">
                 {hero.avatar ? (
                   <img
@@ -189,7 +180,7 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
                     }}
                   />
                 ) : null}
-                <span className={`font-serif text-5xl sm:text-7xl lg:text-8xl font-black text-slate-400 ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`font-serif text-4xl sm:text-6xl lg:text-7xl font-black text-slate-400 ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : 'E'}
                 </span>
               </div>
@@ -340,19 +331,19 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
         )}
 
         {/* ── 5. CORE COMPETENCIES ── */}
-        {skills.length > 0 && (
+        {normalizedSkills.length > 0 && (
           <section id="skills" className="pt-8">
             <div className="mb-8">
               <span className="text-xs uppercase tracking-widest font-black text-slate-400">Capabilities</span>
-              <h3 className="font-serif text-3xl font-black text-slate-900 mt-1">Core Competencies</h3>
+              <h3 className="font-serif text-2xl sm:text-3xl font-black text-slate-900 mt-1">Core Competencies</h3>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {skills.map((cat, idx) => (
-                <div key={idx} className="p-6 rounded-2xl bg-white border border-slate-200">
+              {normalizedSkills.map((cat, idx) => (
+                <div key={idx} className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">
                   <h4 className="text-xs font-black uppercase tracking-wider text-slate-500 mb-3">{cat.name}</h4>
                   <div className="flex flex-wrap gap-1.5">
-                    {cat.skills.map((s, sIdx) => (
+                    {(cat.skills || []).map((s, sIdx) => (
                       <span key={sIdx} className="text-xs font-semibold px-2.5 py-1 rounded bg-slate-50 border border-slate-200 text-slate-800">
                         {s}
                       </span>
