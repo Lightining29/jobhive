@@ -283,6 +283,7 @@ const CandidateProfilePage = () => {
                 <img
                   src={formatAvatarUrl(profile.avatar)}
                   alt={profile?.name || 'Avatar'}
+                  referrerPolicy="no-referrer"
                   className="h-20 w-20 rounded-full object-cover border-2 border-primary-500 shadow-md"
                   onError={(e) => {
                     e.target.style.display = 'none';

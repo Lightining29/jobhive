@@ -22,6 +22,7 @@ const DashboardLayout = ({ title, subtitle, navItems, children }) => {
             <img
               src={formatAvatarUrl(user.avatar)}
               alt={user.name || ''}
+              referrerPolicy="no-referrer"
               className="h-12 w-12 rounded-full object-cover border-2 border-primary-500 shadow-sm"
               onError={(e) => {
                 e.target.style.display = 'none';

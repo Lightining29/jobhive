@@ -26,9 +26,10 @@ const Navbar = () => {
             {user.avatar ? (
               <img
                 src={formatAvatarUrl(user.avatar)}
-                alt=""
+                alt={user.name || ''}
+                referrerPolicy="no-referrer"
                 className="h-11 w-11 rounded-full object-cover border-2 border-primary-500 shrink-0 shadow-sm"
-                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                onError={(e) => { e.target.style.display = 'none'; if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex'; }}
               />
             ) : null}
             <span className={`h-11 w-11 rounded-full bg-primary-600 text-white items-center justify-center text-sm font-bold shrink-0 shadow-sm ${user.avatar ? 'hidden' : 'flex'}`}>
@@ -204,7 +205,13 @@ const Navbar = () => {
                     aria-label="User menu"
                   >
                     {user.avatar ? (
-                      <img src={formatAvatarUrl(user.avatar)} alt="" className="h-9 w-9 rounded-full object-cover border-2 border-primary-500 transition-colors" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                      <img
+                        src={formatAvatarUrl(user.avatar)}
+                        alt={user.name || ''}
+                        referrerPolicy="no-referrer"
+                        className="h-9 w-9 rounded-full object-cover border-2 border-primary-500 transition-colors"
+                        onError={(e) => { e.target.style.display = 'none'; if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex'; }}
+                      />
                     ) : null}
                     <span className={`h-9 w-9 rounded-full bg-primary-600 text-white items-center justify-center text-sm font-bold shadow-sm ${user.avatar ? 'hidden' : 'flex'}`}>
                       {initials(user.name)}
@@ -280,9 +287,10 @@ const Navbar = () => {
                   {user.avatar ? (
                     <img
                       src={formatAvatarUrl(user.avatar)}
-                      alt={user.name}
+                      alt={user.name || ''}
+                      referrerPolicy="no-referrer"
                       className="h-7 w-7 rounded-full object-cover shrink-0 border border-primary-500"
-                      onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                      onError={(e) => { e.target.style.display = 'none'; if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex'; }}
                     />
                   ) : null}
                   <span className={`h-7 w-7 rounded-full bg-primary-600 text-white items-center justify-center text-xs font-bold shrink-0 ${user.avatar ? 'hidden' : 'flex'}`}>

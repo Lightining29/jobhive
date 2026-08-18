@@ -61,11 +61,24 @@ export const initials = (name = '') =>
     .join('')
     .toUpperCase() || 'U';
 
-export const formatAvatarUrl = (url) => {
-  if (!url || typeof url !== 'string') return '';
+export const formatAvatarUrl = (raw) => {
+  if (!raw) return '';
+  let url = raw;
+  if (typeof raw === 'object') {
+    url = raw.url || raw.secure_url || raw.path || raw.avatar || '';
+  }
+  if (typeof url !== 'string') return '';
   const trimmed = url.trim();
   if (!trimmed) return '';
   if (trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+    return trimmed;
+  }
+
+  if (trimmed.startsWith('//')) {
+    return `https:${trimmed}`;
+  }
+
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
     return trimmed;
   }
 
@@ -77,19 +90,15 @@ export const formatAvatarUrl = (url) => {
   if (uploadsIdx !== -1) {
     const rel = trimmed.substring(uploadsIdx);
     if (apiBase && !apiBase.startsWith('/')) {
-      return `${apiBase}${rel}`;
+      return `${apiBase.replace(/\/$/, '')}${rel}`;
     }
     return rel;
   }
 
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-    return trimmed;
-  }
-
   if (trimmed.startsWith('/')) {
-    return apiBase && !apiBase.startsWith('/') ? `${apiBase}${trimmed}` : trimmed;
+    return apiBase && !apiBase.startsWith('/') ? `${apiBase.replace(/\/$/, '')}${trimmed}` : trimmed;
   }
-  return apiBase && !apiBase.startsWith('/') ? `${apiBase}/${trimmed}` : `/${trimmed}`;
+  return apiBase && !apiBase.startsWith('/') ? `${apiBase.replace(/\/$/, '')}/${trimmed}` : `/${trimmed}`;
 };
 
 const ACRONYMS = {
