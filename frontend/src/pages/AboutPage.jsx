@@ -102,7 +102,7 @@ export const AboutPage = () => {
   };
 
   return (
-    <div className="min-h-screen pb-24 bg-slate-50/50">
+    <div className="min-h-screen pb-24 bg-slate-50/50 dark:bg-[#070B14] transition-colors duration-300">
       <SEOHead
         title="About Us - Leading AI Career Platform & Job Portal"
         description="Discover Job Workplace by Appletree Infotech. India's fastest-growing AI career ecosystem connecting developers and professionals with verified openings across tech, remote, and non-tech industries."
@@ -122,20 +122,20 @@ export const AboutPage = () => {
       />
 
       {/* ── 1. Hero Header ────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-20 pb-24 md:pt-28 md:pb-32 text-center bg-gradient-to-b from-primary-50/70 via-white to-transparent border-b border-slate-100">
+      <section className="relative overflow-hidden pt-20 pb-24 md:pt-28 md:pb-32 text-center bg-gradient-to-b from-primary-50/70 via-white to-transparent dark:from-slate-900/70 dark:via-slate-900/20 dark:to-transparent border-b border-slate-100 dark:border-slate-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
           <FadeIn>
-            <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 border border-primary-200 bg-white/90 text-primary-700 shadow-xs">
-              <FaHexagonNodes className="h-4 w-4 text-primary-600 animate-pulse-soft" />
+            <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 border border-primary-200 dark:border-primary-800 bg-white/90 dark:bg-slate-900/90 text-primary-700 dark:text-primary-300 shadow-xs">
+              <FaHexagonNodes className="h-4 w-4 text-primary-600 dark:text-amber-400 animate-pulse-soft" />
               <span className="text-xs sm:text-sm font-bold tracking-wide uppercase">About Job Workplace</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight text-slate-900">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight text-slate-900 dark:text-white">
               Transforming How The World <br />
-              <span className="text-primary-600">Discovers Great Work</span>
+              <span className="text-primary-600 dark:text-amber-400">Discovers Great Work</span>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl mt-6 max-w-2xl mx-auto leading-relaxed text-slate-600">
+            <p className="text-base sm:text-lg md:text-xl mt-6 max-w-2xl mx-auto leading-relaxed text-slate-600 dark:text-slate-300">
               Job Workplace by Appletree Infotech is an AI-powered talent marketplace engineered to connect ambitious professionals with verified, high-growth companies across India and worldwide.
             </p>
 
@@ -144,7 +144,7 @@ export const AboutPage = () => {
                 Explore 10,000+ Jobs
                 <FaArrowRight className="h-4 w-4" />
               </Link>
-              <Link to="/auth/register" className="btn-outline !px-8 !py-3.5 text-base font-bold bg-white border-slate-300 hover:bg-slate-50 rounded-xl">
+              <Link to="/auth/register" className="btn-outline !px-8 !py-3.5 text-base font-bold bg-white dark:bg-slate-800 text-slate-800 dark:text-white border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl">
                 Join As Candidate
               </Link>
             </div>
@@ -154,23 +154,23 @@ export const AboutPage = () => {
 
       {/* ── 2. Real-Time Impact Counters ──────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
-        <div className="card p-8 sm:p-10 bg-white shadow-xl border border-slate-100 rounded-3xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-slate-100">
+        <div className="card p-8 sm:p-10 bg-white dark:bg-slate-900 shadow-xl border border-slate-100 dark:border-slate-800 rounded-3xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-slate-100 dark:divide-slate-800">
             <div className="pt-4 md:pt-0">
-              <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900">10,000+</p>
-              <p className="text-xs sm:text-sm text-slate-500 mt-2 font-semibold tracking-wide uppercase">Curated Live Jobs</p>
+              <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white">10,000+</p>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 font-semibold tracking-wide uppercase">Curated Live Jobs</p>
             </div>
             <div className="pt-4 md:pt-0">
-              <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary-600">500+</p>
-              <p className="text-xs sm:text-sm text-slate-500 mt-2 font-semibold tracking-wide uppercase">Verified Employers</p>
+              <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-primary-600 dark:text-amber-400">500+</p>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 font-semibold tracking-wide uppercase">Verified Employers</p>
             </div>
             <div className="pt-4 md:pt-0">
-              <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-emerald-600">98.4%</p>
-              <p className="text-xs sm:text-sm text-slate-500 mt-2 font-semibold tracking-wide uppercase">Candidate Satisfaction</p>
+              <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-emerald-600 dark:text-emerald-400">98.4%</p>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 font-semibold tracking-wide uppercase">Candidate Satisfaction</p>
             </div>
             <div className="pt-4 md:pt-0">
-              <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-amber-500">24/7</p>
-              <p className="text-xs sm:text-sm text-slate-500 mt-2 font-semibold tracking-wide uppercase">AI Match Engine</p>
+              <p className="text-3xl sm:text-4xl lg:text-5xl font-black text-amber-500 dark:text-amber-300">24/7</p>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 font-semibold tracking-wide uppercase">AI Match Engine</p>
             </div>
           </div>
         </div>
@@ -179,44 +179,44 @@ export const AboutPage = () => {
       {/* ── 3. Core Mission & Vision ──────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="text-xs font-bold uppercase tracking-wider text-primary-600 bg-primary-50 px-3 py-1 rounded-full border border-primary-100">
+          <span className="text-xs font-bold uppercase tracking-wider text-primary-600 dark:text-amber-400 bg-primary-50 dark:bg-slate-800 px-3 py-1 rounded-full border border-primary-100 dark:border-slate-700">
             Our Purpose
           </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mt-3">
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mt-3">
             Built To Eliminate Hiring Friction
           </h2>
-          <p className="text-slate-600 mt-2 text-sm sm:text-base">
+          <p className="text-slate-600 dark:text-slate-300 mt-2 text-sm sm:text-base">
             Traditional job boards are noisy, outdated, and filled with ghost postings. We built Job Workplace to bring clarity and speed back to hiring.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="card p-8 bg-white border border-slate-100 hover:border-primary-200 transition-all hover:shadow-lg rounded-2xl">
-            <div className="h-14 w-14 rounded-2xl flex items-center justify-center mb-6 bg-primary-50 text-primary-600 shadow-xs">
+          <div className="card p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-primary-200 dark:hover:border-primary-500/40 transition-all hover:shadow-lg rounded-2xl">
+            <div className="h-14 w-14 rounded-2xl flex items-center justify-center mb-6 bg-primary-50 dark:bg-primary-950/60 text-primary-600 dark:text-primary-400 shadow-xs">
               <FaBolt className="h-7 w-7" />
             </div>
-            <h3 className="text-xl font-bold mb-3 text-slate-900">Semantic AI Matching</h3>
-            <p className="text-sm leading-relaxed text-slate-600">
+            <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Semantic AI Matching</h3>
+            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
               We go beyond rigid keyword searches. Our context-aware AI scores candidates based on actual technical proficiencies, project depth, and genuine suitability.
             </p>
           </div>
 
-          <div className="card p-8 bg-white border border-slate-100 hover:border-amber-200 transition-all hover:shadow-lg rounded-2xl">
-            <div className="h-14 w-14 rounded-2xl flex items-center justify-center mb-6 bg-amber-50 text-amber-600 shadow-xs">
+          <div className="card p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-amber-200 dark:hover:border-amber-500/40 transition-all hover:shadow-lg rounded-2xl">
+            <div className="h-14 w-14 rounded-2xl flex items-center justify-center mb-6 bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 shadow-xs">
               <FaGlobe className="h-7 w-7" />
             </div>
-            <h3 className="text-xl font-bold mb-3 text-slate-900">Global & Local Scale</h3>
-            <p className="text-sm leading-relaxed text-slate-600">
+            <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Global & Local Scale</h3>
+            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
               Connecting talent from India’s premier tech corridors (Bengaluru, Hyderabad, Pune, NCR) to high-paying remote roles with startups and enterprises worldwide.
             </p>
           </div>
 
-          <div className="card p-8 bg-white border border-slate-100 hover:border-emerald-200 transition-all hover:shadow-lg rounded-2xl">
-            <div className="h-14 w-14 rounded-2xl flex items-center justify-center mb-6 bg-emerald-50 text-emerald-600 shadow-xs">
+          <div className="card p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-500/40 transition-all hover:shadow-lg rounded-2xl">
+            <div className="h-14 w-14 rounded-2xl flex items-center justify-center mb-6 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 shadow-xs">
               <FaShieldHalved className="h-7 w-7" />
             </div>
-            <h3 className="text-xl font-bold mb-3 text-slate-900">Zero Ghost Jobs</h3>
-            <p className="text-sm leading-relaxed text-slate-600">
+            <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Zero Ghost Jobs</h3>
+            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
               Every employer account is manually vetted and verified. No third-party spam aggregators, no stale listings, and direct recruiter transparency.
             </p>
           </div>
@@ -225,7 +225,7 @@ export const AboutPage = () => {
 
       {/* ── 4. Key Feature Pillars ───────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
-        <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-3xl p-8 sm:p-12 lg:p-16 text-white shadow-2xl overflow-hidden relative">
+        <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-3xl p-8 sm:p-12 lg:p-16 text-white shadow-2xl overflow-hidden relative border border-slate-800">
           <div className="absolute top-0 right-0 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="max-w-2xl mb-12">
@@ -307,13 +307,13 @@ export const AboutPage = () => {
       {/* ── 5. Frequently Asked Questions (FAQ) Section with Rich Schema ─ */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
         <div className="text-center mb-12">
-          <span className="text-xs font-bold uppercase tracking-wider text-primary-600 bg-primary-50 px-3 py-1 rounded-full border border-primary-100">
+          <span className="text-xs font-bold uppercase tracking-wider text-primary-600 dark:text-amber-400 bg-primary-50 dark:bg-slate-800 px-3 py-1 rounded-full border border-primary-100 dark:border-slate-700">
             Got Questions?
           </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mt-3">
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mt-3">
             Frequently Asked Questions
           </h2>
-          <p className="text-slate-600 mt-2 text-sm sm:text-base">
+          <p className="text-slate-600 dark:text-slate-300 mt-2 text-sm sm:text-base">
             Everything you need to know about Job Workplace and how our platform works.
           </p>
         </div>
@@ -324,26 +324,26 @@ export const AboutPage = () => {
             return (
               <div
                 key={idx}
-                className={`card bg-white border transition-all rounded-2xl overflow-hidden ${
-                  isOpen ? 'border-primary-300 shadow-md ring-2 ring-primary-50' : 'border-slate-200'
+                className={`card bg-white dark:bg-slate-900 border transition-all rounded-2xl overflow-hidden ${
+                  isOpen ? 'border-primary-300 dark:border-amber-400/50 shadow-md ring-2 ring-primary-50 dark:ring-amber-400/10' : 'border-slate-200 dark:border-slate-800'
                 }`}
               >
                 <button
                   onClick={() => toggleFaq(idx)}
-                  className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-bold text-base sm:text-lg text-slate-900 cursor-pointer"
+                  className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-bold text-base sm:text-lg text-slate-900 dark:text-white cursor-pointer"
                 >
                   <span className="flex items-center gap-3">
-                    <FaCircleQuestion className="h-5 w-5 text-primary-600 shrink-0" />
+                    <FaCircleQuestion className="h-5 w-5 text-primary-600 dark:text-amber-400 shrink-0" />
                     {faq.q}
                   </span>
                   <FaChevronDown
-                    className={`h-4 w-4 text-slate-400 transition-transform duration-200 shrink-0 ${
-                      isOpen ? 'rotate-180 text-primary-600' : ''
+                    className={`h-4 w-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 shrink-0 ${
+                      isOpen ? 'rotate-180 text-primary-600 dark:text-amber-400' : ''
                     }`}
                   />
                 </button>
                 {isOpen && (
-                  <div className="px-5 sm:px-6 pb-6 pt-1 text-sm sm:text-base text-slate-600 leading-relaxed border-t border-slate-50">
+                  <div className="px-5 sm:px-6 pb-6 pt-1 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-50 dark:border-slate-800/80">
                     {faq.a}
                   </div>
                 )}
