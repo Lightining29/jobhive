@@ -144,19 +144,19 @@ export const DarkHeroParallaxScene = () => {
 
           {/* Wide Glowing Command Search Input Box */}
           <form onSubmit={handleSearch} className="mt-6 max-w-2xl mx-auto">
-            <div className="relative p-[2px] rounded-2xl bg-gradient-to-r from-[#ff2d87] via-[#a855f7] to-[#00f0ff] shadow-[0_0_35px_rgba(255,45,135,0.45)] transition-all duration-300 focus-within:shadow-[0_0_55px_rgba(0,240,255,0.7)]">
-              <div className="flex items-center gap-2 rounded-[14px] bg-[#050711]/95 backdrop-blur-2xl p-2.5 pl-5">
+            <div className="relative p-[2px] rounded-full bg-gradient-to-r from-[#ff2d87] via-[#a855f7] to-[#00f0ff] shadow-[0_0_35px_rgba(255,45,135,0.45)] transition-all duration-300 focus-within:shadow-[0_0_55px_rgba(0,240,255,0.7)]">
+              <div className="flex items-center gap-2 rounded-full bg-[#050711]/95 backdrop-blur-2xl p-2 pl-6">
                 <FaMagnifyingGlass className="h-5 w-5 text-cyan-400 shrink-0 drop-shadow-[0_0_10px_#00f0ff]" />
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search Java Developer, Spring Boot, React, Remote, Bengaluru, Pune..."
-                  className="w-full bg-transparent border-none outline-none text-white text-base placeholder:text-slate-400 py-2.5 pr-2 focus:ring-0"
+                  className="w-full bg-transparent border-none outline-none text-white text-base placeholder:text-slate-400 py-2.5 pr-2 focus:ring-0 rounded-full"
                 />
                 <button
                   type="submit"
-                  className="shrink-0 px-7 py-3 rounded-xl font-black text-sm bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:from-pink-400 hover:to-amber-300 text-white shadow-[0_0_25px_rgba(255,45,135,0.7)] transition-all duration-200 cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95"
+                  className="shrink-0 px-8 py-3 rounded-full font-black text-sm bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:from-pink-400 hover:to-amber-300 text-white shadow-[0_0_25px_rgba(255,45,135,0.7)] transition-all duration-200 cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95"
                 >
                   <FaBolt className="h-4 w-4" />
                   Search

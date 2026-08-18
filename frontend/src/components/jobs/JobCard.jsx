@@ -111,9 +111,9 @@ export const CompanyLogo = ({ logo, name, size = 'md', className = '' }) => {
 
 
 const WORK_MODE_BADGES = {
-  remote: { label: 'Remote', icon: FaGlobe, cls: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
-  hybrid: { label: 'Hybrid', icon: FaBuilding, cls: 'bg-amber-50 text-amber-700 border border-amber-200' },
-  onsite: { label: 'On-site', icon: FaLocationDot, cls: 'bg-sky-50 text-sky-700 border border-sky-200' },
+  remote: { label: 'Remote', icon: FaGlobe, cls: 'bg-emerald-100 text-emerald-950 border-emerald-400 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-500/50' },
+  hybrid: { label: 'Hybrid', icon: FaBuilding, cls: 'bg-amber-100 text-amber-950 border-amber-400 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-500/50' },
+  onsite: { label: 'On-site', icon: FaLocationDot, cls: 'bg-sky-100 text-sky-950 border-sky-400 dark:bg-sky-950/80 dark:text-sky-300 dark:border-sky-500/50' },
 };
 
 const SOURCE_LABELS = {
@@ -221,29 +221,29 @@ const JobCard = ({ job, match }) => {
           )}
         </div>
 
-        <div className="flex flex-wrap gap-1.5 mt-3">
+        <div className="flex flex-wrap items-center gap-1.5 mt-3">
           {workMode && (() => {
             const ModeIcon = WORK_MODE_BADGES[workMode].icon;
             return (
-              <span className={`badge ${WORK_MODE_BADGES[workMode].cls} dark:neon-badge-yellow`}>
-                <ModeIcon className="h-2.5 w-2.5" />
+              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border ${WORK_MODE_BADGES[workMode].cls}`}>
+                <ModeIcon className="h-3 w-3" />
                 {WORK_MODE_BADGES[workMode].label}
               </span>
             );
           })()}
           {employment && (
-            <span className="badge border bg-slate-50 dark:neon-badge-cyan text-slate-600 dark:text-cyan-300">
-              <FaBriefcase className="h-2.5 w-2.5" />
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border bg-slate-100 text-slate-900 border-slate-300 dark:bg-cyan-950/70 dark:text-cyan-300 dark:border-cyan-500/40">
+              <FaBriefcase className="h-3 w-3" />
               {employment}
             </span>
           )}
           {job.experienceLevel && (
-            <span className="badge border bg-slate-50 dark:neon-badge-yellow text-slate-600 dark:text-amber-300">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border bg-indigo-50 text-indigo-950 border-indigo-300 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-500/40">
               {capitalize(job.experienceLevel)}
             </span>
           )}
           {sourceLabel && (
-            <span className="badge border border-slate-200 dark:neon-badge-cyan bg-white">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border bg-slate-50 text-slate-900 border-slate-300 dark:bg-slate-900 dark:text-slate-200 dark:border-slate-700">
               <span className={`h-1.5 w-1.5 rounded-full ${SOURCE_DOT_COLORS[job.source] || 'bg-cyan-400'}`} />
               {sourceLabel}
             </span>

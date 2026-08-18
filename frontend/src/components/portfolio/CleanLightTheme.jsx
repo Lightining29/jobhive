@@ -69,18 +69,18 @@ export const CleanLightTheme = ({ portfolio, isPreview = false }) => {
       </div>
 
       {/* Sticky Clean Light Navbar */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/80 shadow-xs">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <a href="#hero" className="flex items-center gap-2.5 group">
-            <span className="h-9 w-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-sm group-hover:bg-blue-600 transition-colors shadow-sm">
+      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200/80 shadow-xs">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
+          <a href="#hero" className="flex items-center gap-2 group shrink-0 min-w-0">
+            <span className="h-8 w-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-black text-sm group-hover:bg-blue-600 transition-colors shadow-sm shrink-0">
               &lt;/&gt;
             </span>
-            <span className="font-black text-base text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors">
+            <span className="font-black text-sm sm:text-base text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors truncate">
               {hero.name || 'Developer'}
             </span>
           </a>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-slate-600">
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-slate-600">
             {about.summary && <a href="#about" className="hover:text-slate-900 transition-colors">About</a>}
             {skills.length > 0 && <a href="#skills" className="hover:text-slate-900 transition-colors">Skills</a>}
             {experience.length > 0 && <a href="#experience" className="hover:text-slate-900 transition-colors">Experience</a>}
@@ -89,26 +89,28 @@ export const CleanLightTheme = ({ portfolio, isPreview = false }) => {
             <a href="#contact" className="hover:text-slate-900 transition-colors">Contact</a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {hero.showResume && hero.resumeUrl && (
               <a
                 href={hero.resumeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-950 transition-all shadow-xs"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-950 transition-all shadow-xs"
               >
                 <FaFileArrowDown className="h-3 w-3 text-blue-600" /> Resume
               </a>
             )}
             <a
               href="#contact"
-              className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-sm"
+              className="inline-flex items-center px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-sm"
             >
               Get in Touch
             </a>
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700"
+              className="lg:hidden p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700"
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <FaXmark className="h-4 w-4" /> : <FaBars className="h-4 w-4" />}
             </button>
@@ -116,33 +118,33 @@ export const CleanLightTheme = ({ portfolio, isPreview = false }) => {
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden px-4 py-4 bg-white border-b border-slate-200 space-y-2 text-sm font-bold">
-            {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-slate-700 hover:text-blue-600">About</a>}
-            {skills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-slate-700 hover:text-blue-600">Skills</a>}
-            {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-slate-700 hover:text-blue-600">Experience</a>}
-            {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-slate-700 hover:text-blue-600">Projects</a>}
-            {services.length > 0 && <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-slate-700 hover:text-blue-600">Services</a>}
-            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-slate-700 hover:text-blue-600">Contact</a>
+          <div className="lg:hidden px-6 py-4 bg-white/95 backdrop-blur-2xl border-b border-slate-200 space-y-3 text-sm font-bold">
+            {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-blue-600">About</a>}
+            {skills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-blue-600">Skills</a>}
+            {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-blue-600">Experience</a>}
+            {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-blue-600">Projects</a>}
+            {services.length > 0 && <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-blue-600">Services</a>}
+            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-blue-600">Contact</a>
           </div>
         )}
       </header>
 
       {/* Main Content Container */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20 relative z-10 space-y-24">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 relative z-10 space-y-24 w-full max-w-full overflow-hidden">
         
         {/* ── 1. HERO SECTION ── */}
-        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12 pt-4">
-          <div className="flex-1 text-center lg:text-left space-y-6">
+        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
+          <div className="flex-1 text-center lg:text-left space-y-5 min-w-0 w-full">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-bold shadow-xs">
               <span className="h-2 w-2 rounded-full bg-blue-600" />
               <span>{hero.title || 'Software Engineer'}</span>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-slate-950 tracking-tight leading-[1.08]">
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-slate-950 tracking-tight leading-[1.08] break-words">
               Hi, I'm <span className="text-blue-600">{hero.name}</span>
             </h1>
 
-            <p className="text-base sm:text-xl font-medium text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-sm sm:text-lg font-medium text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               {hero.tagline || hero.bioShort || 'Building scalable applications and high-impact digital experiences.'}
             </p>
 
@@ -185,8 +187,8 @@ export const CleanLightTheme = ({ portfolio, isPreview = false }) => {
           </div>
 
           {/* Profile Photo with Big Circular Slate Blue Ring */}
-          <div className="relative shrink-0 flex items-center justify-center">
-            <div className="relative h-56 w-56 sm:h-72 sm:w-72 rounded-full p-2 bg-gradient-to-br from-blue-400 via-indigo-400 to-slate-400 shadow-xl">
+          <div className="relative shrink-0 flex items-center justify-center my-4 lg:my-0">
+            <div className="relative h-44 w-44 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-full p-2 bg-gradient-to-br from-blue-400 via-indigo-400 to-slate-400 shadow-xl">
               <div className="h-full w-full rounded-full overflow-hidden bg-white flex items-center justify-center border-2 border-slate-200">
                 {hero.avatar ? (
                   <img
@@ -200,15 +202,15 @@ export const CleanLightTheme = ({ portfolio, isPreview = false }) => {
                     }}
                   />
                 ) : null}
-                <span className={`text-6xl sm:text-8xl font-black text-slate-900 ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`text-5xl sm:text-7xl lg:text-8xl font-black text-blue-600 ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : 'D'}
                 </span>
               </div>
             </div>
 
             {about.experienceYears > 0 && (
-              <div className="absolute -bottom-2 -left-2 sm:bottom-2 sm:left-0 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-lg flex items-center gap-2 text-xs font-black text-slate-900">
-                <FaBolt className="h-3.5 w-3.5 text-blue-600" />
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-0 px-3.5 py-1.5 rounded-full bg-slate-900 shadow-sm flex items-center gap-1.5 text-xs font-black text-white shrink-0 whitespace-nowrap">
+                <FaBolt className="h-3.5 w-3.5 text-amber-400" />
                 <span>{about.experienceYears}+ YRS EXP</span>
               </div>
             )}

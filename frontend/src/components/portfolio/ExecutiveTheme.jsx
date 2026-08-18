@@ -55,19 +55,19 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] text-slate-800 font-sans selection:bg-slate-900 selection:text-white">
-      {/* Executive Top Navigation */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div>
-            <h1 className="font-serif text-xl font-black text-slate-900 tracking-tight">
-              {hero.name || 'Executive Profile'}
+      {/* Header */}
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-xs">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
+          <div className="min-w-0 shrink-0">
+            <h1 className="font-serif text-lg font-black text-slate-950 tracking-tight truncate">
+              {hero.name || 'Candidate Portfolio'}
             </h1>
-            <p className="text-xs uppercase tracking-widest text-slate-500 font-bold">
+            <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold truncate">
               {hero.title || 'Professional Portfolio'}
             </p>
           </div>
 
-          <nav className="hidden md:flex items-center gap-8 text-xs uppercase tracking-widest font-bold text-slate-600">
+          <nav className="hidden lg:flex items-center gap-8 text-xs uppercase tracking-widest font-bold text-slate-600">
             {about.summary && <a href="#about" className="hover:text-slate-950 transition-colors">Overview</a>}
             {experience.length > 0 && <a href="#experience" className="hover:text-slate-950 transition-colors">Experience</a>}
             {projects.length > 0 && <a href="#projects" className="hover:text-slate-950 transition-colors">Projects</a>}
@@ -75,50 +75,68 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
             <a href="#contact" className="hover:text-slate-950 transition-colors">Inquire</a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {hero.showResume && hero.resumeUrl && (
               <a
                 href={hero.resumeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 border border-slate-300 text-slate-800 hover:bg-slate-200 transition-all"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 border border-slate-300 text-slate-800 hover:bg-slate-200 transition-all"
               >
                 <FaFileArrowDown className="h-3 w-3 text-slate-600" /> CV
               </a>
             )}
             <a
               href="#contact"
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-xs font-black bg-slate-950 text-white hover:bg-slate-800 transition-all shadow-sm"
+              className="inline-flex items-center px-3.5 sm:px-5 py-2 rounded-lg text-xs font-black bg-slate-950 text-white hover:bg-slate-800 transition-all shadow-sm"
             >
               Get In Touch
             </a>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-700"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <FaXmark className="h-4 w-4" /> : <FaBars className="h-4 w-4" />}
+            </button>
           </div>
         </div>
+
+        {mobileMenuOpen && (
+          <div className="lg:hidden px-6 py-4 bg-white/95 backdrop-blur-2xl border-b border-slate-200 space-y-3 text-xs uppercase tracking-wider font-bold">
+            {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Overview</a>}
+            {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Experience</a>}
+            {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Projects</a>}
+            {skills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Competencies</a>}
+            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Inquire</a>
+          </div>
+        )}
       </header>
 
       {/* Main Container */}
-      <main className="max-w-5xl mx-auto px-6 py-16 space-y-24">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 space-y-24 w-full max-w-full overflow-hidden">
 
         {/* ── 1. HERO / EXECUTIVE SUMMARY ── */}
-        <section id="hero" className="flex flex-col-reverse md:flex-row items-center justify-between gap-12 pt-4">
-          <div className="flex-1 text-center md:text-left">
+        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
+          <div className="flex-1 text-center lg:text-left min-w-0 w-full">
             <div className="inline-block px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-bold uppercase tracking-widest mb-4">
               Verified Candidate Portfolio
             </div>
 
-            <h2 className="font-serif text-4xl sm:text-5xl font-black text-slate-950 leading-tight">
+            <h2 className="font-serif text-3xl sm:text-5xl font-black text-slate-950 leading-tight break-words">
               {hero.name || 'Professional Candidate'}
             </h2>
 
-            <p className="text-lg font-bold text-slate-600 mt-2">
+            <p className="text-base sm:text-lg font-bold text-slate-600 mt-2">
               {hero.title || 'Senior Software Engineer'}
             </p>
 
-            <p className="text-base text-slate-600 mt-5 leading-relaxed max-w-xl mx-auto md:mx-0">
+            <p className="text-sm sm:text-base text-slate-600 mt-4 leading-relaxed max-w-xl mx-auto lg:mx-0">
               {hero.tagline || hero.bioShort || 'Driving enterprise digital strategy and building scalable, user-centric software architectures.'}
             </p>
 
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-8">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-8">
               <a
                 href="#contact"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-wider text-white bg-slate-950 hover:bg-slate-800 transition-all shadow-md"
@@ -136,7 +154,7 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
               )}
             </div>
 
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 mt-8 pt-6 border-t border-slate-200 text-xs font-semibold text-slate-500">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 mt-8 pt-6 border-t border-slate-200 text-xs font-semibold text-slate-500">
               {hero.location && (
                 <span className="flex items-center gap-1.5 text-slate-700">
                   <FaLocationDot className="h-3 w-3 text-slate-400" /> {hero.location}
@@ -156,8 +174,8 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
           </div>
 
           {/* Big Circular Portrait Photo */}
-          <div className="relative shrink-0 flex items-center justify-center">
-            <div className="h-56 w-56 sm:h-72 sm:w-72 rounded-full p-2 bg-gradient-to-br from-slate-300 via-slate-100 to-amber-200 shadow-xl border border-slate-200">
+          <div className="relative shrink-0 flex items-center justify-center my-4 lg:my-0">
+            <div className="h-44 w-44 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-full p-2 bg-gradient-to-br from-slate-300 via-slate-100 to-amber-200 shadow-xl border border-slate-200">
               <div className="h-full w-full rounded-full overflow-hidden bg-slate-100 flex items-center justify-center">
                 {hero.avatar ? (
                   <img
@@ -171,7 +189,7 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
                     }}
                   />
                 ) : null}
-                <span className={`font-serif text-6xl sm:text-8xl font-black text-slate-400 ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`font-serif text-5xl sm:text-7xl lg:text-8xl font-black text-slate-400 ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : 'E'}
                 </span>
               </div>

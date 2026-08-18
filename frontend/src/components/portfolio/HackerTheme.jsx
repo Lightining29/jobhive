@@ -72,17 +72,17 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
 
       {/* Terminal Command Header */}
       <header className="sticky top-0 z-40 bg-[#031006]/90 backdrop-blur-xl border-b border-emerald-500/30 shadow-[0_4px_30px_rgba(16,185,129,0.15)]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <a href="#hero" className="flex items-center gap-2.5 group">
-            <span className="h-8 w-8 rounded-lg bg-emerald-500 text-black flex items-center justify-center font-black text-xs shadow-[0_0_15px_rgba(16,185,129,0.7)] group-hover:scale-110 transition-transform">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
+          <a href="#hero" className="flex items-center gap-2 group shrink-0 min-w-0">
+            <span className="h-8 w-8 rounded-lg bg-emerald-500 text-black flex items-center justify-center font-black text-xs shadow-[0_0_15px_rgba(16,185,129,0.7)] group-hover:scale-110 transition-transform shrink-0">
               &gt;_
             </span>
-            <span className="font-bold text-sm text-emerald-400 tracking-tight group-hover:text-emerald-300 transition-colors">
+            <span className="font-bold text-xs sm:text-sm text-emerald-400 tracking-tight group-hover:text-emerald-300 transition-colors truncate">
               root@{hero.name?.toLowerCase().replace(/\s+/g, '') || 'developer'}:~#
             </span>
           </a>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-emerald-400/80">
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-emerald-400/80">
             {about.summary && <a href="#about" className="hover:text-emerald-300 transition-colors hover:underline">/about</a>}
             {skills.length > 0 && <a href="#skills" className="hover:text-emerald-300 transition-colors hover:underline">/skills</a>}
             {experience.length > 0 && <a href="#experience" className="hover:text-emerald-300 transition-colors hover:underline">/history</a>}
@@ -91,26 +91,28 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
             <a href="#contact" className="hover:text-emerald-300 transition-colors hover:underline">/contact</a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {hero.showResume && hero.resumeUrl && (
               <a
                 href={hero.resumeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#061c0b] border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500 hover:text-black transition-all shadow-[0_0_10px_rgba(16,185,129,0.3)]"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#061c0b] border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500 hover:text-black transition-all shadow-[0_0_10px_rgba(16,185,129,0.3)]"
               >
                 <FaFileArrowDown className="h-3 w-3" /> cat resume.pdf
               </a>
             )}
             <a
               href="#contact"
-              className="px-4 py-2 rounded-lg text-xs font-black bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.7)] hover:bg-emerald-400 transition-all"
+              className="px-3.5 sm:px-4 py-1.5 rounded-lg text-xs font-black bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.7)] hover:bg-emerald-400 transition-all"
             >
               $ ./connect
             </a>
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg bg-emerald-950/50 border border-emerald-500/40 text-emerald-400"
+              className="lg:hidden p-2 rounded-lg bg-emerald-950/50 border border-emerald-500/40 text-emerald-400"
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <FaXmark className="h-4 w-4" /> : <FaBars className="h-4 w-4" />}
             </button>
@@ -118,7 +120,7 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden px-4 py-4 bg-[#041508] border-b border-emerald-500/40 space-y-2 text-xs font-bold">
+          <div className="lg:hidden px-6 py-4 bg-[#041508]/95 backdrop-blur-2xl border-b border-emerald-500/40 space-y-3 text-xs font-bold">
             {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-emerald-300 hover:text-emerald-100">&gt; cd /about</a>}
             {skills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-emerald-300 hover:text-emerald-100">&gt; cd /skills</a>}
             {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-emerald-300 hover:text-emerald-100">&gt; cd /history</a>}
@@ -130,22 +132,22 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
       </header>
 
       {/* Main Content Container */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20 relative z-10 space-y-24">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 relative z-10 space-y-24 w-full max-w-full overflow-hidden">
         
         {/* ── 1. HERO SECTION ── */}
-        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12 pt-4">
-          <div className="flex-1 text-center lg:text-left space-y-6">
+        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
+          <div className="flex-1 text-center lg:text-left space-y-5 min-w-0 w-full">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-xs font-bold shadow-[0_0_15px_rgba(16,185,129,0.2)]">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
               <span>STATUS: ONLINE &bull; {hero.title || 'SYSTEM ENGINEER'}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight break-words">
               <span className="text-emerald-400 font-normal">&gt;</span> <span className="text-emerald-300 drop-shadow-[0_0_20px_#10b981]">{hero.name}</span>
               <span className="inline-block w-3 h-8 bg-emerald-400 ml-2 animate-pulse" />
             </h1>
 
-            <p className="text-sm sm:text-base font-normal text-emerald-200/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-xs sm:text-base font-normal text-emerald-200/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               // {hero.tagline || hero.bioShort || 'Building scalable applications and high-impact digital experiences.'}
             </p>
 
@@ -188,8 +190,8 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
           </div>
 
           {/* Profile Photo Circular Terminal Box */}
-          <div className="relative shrink-0 flex items-center justify-center">
-            <div className="relative h-56 w-56 sm:h-72 sm:w-72 rounded-full p-2 bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600 shadow-[0_0_45px_rgba(16,185,129,0.65)]">
+          <div className="relative shrink-0 flex items-center justify-center my-4 lg:my-0">
+            <div className="relative h-44 w-44 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-full p-2 bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600 shadow-[0_0_45px_rgba(16,185,129,0.65)]">
               <div className="h-full w-full rounded-full overflow-hidden bg-[#020b05] flex items-center justify-center border-2 border-emerald-500/50">
                 {hero.avatar ? (
                   <img
@@ -203,14 +205,14 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
                     }}
                   />
                 ) : null}
-                <span className={`text-6xl sm:text-8xl font-black text-emerald-400 drop-shadow-[0_0_20px_#10b981] ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`text-5xl sm:text-7xl lg:text-8xl font-black text-emerald-400 drop-shadow-[0_0_20px_#10b981] ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : '01'}
                 </span>
               </div>
             </div>
 
             {about.experienceYears > 0 && (
-              <div className="absolute -bottom-2 -left-2 sm:bottom-2 sm:left-0 px-3.5 py-1.5 rounded-full bg-[#041a09] border border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.8)] flex items-center gap-2 text-xs font-black text-emerald-300">
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-0 px-3.5 py-1.5 rounded-full bg-[#041a09] border border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.8)] flex items-center gap-1.5 text-xs font-black text-emerald-300 shrink-0 whitespace-nowrap">
                 <FaBolt className="h-3 w-3 text-emerald-400" />
                 <span>UPTIME: {about.experienceYears}Y</span>
               </div>

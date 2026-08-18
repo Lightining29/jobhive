@@ -216,10 +216,45 @@ const getSavedJobs = asyncHandler(async (req, res) => {
   res.json({ success: true, jobs });
 });
 
+const getAvatarStream = asyncHandler(async (req, res, next) => {
+  const { userId } = req.params;
+  let user = null;
+  try {
+    user = await UserSQL.findByPk(userId);
+  } catch (e) {}
+  if (!user) {
+    try {
+      user = await UserSQL.findOne({ where: { email: userId } });
+    } catch (e) {}
+  }
+  if (!user || !user.avatar) {
+    return res.status(404).send('Avatar not found');
+  }
+
+  const rawAvatar = user.avatar.trim();
+  if (rawAvatar.startsWith('data:image/')) {
+    const match = rawAvatar.match(/^data:(image\/[a-zA-Z0-9\+\-\.]+);base64,(.+)$/);
+    if (match) {
+      const mime = match[1];
+      const buffer = Buffer.from(match[2], 'base64');
+      res.setHeader('Content-Type', mime);
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      return res.send(buffer);
+    }
+  }
+
+  if (rawAvatar.startsWith('http://') || rawAvatar.startsWith('https://')) {
+    return res.redirect(rawAvatar);
+  }
+
+  return res.status(404).send('Avatar not found');
+});
+
 module.exports = {
   getProfile,
   updateProfile,
   uploadAvatar,
+  getAvatarStream,
   uploadResumeFile,
   getResumeScore,
   toggleSavedJob,

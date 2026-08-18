@@ -388,25 +388,109 @@ const updateMyPortfolio = asyncHandler(async (req, res, next) => {
   });
 });
 
+const { Op } = require('sequelize');
+
 // ── 4. Public Portfolio View ────────────────────────────────────────
 const getPublicPortfolio = asyncHandler(async (req, res, next) => {
   const { slug } = req.params;
+  const cleanSlug = String(slug).toLowerCase().trim();
   let portfolio = null;
 
   try {
-    portfolio = await PortfolioMongo.findOne({ slug: slug.toLowerCase() });
-    if (portfolio) {
-      portfolio.views = (portfolio.views || 0) + 1;
-      await portfolio.save().catch(() => {});
-    }
+    portfolio = await PortfolioMongo.findOne({ slug: cleanSlug });
   } catch (e) {}
 
   if (!portfolio) {
     try {
-      portfolio = await PortfolioSQL.findOne({ where: { slug: slug.toLowerCase() } });
-      if (portfolio) {
-        portfolio.views = (portfolio.views || 0) + 1;
-        await portfolio.save().catch(() => {});
+      portfolio = await PortfolioSQL.findOne({ where: { slug: cleanSlug } });
+    } catch (e) {}
+  }
+
+  // 3. Fallback: match by partial slug or user name/email/id
+  if (!portfolio) {
+    try {
+      const user = await UserSQL.findOne({
+        where: {
+          [Op.or]: [
+            { name: { [Op.like]: `%${cleanSlug}%` } },
+            { email: { [Op.like]: `${cleanSlug}%` } },
+            ...(isNaN(Number(cleanSlug)) ? [] : [{ id: Number(cleanSlug) }]),
+          ],
+        },
+      });
+      if (user) {
+        portfolio = await PortfolioSQL.findOne({ where: { userId: user.id } });
+        if (!portfolio) {
+          portfolio = await PortfolioMongo.findOne({ user: String(user.id) });
+        }
+      }
+    } catch (e) {}
+  }
+
+  // 4. If still not found, check if a user with this name exists and generate their verified portfolio
+  if (!portfolio) {
+    try {
+      const user = await UserSQL.findOne({
+        where: {
+          [Op.or]: [
+            { name: { [Op.like]: cleanSlug } },
+            { email: { [Op.like]: `${cleanSlug}%` } },
+          ],
+        },
+      });
+      if (user) {
+        const rawUser = typeof user.toJSON === 'function' ? user.toJSON() : user;
+        const name = rawUser.name || 'Developer';
+        const headline = rawUser.headline || 'Software Engineer';
+        const bio = rawUser.bio || `Passionate ${headline} dedicated to engineering reliable, scalable, and user-centric software solutions.`;
+        const skillsList = Array.isArray(rawUser.skills) ? rawUser.skills : [];
+        const categorizedSkills = categorizeSkills(skillsList);
+
+        const portfolioPayload = {
+          userId: user.id,
+          slug: cleanSlug,
+          theme: 'modern_tech',
+          isPublished: true,
+          hero: {
+            name,
+            title: headline,
+            tagline: bio,
+            bioShort: bio,
+            location: rawUser.preferences?.preferredLocations?.[0] || 'Global / Remote',
+            avatar: rawUser.avatar || '',
+            github: rawUser.socialLinks?.github || '',
+            linkedin: rawUser.socialLinks?.linkedin || '',
+            email: rawUser.email || '',
+            ctaHire: 'Get in Touch',
+            ctaWork: 'Explore Projects',
+          },
+          about: {
+            summary: bio,
+            experienceYears: 2,
+            highlights: [
+              'Clean code architecture & modern design patterns',
+              'High-performance full-stack web applications',
+              'Agile engineering and cross-functional team collaboration',
+            ],
+          },
+          skills: categorizedSkills,
+          projects: [],
+          experience: [],
+          education: [],
+          certifications: [],
+          services: deriveServices(skillsList, headline),
+          seo: {
+            title: `${name} | ${headline} Portfolio`,
+            metaDescription: `${name} is a ${headline} specializing in ${skillsList.slice(0, 5).join(', ')}.`,
+            keywords: [name, headline, ...skillsList],
+          },
+        };
+
+        try {
+          portfolio = await PortfolioSQL.create(portfolioPayload);
+        } catch (err) {
+          portfolio = portfolioPayload;
+        }
       }
     } catch (e) {}
   }
@@ -415,12 +499,19 @@ const getPublicPortfolio = asyncHandler(async (req, res, next) => {
     return next(new ApiError(404, 'Portfolio not found.'));
   }
 
-  if (!portfolio.isPublished) {
+  if (portfolio.isPublished === false) {
     return res.status(403).json({
       success: false,
       message: 'This portfolio is currently private by the author.',
     });
   }
+
+  try {
+    if (typeof portfolio.save === 'function') {
+      portfolio.views = (portfolio.views || 0) + 1;
+      await portfolio.save().catch(() => {});
+    }
+  } catch (e) {}
 
   res.json({
     success: true,

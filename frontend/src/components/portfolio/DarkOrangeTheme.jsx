@@ -71,17 +71,17 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
 
       {/* Sticky Dark Orange Glass Navbar */}
       <header className="sticky top-0 z-40 bg-[#0c0805]/80 backdrop-blur-xl border-b border-orange-500/25 shadow-[0_4px_30px_rgba(249,115,22,0.12)]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <a href="#hero" className="flex items-center gap-2.5 group">
-            <span className="h-9 w-9 rounded-xl bg-gradient-to-br from-orange-400 via-amber-500 to-red-600 text-black flex items-center justify-center font-black text-sm shadow-[0_0_15px_rgba(249,115,22,0.7)] group-hover:scale-110 transition-transform">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
+          <a href="#hero" className="flex items-center gap-2 group shrink-0 min-w-0">
+            <span className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-400 via-amber-500 to-red-600 text-black flex items-center justify-center font-black text-sm shadow-[0_0_15px_rgba(249,115,22,0.7)] group-hover:scale-110 transition-transform shrink-0">
               <FaFire className="h-4 w-4 text-black" />
             </span>
-            <span className="font-black text-base text-white tracking-tight group-hover:text-orange-400 transition-colors">
+            <span className="font-black text-sm sm:text-base text-white tracking-tight group-hover:text-orange-400 transition-colors truncate">
               {hero.name || 'Developer'}
             </span>
           </a>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs font-black uppercase tracking-wider text-orange-200/80">
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-black uppercase tracking-wider text-orange-200/80">
             {about.summary && <a href="#about" className="hover:text-orange-400 transition-colors">About</a>}
             {skills.length > 0 && <a href="#skills" className="hover:text-orange-400 transition-colors">Skills</a>}
             {experience.length > 0 && <a href="#experience" className="hover:text-orange-400 transition-colors">Experience</a>}
@@ -90,26 +90,28 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
             <a href="#contact" className="hover:text-orange-400 transition-colors">Contact</a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {hero.showResume && hero.resumeUrl && (
               <a
                 href={hero.resumeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#1a0f08] border border-orange-500/40 text-orange-300 hover:bg-orange-500 hover:text-black hover:shadow-[0_0_15px_rgba(249,115,22,0.6)] transition-all"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#1a0f08] border border-orange-500/40 text-orange-300 hover:bg-orange-500 hover:text-black hover:shadow-[0_0_15px_rgba(249,115,22,0.6)] transition-all"
               >
                 <FaFileArrowDown className="h-3 w-3 text-orange-400" /> Resume
               </a>
             )}
             <a
               href="#contact"
-              className="px-4 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 text-black shadow-[0_0_15px_rgba(249,115,22,0.6)] hover:scale-105 transition-all"
+              className="inline-flex items-center px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-black bg-gradient-to-r from-orange-500 to-amber-500 text-black shadow-[0_0_15px_rgba(249,115,22,0.6)] hover:scale-105 transition-all"
             >
               Get in Touch
             </a>
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl bg-orange-950/40 border border-orange-500/30 text-orange-300"
+              className="lg:hidden p-2 rounded-xl bg-orange-950/40 border border-orange-500/30 text-orange-300"
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <FaXmark className="h-4 w-4" /> : <FaBars className="h-4 w-4" />}
             </button>
@@ -118,33 +120,33 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden px-4 py-4 bg-[#0e0a06] border-b border-orange-500/30 space-y-2 text-sm font-bold">
-            {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-orange-200 hover:text-orange-400">About</a>}
-            {skills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-orange-200 hover:text-orange-400">Skills</a>}
-            {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-orange-200 hover:text-orange-400">Experience</a>}
-            {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-orange-200 hover:text-orange-400">Projects</a>}
-            {services.length > 0 && <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-orange-200 hover:text-orange-400">Services</a>}
-            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-orange-200 hover:text-orange-400">Contact</a>
+          <div className="lg:hidden px-6 py-4 bg-[#0e0a06]/95 backdrop-blur-2xl border-b border-orange-500/30 space-y-3 text-sm font-bold">
+            {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block text-orange-200 hover:text-orange-400">About</a>}
+            {skills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block text-orange-200 hover:text-orange-400">Skills</a>}
+            {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block text-orange-200 hover:text-orange-400">Experience</a>}
+            {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block text-orange-200 hover:text-orange-400">Projects</a>}
+            {services.length > 0 && <a href="#services" onClick={() => setMobileMenuOpen(false)} className="block text-orange-200 hover:text-orange-400">Services</a>}
+            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block text-orange-200 hover:text-orange-400">Contact</a>
           </div>
         )}
       </header>
 
       {/* Main Content Container */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20 relative z-10 space-y-24">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 relative z-10 space-y-24 w-full max-w-full overflow-hidden">
         
         {/* ── 1. HERO SECTION ── */}
-        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12 pt-4">
-          <div className="flex-1 text-center lg:text-left space-y-6">
+        <section id="hero" className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 sm:gap-12 pt-2 w-full max-w-full overflow-hidden">
+          <div className="flex-1 text-center lg:text-left space-y-5 min-w-0 w-full">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-300 text-xs font-black shadow-[0_0_15px_rgba(249,115,22,0.2)]">
               <FaFire className="h-3 w-3 text-orange-400 animate-pulse" />
               <span>{hero.title || 'Software Engineer'}</span>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.08]">
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-white tracking-tight leading-[1.08] break-words">
               Hi, I'm <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-red-500 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(249,115,22,0.4)]">{hero.name}</span>
             </h1>
 
-            <p className="text-base sm:text-xl font-medium text-orange-100/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-sm sm:text-lg font-medium text-orange-100/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               {hero.tagline || hero.bioShort || 'Building scalable applications and high-impact digital experiences.'}
             </p>
 
@@ -187,8 +189,8 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
           </div>
 
           {/* Profile Photo with Big Circular Dark Orange Neon Ring */}
-          <div className="relative shrink-0 flex items-center justify-center">
-            <div className="relative h-56 w-56 sm:h-72 sm:w-72 rounded-full p-2 bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 shadow-[0_0_45px_rgba(249,115,22,0.65)]">
+          <div className="relative shrink-0 flex items-center justify-center my-4 lg:my-0">
+            <div className="relative h-44 w-44 sm:h-64 sm:w-64 lg:h-72 lg:w-72 rounded-full p-2 bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 shadow-[0_0_45px_rgba(249,115,22,0.65)]">
               <div className="h-full w-full rounded-full overflow-hidden bg-[#100a06] flex items-center justify-center border-2 border-orange-500/50">
                 {hero.avatar ? (
                   <img
@@ -202,14 +204,14 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
                     }}
                   />
                 ) : null}
-                <span className={`text-6xl sm:text-8xl font-black text-orange-400 drop-shadow-[0_0_20px_#f97316] ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`text-5xl sm:text-7xl lg:text-8xl font-black text-orange-400 drop-shadow-[0_0_20px_#f97316] ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : 'D'}
                 </span>
               </div>
             </div>
 
             {about.experienceYears > 0 && (
-              <div className="absolute -bottom-2 -left-2 sm:bottom-2 sm:left-0 px-4 py-2 rounded-full bg-[#120a06] border-2 border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.8)] flex items-center gap-2 text-xs font-black text-white">
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-0 px-3.5 py-1.5 rounded-full bg-[#120a06] border-2 border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.8)] flex items-center gap-1.5 text-xs font-black text-white shrink-0 whitespace-nowrap">
                 <FaFire className="h-3.5 w-3.5 text-amber-400" />
                 <span>{about.experienceYears}+ YRS EXP</span>
               </div>

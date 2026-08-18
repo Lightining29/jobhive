@@ -5,12 +5,16 @@ const {
   getProfile,
   updateProfile,
   uploadAvatar,
+  getAvatarStream,
   uploadResumeFile,
   getResumeScore,
   toggleSavedJob,
   getSavedJobs,
 } = require('../controllers/candidate.controller');
 const { validateUpdateProfile } = require('../validators');
+
+// Public route to stream avatar directly from database bytes
+router.get('/avatar/:userId', getAvatarStream);
 
 router.use(protect, authorize('candidate'));
 
