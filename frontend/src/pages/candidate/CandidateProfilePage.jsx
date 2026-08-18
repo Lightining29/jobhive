@@ -50,9 +50,13 @@ const CandidateProfilePage = () => {
   const load = useCallback(async () => {
     try {
       const { data } = await candidateService.profile();
-      setProfile(data.profile);
-      setCompletion(data.profileCompletion);
-      const p = data.profile;
+      const p = data.profile || {};
+      const localCached = localStorage.getItem(`jobhive_avatar_${user?._id || user?.id || 'candidate'}`);
+      if (!p.avatar && (user?.avatar || localCached)) {
+        p.avatar = user?.avatar || localCached;
+      }
+      setProfile(p);
+      setCompletion(data.profileCompletion || 0);
       reset({
         name: p.name || '',
         headline: p.headline || '',
@@ -77,7 +81,7 @@ const CandidateProfilePage = () => {
     } finally {
       setLoading(false);
     }
-  }, [reset]);
+  }, [reset, user]);
 
   useEffect(() => {
     load();
@@ -88,22 +92,20 @@ const CandidateProfilePage = () => {
       e.preventDefault();
       e.stopPropagation();
     }
-    const s = (skillInputRef.current?.value || '').trim().toLowerCase();
-    if (!s) return;
-    if (skills.some((x) => x.toLowerCase() === s)) {
-      toast('Skill already added');
-      return;
+    const val = skillInput.trim();
+    if (!val) return;
+    const current = skills || [];
+    if (!current.includes(val)) {
+      setValue('skills', [...current, val]);
     }
-    setValue('skills', [...skills, s], { shouldDirty: true });
-    if (skillInputRef.current) skillInputRef.current.value = '';
+    setSkillInput('');
   };
 
-  const removeSkill = (idx, e) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    setValue('skills', skills.filter((_, i) => i !== idx), { shouldDirty: true });
+  const removeSkill = (s) => {
+    setValue(
+      'skills',
+      (skills || []).filter((x) => x !== s)
+    );
   };
 
   const uploadResume = async (e) => {
@@ -111,9 +113,13 @@ const CandidateProfilePage = () => {
     if (!file) return;
     setUploading('resume');
     try {
-      const { data } = await candidateService.uploadResume(file);
+      const res = await candidateService.uploadResume(file);
       toast.success('Resume uploaded');
       await load();
+      if (res?.data?.parsed) {
+        toast('Resume parsed! You can review details below.');
+      }
+      if (refreshUser) await refreshUser();
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -140,6 +146,9 @@ const CandidateProfilePage = () => {
       if (setUser) {
         setUser((prev) => prev ? { ...prev, avatar: newAvatar } : { avatar: newAvatar });
       }
+      try {
+        localStorage.setItem(`jobhive_avatar_${user?._id || user?.id || 'candidate'}`, newAvatar);
+      } catch (e) {}
       if (refreshUser) await refreshUser();
     } catch (err) {
       toast.error(err.message || 'Failed to update profile photo');

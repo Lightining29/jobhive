@@ -8,10 +8,44 @@ const { uploadDir } = require('../middleware/upload');
 const env = require('../config/env');
 
 const getProfile = asyncHandler(async (req, res) => {
-  const user = await UserSQL.findByPk(req.user.id);
+  let user = null;
+  try {
+    user = await UserSQL.findByPk(req.user.id);
+  } catch (e) {}
+  if (!user && req.user?.email) {
+    try {
+      user = await UserSQL.findOne({ where: { email: req.user.email } });
+    } catch (e) {}
+  }
+  if (!user) {
+    try {
+      const UserMongo = require('../models/User');
+      user = await UserMongo.findById(req.user.id);
+    } catch (e) {}
+  }
+  if (!user && req.user?.email) {
+    try {
+      const UserMongo = require('../models/User');
+      user = await UserMongo.findOne({ email: req.user.email });
+    } catch (e) {}
+  }
+
   if (!user) {
     return res.status(404).json({ success: false, message: 'User not found' });
   }
+
+  // Cross-sync avatar if missing in SQL but present in Mongo
+  if (!user.avatar && req.user?.email) {
+    try {
+      const UserMongo = require('../models/User');
+      const mUser = await UserMongo.findOne({ email: req.user.email });
+      if (mUser?.avatar) {
+        user.avatar = mUser.avatar;
+      }
+    } catch (e) {}
+  }
+
+  const safeUser = user.toSafeJSON ? user.toSafeJSON() : (user.toJSON ? user.toJSON() : user);
 
   const totalFields = 9;
   let completed = 0;
@@ -26,11 +60,32 @@ const getProfile = asyncHandler(async (req, res) => {
   if (user.socialLinks && (user.socialLinks.linkedin || user.socialLinks.github || user.socialLinks.portfolio)) completed += 1;
   const profileCompletion = Math.round((completed / totalFields) * 100);
 
-  res.json({ success: true, profile: user.toSafeJSON(), profileCompletion });
+  res.json({ success: true, profile: safeUser, profileCompletion });
 });
 
 const updateProfile = asyncHandler(async (req, res) => {
-  const user = await UserSQL.findByPk(req.user.id);
+  let user = null;
+  try {
+    user = await UserSQL.findByPk(req.user.id);
+  } catch (e) {}
+  if (!user && req.user?.email) {
+    try {
+      user = await UserSQL.findOne({ where: { email: req.user.email } });
+    } catch (e) {}
+  }
+  if (!user) {
+    try {
+      const UserMongo = require('../models/User');
+      user = await UserMongo.findById(req.user.id);
+    } catch (e) {}
+  }
+  if (!user && req.user?.email) {
+    try {
+      const UserMongo = require('../models/User');
+      user = await UserMongo.findOne({ email: req.user.email });
+    } catch (e) {}
+  }
+
   if (!user) {
     return res.status(404).json({ success: false, message: 'User not found' });
   }
@@ -38,7 +93,7 @@ const updateProfile = asyncHandler(async (req, res) => {
   const allowed = ['name', 'phone', 'headline', 'bio', 'skills', 'education', 'experience', 'certifications', 'socialLinks', 'preferences', 'avatar'];
   allowed.forEach((field) => {
     if (req.body[field] !== undefined && req.body[field] !== null) {
-      if (field === 'avatar' && req.body[field] === '') return;
+      if (field === 'avatar' && (req.body[field] === '' || req.body[field].startsWith('blob:'))) return;
       user[field] = req.body[field];
     }
   });
@@ -49,19 +104,42 @@ const updateProfile = asyncHandler(async (req, res) => {
     const UserMongo = require('../models/User');
     if (UserMongo && req.user.email) {
       const updateData = { ...req.body };
-      if (!updateData.avatar) delete updateData.avatar;
+      if (!updateData.avatar || updateData.avatar.startsWith('blob:')) delete updateData.avatar;
       await UserMongo.findOneAndUpdate({ email: req.user.email }, { $set: updateData });
     }
   } catch {
     // ignore
   }
 
-  res.json({ success: true, message: 'Profile updated.', user: user.toSafeJSON() });
+  const safeUser = user.toSafeJSON ? user.toSafeJSON() : (user.toJSON ? user.toJSON() : user);
+  res.json({ success: true, message: 'Profile updated.', user: safeUser });
 });
 
 const uploadAvatar = asyncHandler(async (req, res, next) => {
   if (!req.file) return next(new ApiError(400, 'No image uploaded.'));
-  const user = await UserSQL.findByPk(req.user.id);
+
+  let user = null;
+  try {
+    user = await UserSQL.findByPk(req.user.id);
+  } catch (e) {}
+  if (!user && req.user?.email) {
+    try {
+      user = await UserSQL.findOne({ where: { email: req.user.email } });
+    } catch (e) {}
+  }
+  if (!user) {
+    try {
+      const UserMongo = require('../models/User');
+      user = await UserMongo.findById(req.user.id);
+    } catch (e) {}
+  }
+  if (!user && req.user?.email) {
+    try {
+      const UserMongo = require('../models/User');
+      user = await UserMongo.findOne({ email: req.user.email });
+    } catch (e) {}
+  }
+
   if (!user) return next(new ApiError(404, 'User not found'));
 
   let localPath = null;
@@ -97,8 +175,28 @@ const uploadAvatar = asyncHandler(async (req, res, next) => {
       localPath = req.file.path;
     }
 
-    user.avatar = avatarUrl;
-    await user.save();
+    // Ensure MySQL avatar column is LONGTEXT
+    try {
+      const { sequelize } = require('../config/mysql');
+      if (sequelize) {
+        await sequelize.query('ALTER TABLE users MODIFY COLUMN avatar LONGTEXT;').catch(() => {});
+      }
+    } catch (e) {}
+
+    // Save to SQL user
+    try {
+      if (user instanceof UserSQL || user.save) {
+        user.avatar = avatarUrl;
+        await user.save();
+      }
+    } catch (sqlErr) {
+      // If Base64 failed due to column size, fallback to local URL
+      try {
+        user.avatar = `/uploads/${req.file.filename}`;
+        await user.save();
+        avatarUrl = `/uploads/${req.file.filename}`;
+      } catch (err2) {}
+    }
 
     // Sync Mongo if active
     try {
@@ -115,7 +213,7 @@ const uploadAvatar = asyncHandler(async (req, res, next) => {
       const Portfolio = require('../models/Portfolio');
       if (Portfolio) {
         await Portfolio.findOneAndUpdate(
-          { userId: String(user.id) },
+          { $or: [{ userId: String(user.id || req.user.id) }, { 'hero.email': req.user.email }] },
           { $set: { 'hero.avatar': avatarUrl } }
         );
       }
@@ -123,7 +221,8 @@ const uploadAvatar = asyncHandler(async (req, res, next) => {
       // ignore
     }
 
-    res.json({ success: true, message: 'Avatar uploaded successfully and saved in database.', user: user.toSafeJSON(), avatar: avatarUrl });
+    const safeUser = user.toSafeJSON ? user.toSafeJSON() : (user.toJSON ? user.toJSON() : user);
+    res.json({ success: true, message: 'Avatar uploaded successfully and saved in database.', user: safeUser, avatar: avatarUrl });
   } finally {
     if (cloudinary.isConfigured() && localPath === null && req.file.path) {
       fs.promises.unlink(req.file.path).catch(() => {});

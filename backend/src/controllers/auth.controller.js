@@ -449,11 +449,45 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 });
 
 const me = asyncHandler(async (req, res) => {
-  const user = await UserSQL.findByPk(req.user.id);
+  let user = null;
+  try {
+    user = await UserSQL.findByPk(req.user.id);
+  } catch (e) {}
+  if (!user && req.user?.email) {
+    try {
+      user = await UserSQL.findOne({ where: { email: req.user.email } });
+    } catch (e) {}
+  }
+  if (!user) {
+    try {
+      const UserMongo = require('../models/User');
+      user = await UserMongo.findById(req.user.id);
+    } catch (e) {}
+  }
+  if (!user && req.user?.email) {
+    try {
+      const UserMongo = require('../models/User');
+      user = await UserMongo.findOne({ email: req.user.email });
+    } catch (e) {}
+  }
+
   if (!user) {
     return res.status(404).json({ success: false, message: 'User not found' });
   }
-  res.json({ success: true, user: user.toSafeJSON() });
+
+  // Cross-sync avatar if missing in SQL but present in Mongo
+  if (!user.avatar && req.user?.email) {
+    try {
+      const UserMongo = require('../models/User');
+      const mUser = await UserMongo.findOne({ email: req.user.email });
+      if (mUser?.avatar) {
+        user.avatar = mUser.avatar;
+      }
+    } catch (e) {}
+  }
+
+  const safeUser = user.toSafeJSON ? user.toSafeJSON() : (user.toJSON ? user.toJSON() : user);
+  res.json({ success: true, user: safeUser });
 });
 
 const googleLogin = asyncHandler(async (req, res, next) => {
