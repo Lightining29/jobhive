@@ -159,12 +159,20 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
           <div className="relative shrink-0">
             <div className="h-52 w-52 sm:h-64 sm:w-64 rounded-2xl overflow-hidden bg-slate-100 border-4 border-white shadow-xl flex items-center justify-center">
               {hero.avatar ? (
-                <img src={formatAvatarUrl(hero.avatar)} alt={hero.name} className="h-full w-full object-cover" />
-              ) : (
-                <span className="font-serif text-6xl font-black text-slate-400">
-                  {hero.name ? hero.name.charAt(0).toUpperCase() : 'E'}
-                </span>
-              )}
+                <img
+                  src={formatAvatarUrl(hero.avatar)}
+                  alt={hero.name || ''}
+                  referrerPolicy="no-referrer"
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <span className={`font-serif text-6xl font-black text-slate-400 ${hero.avatar ? 'hidden' : 'flex'}`}>
+                {hero.name ? hero.name.charAt(0).toUpperCase() : 'E'}
+              </span>
             </div>
           </div>
         </section>

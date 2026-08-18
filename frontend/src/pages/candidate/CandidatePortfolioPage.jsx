@@ -32,8 +32,7 @@ import {
 import { portfolioService, candidateService } from '../../services';
 import { useAuth } from '../../context/AuthContext';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
-import { ModernTechTheme } from '../../components/portfolio/ModernTechTheme';
-import { ExecutiveTheme } from '../../components/portfolio/ExecutiveTheme';
+import { PORTFOLIO_THEMES, renderPortfolioTheme } from '../../components/portfolio/ThemeRegistry';
 
 export const CandidatePortfolioPage = () => {
   const { user } = useAuth();
@@ -228,30 +227,26 @@ export const CandidatePortfolioPage = () => {
             </div>
 
             {/* Theme Selector Pills */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-1">
+            <div className="flex items-center gap-2 overflow-x-auto max-w-full pb-1 sm:pb-0">
+              <span className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-1 shrink-0">
                 <FaPalette className="h-3 w-3 text-cyan-400" /> Theme:
               </span>
-              <button
-                onClick={() => handleThemeSwitch('modern_tech')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  previewTheme === 'modern_tech'
-                    ? 'bg-[#00f0ff] text-slate-950 font-black shadow-[0_0_12px_rgba(0,240,255,0.7)]'
-                    : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'
-                }`}
-              >
-                Theme 1: Modern Tech
-              </button>
-              <button
-                onClick={() => handleThemeSwitch('executive')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  previewTheme === 'executive'
-                    ? 'bg-[#00f0ff] text-slate-950 font-black shadow-[0_0_12px_rgba(0,240,255,0.7)]'
-                    : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800'
-                }`}
-              >
-                Theme 2: Executive
-              </button>
+              <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
+                {PORTFOLIO_THEMES.map((th) => (
+                  <button
+                    key={th.id}
+                    onClick={() => handleThemeSwitch(th.id)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shrink-0 ${
+                      previewTheme === th.id
+                        ? 'bg-[#00f0ff] text-slate-950 shadow-[0_0_15px_rgba(0,240,255,0.7)] scale-105'
+                        : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-cyan-400'
+                    }`}
+                  >
+                    <span className={`h-2.5 w-2.5 rounded-full bg-gradient-to-r ${th.previewGradient}`} />
+                    <span>{th.name}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -284,20 +279,22 @@ export const CandidatePortfolioPage = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
-                <span>Rendering Mode:</span>
-                <span className="text-cyan-400 font-black uppercase">{previewTheme === 'modern_tech' ? 'Theme 1 (Modern Tech SaaS)' : 'Theme 2 (Professional Executive)'}</span>
+                <span>Active Theme:</span>
+                <span className="text-cyan-400 font-black uppercase">
+                  {PORTFOLIO_THEMES.find(t => t.id === previewTheme)?.name || previewTheme}
+                </span>
               </div>
               <div className="flex items-center gap-1.5 bg-slate-200 dark:bg-slate-800 p-1 rounded-lg">
                 <button
                   onClick={() => setPreviewDevice('desktop')}
-                  className={`p-1.5 rounded text-xs ${previewDevice === 'desktop' ? 'bg-white dark:bg-slate-900 text-cyan-400 shadow-xs' : 'text-slate-500'}`}
+                  className={`p-1.5 rounded text-xs ${previewDevice === 'desktop' ? 'bg-white dark:bg-slate-900 text-cyan-400 shadow-xs font-bold' : 'text-slate-500'}`}
                   title="Desktop viewport"
                 >
                   <FaLaptop className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => setPreviewDevice('mobile')}
-                  className={`p-1.5 rounded text-xs ${previewDevice === 'mobile' ? 'bg-white dark:bg-slate-900 text-cyan-400 shadow-xs' : 'text-slate-500'}`}
+                  className={`p-1.5 rounded text-xs ${previewDevice === 'mobile' ? 'bg-white dark:bg-slate-900 text-cyan-400 shadow-xs font-bold' : 'text-slate-500'}`}
                   title="Mobile viewport"
                 >
                   <FaMobileScreen className="h-3.5 w-3.5" />
@@ -308,11 +305,7 @@ export const CandidatePortfolioPage = () => {
             <div className={`mx-auto rounded-[28px] overflow-hidden border-2 border-slate-300 dark:border-[#00f0ff]/50 shadow-2xl transition-all ${
               previewDevice === 'mobile' ? 'max-w-[420px]' : 'w-full'
             }`}>
-              {previewTheme === 'modern_tech' ? (
-                <ModernTechTheme portfolio={portfolio} isPreview={true} />
-              ) : (
-                <ExecutiveTheme portfolio={portfolio} isPreview={true} />
-              )}
+              {renderPortfolioTheme(previewTheme, portfolio, true)}
             </div>
           </div>
         )}

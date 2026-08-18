@@ -188,12 +188,20 @@ export const ModernTechTheme = ({ portfolio, isPreview = false }) => {
             <div className="relative h-48 w-48 sm:h-64 sm:w-64 rounded-3xl p-1.5 bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 shadow-[0_0_35px_rgba(0,240,255,0.5)]">
               <div className="h-full w-full rounded-[22px] overflow-hidden bg-[#070e24] flex items-center justify-center">
                 {hero.avatar ? (
-                  <img src={formatAvatarUrl(hero.avatar)} alt={hero.name} className="h-full w-full object-cover" />
-                ) : (
-                  <span className="text-5xl sm:text-7xl font-black text-cyan-400 drop-shadow-[0_0_15px_#00f0ff]">
-                    {hero.name ? hero.name.charAt(0).toUpperCase() : 'D'}
-                  </span>
-                )}
+                  <img
+                    src={formatAvatarUrl(hero.avatar)}
+                    alt={hero.name || ''}
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <span className={`text-5xl sm:text-7xl font-black text-cyan-400 drop-shadow-[0_0_15px_#00f0ff] ${hero.avatar ? 'hidden' : 'flex'}`}>
+                  {hero.name ? hero.name.charAt(0).toUpperCase() : 'D'}
+                </span>
               </div>
             </div>
 

@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { portfolioService } from '../services';
-import { ModernTechTheme } from '../components/portfolio/ModernTechTheme';
-import { ExecutiveTheme } from '../components/portfolio/ExecutiveTheme';
+import { renderPortfolioTheme } from '../components/portfolio/ThemeRegistry';
 import { PageLoader } from '../components/ui/States';
 import SEOHead from '../components/seo/SEOHead';
 import { FaArrowLeft, FaWandMagicSparkles } from 'react-icons/fa6';
@@ -60,11 +59,7 @@ export const PublicPortfolioPage = () => {
         canonicalUrl={`/portfolio/${portfolio.slug}`}
       />
 
-      {portfolio.theme === 'executive' ? (
-        <ExecutiveTheme portfolio={portfolio} />
-      ) : (
-        <ModernTechTheme portfolio={portfolio} />
-      )}
+      {renderPortfolioTheme(portfolio.theme, portfolio)}
     </>
   );
 };
