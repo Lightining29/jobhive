@@ -16,7 +16,6 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { initials, formatAvatarUrl } from '../../utils/format';
-import ScrollingClock from '../ui/ScrollingClock';
 
 const NAV_LINKS = [
   { to: '/',            label: 'Home',        end: true  },
@@ -232,9 +231,6 @@ const Navbar = () => {
 
           {/* Desktop Auth / Action area */}
           <div className="hidden md:flex items-center gap-2.5">
-            {/* Live Scrolling Clock (Orionix Style) */}
-            <ScrollingClock size="sm" neonColor="pink" showTimezone={false} className="hidden lg:inline-flex !py-1 !px-2.5 !rounded-xl" />
-
             {/* Dark Mode Toggle Button */}
             <button
               type="button"

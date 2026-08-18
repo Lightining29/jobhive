@@ -15,7 +15,6 @@ import {
   FaClock,
 } from 'react-icons/fa6';
 import { FadeIn } from '../ui/Motion';
-import ScrollingClock from '../ui/ScrollingClock';
 import ScrollingNumber from '../ui/ScrollingNumber';
 import LiveSmokeEffect from './LiveSmokeEffect';
 
@@ -83,22 +82,17 @@ export const DarkHeroParallaxScene = () => {
         </div>
       </div>
 
-      {/* ── 3. Centered Cinematic Content Hub (Card Removed) ─────────── */}
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-20 text-center py-6">
+      {/* ── 3. Centered Cinematic Content Hub (Card & Clock Removed) ── */}
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-20 text-center py-8">
         <FadeIn>
           
-          {/* Top Live Scrolling Digital Clock (Orionix Style Number Scroll) */}
-          <div className="flex justify-center mb-6">
-            <ScrollingClock size="md" neonColor="pink" showTimezone={true} />
-          </div>
-
           {/* Night Club Multi-Color Neon Title */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.05] mb-4">
-            <span className="neon-text-pink inline-block mr-3">Night</span>
-            <span className="neon-text-cyan inline-block">Careers</span>
+          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.08] mb-4">
+            <span className="neon-text-pink inline-block mr-3 sm:mr-4">Find Your</span>
+            <span className="neon-text-cyan inline-block">Dream Job</span>
             <br />
-            <span className="text-white font-extrabold text-2xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight mt-3 block">
-              Command Your <span className="neon-text-yellow">Dream Tech Job</span>
+            <span className="neon-text-yellow font-extrabold text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight mt-3 inline-block">
+              Today
             </span>
           </h1>
 
