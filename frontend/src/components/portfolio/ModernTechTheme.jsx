@@ -24,6 +24,7 @@ import {
   FaServer,
   FaCloud,
   FaBrain,
+  FaCertificate,
 } from 'react-icons/fa6';
 import { ProjectDetailModal } from './ProjectDetailModal';
 import { formatAvatarUrl } from '../../utils/format';
