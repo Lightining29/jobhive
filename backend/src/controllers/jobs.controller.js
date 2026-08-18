@@ -1,8 +1,11 @@
+const mongoose = require('mongoose');
 const Job = require('../models/Job');
+const User = require('../models/User');
 const Application = require('../models/Application');
 const Company = require('../models/Company');
 const Notification = require('../models/Notification');
 const Report = require('../models/Report');
+const ApplicationSQL = require('../models/sql/Application.sql');
 const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 const { paginate, buildPagination, parseSalary, parseArray, parseBool, toObjectId } = require('../utils/query');
@@ -360,7 +363,14 @@ const getJob = asyncHandler(async (req, res, next) => {
   let match = null;
   let applied = false;
   if (req.user) {
-    applied = await Application.exists({ job: job._id, candidate: req.user._id });
+    let candidateId = req.user._id || req.user.mongoId;
+    if (!candidateId && req.user.email) {
+      const u = await User.findOne({ email: req.user.email });
+      if (u) candidateId = u._id;
+    }
+    if (candidateId) {
+      applied = await Application.exists({ job: job._id, candidate: candidateId });
+    }
     match = computeMatchScore(req.user, job);
   }
   const related = await Job.find({
@@ -548,16 +558,63 @@ const applyToJob = asyncHandler(async (req, res, next) => {
   const job = await Job.findOne({ _id: req.params.id, isActive: true, isExpired: false });
   if (!job) return next(new ApiError(404, 'Job not found.'));
 
-  const existing = await Application.findOne({ job: job._id, candidate: req.user._id });
+  // Ensure candidate ObjectId in MongoDB
+  let candidateMongo = null;
+  if (req.user) {
+    if (req.user._id && mongoose.isValidObjectId(req.user._id)) {
+      candidateMongo = req.user;
+    } else if (req.user.email) {
+      candidateMongo = await User.findOne({ email: req.user.email });
+      if (!candidateMongo) {
+        candidateMongo = await User.create({
+          name: req.user.name || 'Candidate',
+          email: req.user.email,
+          password: req.user.password || 'synced_candidate',
+          role: req.user.role || 'candidate',
+          emailVerified: true,
+          status: req.user.status || 'active',
+          avatar: req.user.avatar || '',
+          headline: req.user.headline || '',
+          bio: req.user.bio || '',
+          skills: req.user.skills || [],
+        });
+      }
+    }
+  }
+
+  const candidateId = candidateMongo?._id || req.user?._id || req.user?.id;
+  if (!candidateId) {
+    return next(new ApiError(400, 'Candidate profile not identified. Please re-login.'));
+  }
+
+  const existing = await Application.findOne({ job: job._id, candidate: candidateId });
   if (existing) return next(new ApiError(409, 'You have already applied to this job.'));
+
+  const resumeUrl = (req.user.resume && req.user.resume.url) || req.user.resumeUrl || '';
+  const appliedSource = job.source === 'recruiter' ? 'portal' : 'external';
 
   const application = await Application.create({
     job: job._id,
-    candidate: req.user._id,
+    candidate: candidateId,
     coverLetter: req.body.coverLetter || '',
-    resumeUrl: (req.user.resume && req.user.resume.url) || '',
-    appliedSource: job.source === 'recruiter' ? 'portal' : 'external',
+    resumeUrl,
+    appliedSource,
   });
+
+  // Cross sync to MySQL Application table if integer/sql IDs are present
+  try {
+    const sqlCandidateId = Number(req.user.id);
+    if (!isNaN(sqlCandidateId)) {
+      await ApplicationSQL.create({
+        jobId: Number(job.id || job._id) || 1,
+        candidateId: sqlCandidateId,
+        coverLetter: req.body.coverLetter || '',
+        resumeUrl,
+        appliedSource,
+        status: 'pending',
+      });
+    }
+  } catch (err) {}
 
   if (job.postedBy) {
     await Notification.create({
@@ -580,7 +637,15 @@ const applyToJob = asyncHandler(async (req, res, next) => {
 
 const myApplications = asyncHandler(async (req, res) => {
   const { page, limit, skip } = paginate(req.query);
-  const filter = { candidate: req.user._id };
+
+  let candidateId = req.user._id || req.user.mongoId;
+  if (!candidateId && req.user.email) {
+    const u = await User.findOne({ email: req.user.email });
+    if (u) candidateId = u._id;
+  }
+  candidateId = candidateId || req.user.id;
+
+  const filter = { candidate: candidateId };
   if (req.query.status) filter.status = req.query.status;
 
   const [apps, total] = await Promise.all([
@@ -602,10 +667,17 @@ const reportJob = asyncHandler(async (req, res, next) => {
   const exists = await Job.exists({ _id: targetId });
   if (!exists) return next(new ApiError(404, 'Job not found.'));
 
+  let reporterId = req.user._id || req.user.mongoId;
+  if (!reporterId && req.user.email) {
+    const u = await User.findOne({ email: req.user.email });
+    if (u) reporterId = u._id;
+  }
+  reporterId = reporterId || req.user.id;
+
   await Report.create({
     type: 'job',
     targetId,
-    reportedBy: req.user._id,
+    reportedBy: reporterId,
     reason: req.body.reason,
     details: req.body.details || '',
   });

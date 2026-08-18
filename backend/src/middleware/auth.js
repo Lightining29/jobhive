@@ -34,17 +34,61 @@ const clearAuthCookie = (res) => {
 const UserSQL = require('../models/sql/User.sql');
 
 const findUserById = async (id) => {
-  try {
-    const sqlUser = await UserSQL.findByPk(id);
-    if (sqlUser) return sqlUser;
-  } catch (err) {}
+  let user = null;
+  let mongoUser = null;
 
   try {
-    if (User.findById) {
-      return await User.findById(id);
-    }
+    const sqlUser = await UserSQL.findByPk(id);
+    if (sqlUser) user = sqlUser;
   } catch (err) {}
-  return null;
+
+  if (!user) {
+    try {
+      if (User.findById) {
+        user = await User.findById(id);
+      }
+    } catch (err) {}
+    if (!user && User.findOne) {
+      try {
+        user = await User.findOne({ $or: [{ email: id }, { _id: id }] });
+      } catch (err) {}
+    }
+  }
+
+  // Cross sync between SQL and Mongo
+  if (user) {
+    const email = user.email;
+    if (email) {
+      try {
+        if (User.findOne) {
+          mongoUser = await User.findOne({ email });
+          if (!mongoUser && User.create) {
+            mongoUser = await User.create({
+              name: user.name || 'User',
+              email: user.email,
+              password: user.password || 'synced_account',
+              role: user.role || 'candidate',
+              emailVerified: true,
+              status: user.status || 'active',
+              avatar: user.avatar || '',
+              headline: user.headline || '',
+              bio: user.bio || '',
+              skills: user.skills || [],
+            });
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (mongoUser) {
+      user._id = mongoUser._id;
+      user.mongoId = mongoUser._id;
+    } else if (!user._id) {
+      user._id = user.id;
+    }
+  }
+
+  return user;
 };
 
 const protect = async (req, res, next) => {
