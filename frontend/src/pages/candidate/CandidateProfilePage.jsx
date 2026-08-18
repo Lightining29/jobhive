@@ -9,7 +9,6 @@ import {
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { candidateService } from '../../services';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
 import { initials, formatAvatarUrl } from '../../utils/format';
 import { SAMPLE_SKILLS } from '../../utils/constants';
 import AIFillModal from '../../components/voice/AIFillModal';
@@ -20,7 +19,6 @@ const initialCertification = { name: '', issuer: '', year: '' };
 
 const CandidateProfilePage = () => {
   const { setUser, refreshUser, user } = useAuth();
-  const { isNeon } = useTheme();
   const [profile, setProfile] = useState(null);
   const [completion, setCompletion] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -285,9 +283,7 @@ const CandidateProfilePage = () => {
                 <img
                   src={formatAvatarUrl(profile.avatar)}
                   alt={profile?.name || 'Avatar'}
-                  className={`h-20 w-20 rounded-full object-cover border-2 ${
-                    isNeon ? 'border-cyan-400 shadow-[0_0_15px_rgba(0,240,255,0.7)]' : 'border-accent shadow-md'
-                  }`}
+                  className="h-20 w-20 rounded-full object-cover border-2 border-primary-500 shadow-md"
                   onError={(e) => {
                     e.target.style.display = 'none';
                     if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
@@ -295,22 +291,14 @@ const CandidateProfilePage = () => {
                 />
               ) : null}
               <div
-                className={`h-20 w-20 rounded-full items-center justify-center text-2xl font-black ${
+                className={`h-20 w-20 rounded-full items-center justify-center text-2xl font-black bg-primary-50 border-2 border-primary-300 text-primary-700 ${
                   profile?.avatar ? 'hidden' : 'flex'
-                } ${
-                  isNeon
-                    ? 'bg-slate-900 border-2 border-cyan-400/80 text-cyan-300 shadow-[0_0_15px_rgba(0,240,255,0.6)]'
-                    : 'bg-primary-50 border-2 border-accent text-primary'
                 }`}
               >
                 {initials(profile?.name || user?.name || 'User')}
               </div>
               <label
-                className={`absolute -bottom-1 -right-1 h-7 w-7 rounded-full flex items-center justify-center cursor-pointer shadow-md transition-transform hover:scale-110 ${
-                  isNeon
-                    ? 'bg-cyan-400 text-slate-950 shadow-[0_0_10px_rgba(0,240,255,0.85)] hover:bg-cyan-300'
-                    : 'bg-ink text-white hover:bg-gray-700'
-                }`}
+                className="absolute -bottom-1 -right-1 h-7 w-7 rounded-full flex items-center justify-center cursor-pointer shadow-md transition-transform hover:scale-110 bg-primary-600 text-white hover:bg-primary-700"
               >
                 <FaPlus className="h-3.5 w-3.5" />
                 <input
