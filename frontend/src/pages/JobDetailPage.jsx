@@ -301,35 +301,34 @@ const JobDetailPage = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 pb-24 md:pb-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
       <SEOHead
-        title={pageMetaTitle}
-        description={pageMetaDesc}
-        keywords={[job.jobTitle, job.companyName, ...(job.requiredSkills || []), 'jobs', 'careers', job.category, job.workMode].filter(Boolean)}
-        schema={jobPostingSchema}
-        ogType="article"
+        title={`${job.jobTitle} at ${job.companyName || 'Top Company'} | Job Workplace`}
+        description={`Apply for ${job.jobTitle} position at ${job.companyName || 'Job Workplace'}. ${job.location ? `Location: ${job.location}.` : ''} Find full job details and qualifications.`}
+        canonicalUrl={`/jobs/${job._id}`}
       />
-      <button onClick={() => navigate(-1)} className="btn-ghost !pl-2 mb-4 md:mb-6">
-        <FaArrowLeft className="h-4 w-4" /> Back
+
+      <button onClick={() => navigate(-1)} className="btn-ghost text-sm mb-6 inline-flex items-center gap-2 font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+        <FaArrowLeft className="h-3.5 w-3.5" /> Back
       </button>
 
-      <div className="card p-5 sm:p-6 md:p-8 overflow-hidden">
-        <div className="flex flex-col sm:flex-row sm:items-start gap-5">
-          <CompanyLogo logo={job.companyLogo} name={job.companyName} size="lg" className="mx-auto sm:mx-0" />
-          <div className="flex-1 min-w-0 text-center sm:text-left">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-ink leading-tight">{job.jobTitle}</h1>
-            <p className="text-muted mt-1">{job.companyName}</p>
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-3 gap-y-2 mt-3 text-sm text-muted">
-              {job.location && <span className="flex items-center gap-1.5"><FaLocationDot className="h-3.5 w-3.5 text-ink" /> {job.location}</span>}
-              {job.workMode && <span className="flex items-center gap-1.5"><FaBriefcase className="h-3.5 w-3.5 text-ink" /> {WORK_MODE_LABELS[job.workMode]}</span>}
-              <span className="flex items-center gap-1.5"><FaClock className="h-3.5 w-3.5 text-ink" /> Posted {timeAgo(job.postedDate)}</span>
+      <div className="card p-6 sm:p-8 rounded-[24px]">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 pb-6 border-b border-slate-200 dark:border-slate-800">
+          <CompanyLogo logo={job.companyLogo} name={job.companyName} size="lg" className="mx-auto sm:mx-0 shrink-0" />
+          <div className="min-w-0 flex-1 text-center sm:text-left">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">{job.jobTitle}</h1>
+            <p className="text-slate-600 dark:text-cyan-300 font-bold mt-1">{job.companyName}</p>
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-2 mt-3 text-sm text-slate-500 dark:text-slate-300">
+              {job.location && <span className="flex items-center gap-1.5 font-medium"><FaLocationDot className="h-3.5 w-3.5 text-cyan-400" /> {job.location}</span>}
+              {job.workMode && <span className="flex items-center gap-1.5 font-medium"><FaBriefcase className="h-3.5 w-3.5 text-amber-400" /> {WORK_MODE_LABELS[job.workMode]}</span>}
+              <span className="flex items-center gap-1.5 font-medium"><FaClock className="h-3.5 w-3.5 text-slate-400" /> Posted {timeAgo(job.postedDate)}</span>
             </div>
             <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-4">
-              <span className="badge bg-accent text-ink font-semibold"><FaSackDollar className="h-3 w-3" /> {formatSalary(job)}</span>
-              {job.employmentType && <span className="badge bg-gray-100 text-muted border border-line">{EMPLOYMENT_LABELS[job.employmentType]}</span>}
-              {job.experienceLevel && <span className="badge bg-gray-100 text-muted border border-line">{capitalize(job.experienceLevel)}</span>}
-              {job.category && <span className="badge bg-gray-100 text-muted border border-line capitalize">{job.category}</span>}
-              <span className="badge bg-gray-100 text-muted border border-line capitalize">{job.source}</span>
+              <span className="badge bg-amber-400 text-slate-950 font-bold"><FaSackDollar className="h-3 w-3" /> {formatSalary(job)}</span>
+              {job.employmentType && <span className="badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">{EMPLOYMENT_LABELS[job.employmentType]}</span>}
+              {job.experienceLevel && <span className="badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">{capitalize(job.experienceLevel)}</span>}
+              {job.category && <span className="badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 capitalize">{job.category}</span>}
+              <span className="badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 capitalize">{job.source}</span>
             </div>
           </div>
           <div className="hidden md:flex md:flex-col gap-2 shrink-0">
@@ -338,21 +337,21 @@ const JobDetailPage = () => {
         </div>
 
         {match && (
-          <div className="mt-6 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-accent-light to-white border border-accent/40">
+          <div className="mt-6 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#070e24] border border-amber-300 dark:border-cyan-500/40 dark:shadow-[0_0_15px_rgba(0,240,255,0.2)]">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
-                <p className="font-bold text-lg text-ink">{match.score}% Match</p>
-                <p className="text-sm text-muted mt-0.5">{match.reason}</p>
+                <p className="font-extrabold text-lg text-slate-900 dark:text-white">{match.score}% Match</p>
+                <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">{match.reason}</p>
               </div>
-              <span className={`badge border px-3 py-1.5 text-sm ${matchColor(match.score)}`}>{match.score}%</span>
+              <span className={`badge border px-3 py-1.5 text-sm font-bold ${matchColor(match.score)}`}>{match.score}%</span>
             </div>
             {(match.matchingSkills?.length > 0 || match.missingSkills?.length > 0) && (
               <div className="flex flex-wrap gap-2 mt-3">
                 {match.matchingSkills.slice(0, 5).map((s) => (
-                  <span key={s} className="badge bg-emerald-50 text-emerald-700 border border-emerald-200">+ {s}</span>
+                  <span key={s} className="badge bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-500/40 font-semibold">+ {s}</span>
                 ))}
                 {match.missingSkills.slice(0, 5).map((s) => (
-                  <span key={s} className="badge bg-red-50 text-red-500 border border-red-200">- {s}</span>
+                  <span key={s} className="badge bg-red-50 text-red-600 border border-red-200 dark:bg-red-950/50 dark:text-rose-300 dark:border-rose-500/40 font-semibold">- {s}</span>
                 ))}
               </div>
             )}
@@ -367,8 +366,8 @@ const JobDetailPage = () => {
         </div>
 
         <div className="mt-8">
-          <h2 className="font-bold text-lg text-ink mb-4 flex items-center gap-2">
-            <span className="h-5 w-1.5 rounded-full bg-gradient-to-b from-accent to-accent-dark" />
+          <h2 className="font-extrabold text-lg text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <span className="h-5 w-1.5 rounded-full bg-gradient-to-b from-amber-400 to-amber-600" />
             Job Description
           </h2>
           <div className="space-y-5">
@@ -378,19 +377,19 @@ const JobDetailPage = () => {
               return (
                 <div key={section.key}>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={`h-6 w-6 rounded-md bg-gradient-to-br ${colorCls} flex items-center justify-center`}>
+                    <span className={`h-6 w-6 rounded-md bg-gradient-to-br ${colorCls} flex items-center justify-center shrink-0`}>
                       <IconComp className="h-3.5 w-3.5 text-white" />
                     </span>
-                    <h3 className="font-semibold text-sm text-ink">{section.label}</h3>
+                    <h3 className="font-bold text-sm text-slate-900 dark:text-white">{section.label}</h3>
                   </div>
                   <div className="ml-8 space-y-1.5">
                     {section.items.length === 1 ? (
-                      <p className="text-[14px] leading-relaxed text-gray-600">{section.items[0]}</p>
+                      <p className="text-[14px] leading-relaxed text-slate-700 dark:text-slate-200">{section.items[0]}</p>
                     ) : (
                       <ul className="space-y-1.5">
                         {section.items.map((item, i) => (
-                          <li key={i} className="flex items-start gap-2 text-[14px] leading-relaxed text-gray-600">
-                            <span className="h-1.5 w-1.5 rounded-full bg-accent mt-2 shrink-0" />
+                          <li key={i} className="flex items-start gap-2 text-[14px] leading-relaxed text-slate-700 dark:text-slate-200">
+                            <span className="h-1.5 w-1.5 rounded-full bg-amber-400 mt-2 shrink-0" />
                             <span>{item}</span>
                           </li>
                         ))}
@@ -405,10 +404,12 @@ const JobDetailPage = () => {
 
         {job.requiredSkills?.length > 0 && (
           <div className="mt-8">
-            <h2 className="font-bold text-lg text-ink mb-3">Required Skills</h2>
+            <h2 className="font-extrabold text-lg text-slate-900 dark:text-white mb-3">Required Skills</h2>
             <div className="flex flex-wrap gap-2">
               {job.requiredSkills.map((s) => (
-                <span key={s} className="badge bg-gray-50 text-ink border border-line">{s}</span>
+                <span key={s} className="badge bg-slate-100 text-slate-900 border-slate-200 dark:bg-[#070e24] dark:text-cyan-300 dark:border-[#00f0ff]/50 dark:shadow-[0_0_10px_rgba(0,240,255,0.25)] font-semibold">
+                  {s}
+                </span>
               ))}
             </div>
           </div>

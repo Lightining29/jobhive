@@ -76,7 +76,8 @@ const CandidateDashboardPage = () => {
   const navItems = [
     { to: '/candidate/dashboard',    label: 'Overview',        icon: FaGaugeHigh, end: true },
     { to: '/candidate/profile',      label: 'My Profile',      icon: FaUser },
-    { to: '/candidate/recommended',  label: 'Recommended Jobs',icon: FaWandMagicSparkles },
+    { to: '/candidate/portfolio',    label: 'AI Portfolio Studio', icon: FaWandMagicSparkles },
+    { to: '/candidate/recommended',  label: 'Recommended Jobs',icon: FaBolt },
     { to: '/candidate/saved-jobs',   label: 'Saved Jobs',      icon: FaRegBookmark },
     { to: '/candidate/applications', label: 'My Applications', icon: FaBriefcase },
     { to: '/candidate/resume',       label: 'Resume Hub',      icon: FaFileArrowUp },
@@ -92,6 +93,31 @@ const CandidateDashboardPage = () => {
           <StatCard icon={FaFileArrowUp}  label="Resume ATS Score" value={`${resumeScore}/100`}     to="/candidate/resume"       themeIdx={1} />
           <StatCard icon={FaRegBookmark}  label="Saved Jobs"       value={stats.saved}              to="/candidate/saved-jobs"   themeIdx={2} />
           <StatCard icon={FaBriefcase}    label="Applications"     value={stats.applied}            to="/candidate/applications" themeIdx={3} />
+        </div>
+
+        {/* ── 1-Click AI Portfolio Studio Banner ── */}
+        <div className="p-6 sm:p-7 rounded-[24px] bg-gradient-to-r from-[#040816] via-[#071330] to-[#040816] border-2 border-[#00f0ff] shadow-[0_0_30px_rgba(0,240,255,0.35)] flex flex-col md:flex-row items-start md:items-center justify-between gap-5 relative overflow-hidden">
+          <div className="relative z-10 max-w-xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-400/40 text-cyan-300 text-xs font-black mb-3">
+              <FaWandMagicSparkles className="h-3 w-3 text-cyan-400" />
+              <span>CORE FEATURE • 1-CLICK AI PORTFOLIO</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-black text-white dark:neon-text-cyan leading-tight">
+              Create Your Live Recruiter Portfolio
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 font-medium mt-1.5 leading-relaxed">
+              Transform your profile into an interactive, multi-theme developer portfolio website with instant public link and QR sharing.
+            </p>
+          </div>
+          <div className="relative z-10 shrink-0 w-full md:w-auto">
+            <Link
+              to="/candidate/portfolio"
+              className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-black text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 hover:scale-105 shadow-[0_0_20px_rgba(0,240,255,0.7)] transition-all"
+            >
+              <FaWandMagicSparkles className="h-3.5 w-3.5" />
+              Launch Portfolio Studio →
+            </Link>
+          </div>
         </div>
 
         {/* ── Profile Completion Glow Banner ── */}

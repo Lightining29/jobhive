@@ -56,6 +56,9 @@ const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'));
 const AdminICardStudioPage = lazy(() => import('./pages/admin/AdminICardStudioPage'));
 const VerifyCardPage = lazy(() => import('./pages/public/VerifyCardPage'));
 
+const CandidatePortfolioPage = lazy(() => import('./pages/candidate/CandidatePortfolioPage'));
+const PublicPortfolioPage = lazy(() => import('./pages/PublicPortfolioPage'));
+
 const withSuspense = (el) => <ErrorBoundary><Suspense fallback={<PageLoader />}>{el}</Suspense></ErrorBoundary>;
 
 const App = () => (
@@ -65,6 +68,7 @@ const App = () => (
         <BrowserRouter>
         <Toaster position="top-right" toastOptions={{ style: { borderRadius: '12px', fontSize: '14px' } }} />
         <Routes>
+          <Route path="/portfolio/:slug" element={withSuspense(<PublicPortfolioPage />)} />
           <Route element={<MainLayout />}>
             <Route path="/" element={withSuspense(<HomePage />)} />
             <Route path="/jobs" element={withSuspense(<JobsPage />)} />
@@ -92,6 +96,7 @@ const App = () => (
             <Route element={<ProtectedRoute roles={['candidate']} />}>
               <Route path="/candidate/dashboard" element={withSuspense(<CandidateDashboardPage />)} />
               <Route path="/candidate/profile" element={withSuspense(<CandidateProfilePage />)} />
+              <Route path="/candidate/portfolio" element={withSuspense(<CandidatePortfolioPage />)} />
               <Route path="/candidate/recommended" element={withSuspense(<RecommendedJobsPage />)} />
               <Route path="/candidate/saved-jobs" element={withSuspense(<SavedJobsPage />)} />
               <Route path="/candidate/applications" element={withSuspense(<MyApplicationsPage />)} />

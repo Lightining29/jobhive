@@ -191,15 +191,15 @@ const Navbar = () => {
   );
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs transition-colors duration-300">
+    <header className="sticky top-0 z-40 bg-white/75 dark:bg-[#030712]/50 backdrop-blur-2xl border-b border-slate-200/60 dark:border-[#00f0ff]/50 dark:shadow-[0_4px_25px_rgba(0,240,255,0.25)] transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-            <span className="relative h-10 w-10 flex items-center justify-center bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-500 text-slate-950 rounded-xl shadow-md border border-amber-300 group-hover:scale-105 transition-transform duration-300">
+            <span className="relative h-10 w-10 flex items-center justify-center bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-500 text-slate-950 rounded-xl shadow-md border border-amber-300 dark:shadow-[0_0_12px_rgba(0,240,255,0.6)] dark:border-[#00f0ff] group-hover:scale-105 transition-transform duration-300">
               <FaHexagonNodes className="h-5 w-5 text-slate-950" />
             </span>
             <div className="flex flex-col leading-tight">
-              <span className="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white">
+              <span className="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white dark:neon-text-cyan">
                 Job Workplace
               </span>
               <span className="text-xs sm:text-sm font-bold tracking-tight">
@@ -219,8 +219,8 @@ const Navbar = () => {
                 className={({ isActive }) =>
                   `px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-300 ${
                     isActive
-                      ? 'bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300 shadow-xs font-bold'
-                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                      ? 'bg-primary-50 dark:bg-[#00f0ff]/15 text-primary-700 dark:text-[#00f0ff] dark:neon-text-cyan dark:border dark:border-[#00f0ff]/40 shadow-xs font-black'
+                      : 'text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-cyan-500/10 hover:text-slate-900 dark:hover:text-[#00f0ff]'
                   }`
                 }
               >

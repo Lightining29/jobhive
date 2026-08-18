@@ -112,6 +112,7 @@ app.use('/api/resume',             require('./routes/resumeAnalyzer.routes'));
 app.use('/api/news',      require('./routes/careerNews.routes'));
 app.use('/api/cards', apiLimiter, require('./routes/cards.routes'));
 app.use('/api/ai',    apiLimiter, require('./routes/ai.routes'));
+app.use('/api/portfolio', require('./routes/portfolio.routes'));
 
 // ── Dynamic SEO Endpoints (Strictly No-Localhost in Sitemaps) ───────
 const resolveProductionSiteUrl = (req) => {

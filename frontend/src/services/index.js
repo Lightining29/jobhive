@@ -152,4 +152,12 @@ const notificationService = {
   readOne: (id) => api.patch(`/notifications/${id}/read`),
 };
 
-export { authService, jobService, candidateService, recruiterService, adminService, notificationService };
+const portfolioService = {
+  get: () => api.get('/portfolio'),
+  generate: () => api.post('/portfolio/generate'),
+  update: (data) => api.put('/portfolio', data),
+  getPublic: (slug) => api.get(`/portfolio/public/${slug}`),
+};
+
+export { authService, jobService, candidateService, recruiterService, adminService, notificationService, portfolioService };
+
