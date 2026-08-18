@@ -27,7 +27,7 @@ const MarqueeJobItem = ({ job, neonColor = 'pink' }) => {
   const activeCardClass = neonCardClasses[neonColor] || neonCardClasses.cyan;
 
   return (
-    <div className={`w-[320px] sm:w-[360px] shrink-0 p-5 rounded-[24px] bg-white dark:!bg-[#040816] ${activeCardClass} border border-slate-200 shadow-xl transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden will-change-transform`}>
+    <div className="w-[320px] sm:w-[360px] shrink-0 p-5 rounded-[24px] bg-white dark:!bg-[#040816] dark:neon-playing-card-cyan border border-slate-200 dark:border-[#00f0ff] shadow-xl transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden will-change-transform">
       {/* Playing Card Top Corner Neon Suit Mark */}
       <div className="absolute top-2.5 right-3 text-[10px] font-black text-cyan-400/50 select-none pointer-events-none">
         ✦
@@ -41,7 +41,7 @@ const MarqueeJobItem = ({ job, neonColor = 'pink' }) => {
           <div className="min-w-0">
             <Link
               to={`/jobs/${job._id}`}
-              className="font-black text-sm text-slate-900 dark:text-white dark:neon-text-cyan truncate block group-hover:neon-text-pink transition-all drop-shadow-sm"
+              className="font-black text-sm text-slate-900 dark:text-white dark:neon-text-cyan truncate block group-hover:text-cyan-300 transition-all drop-shadow-sm"
             >
               {job.jobTitle}
             </Link>
@@ -54,7 +54,7 @@ const MarqueeJobItem = ({ job, neonColor = 'pink' }) => {
         </div>
 
         {job.workMode && (
-          <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-pink-500/10 dark:neon-badge-yellow">
+          <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-cyan-500/10 dark:neon-badge-yellow">
             {job.workMode}
           </span>
         )}
@@ -62,7 +62,7 @@ const MarqueeJobItem = ({ job, neonColor = 'pink' }) => {
 
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100 dark:border-cyan-500/30 text-xs">
         <div className="flex items-center gap-1.5 font-black text-emerald-600 dark:text-emerald-300 dark:drop-shadow-[0_0_8px_#00ff88]">
-          <FaSackDollar className="h-3.5 w-3.5" />
+          <FaSackDollar className="h-3.5 w-3.5 text-emerald-400" />
           <span>{salary !== 'Not specified' ? salary : 'Competitive'}</span>
         </div>
 
@@ -90,12 +90,12 @@ const MarqueeJobItem = ({ job, neonColor = 'pink' }) => {
 
       <div className="mt-4 flex items-center justify-between pt-1">
         <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-300 flex items-center gap-1 truncate">
-          <FaLocationDot className="h-3 w-3 text-pink-400" />
+          <FaLocationDot className="h-3 w-3 text-cyan-400" />
           {job.location || 'Remote'}
         </span>
         <Link
           to={`/jobs/${job._id}`}
-          className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-slate-900 text-white dark:bg-gradient-to-r dark:from-[#ff2d87] dark:to-rose-600 hover:scale-105 transition-all flex items-center gap-1 shadow-md dark:shadow-[0_0_15px_rgba(255,45,135,0.7)]"
+          className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-slate-900 text-white dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 hover:scale-105 transition-all flex items-center gap-1 shadow-md dark:shadow-[0_0_15px_rgba(0,240,255,0.7)]"
         >
           View Role
           <FaArrowRight className="h-2.5 w-2.5" />

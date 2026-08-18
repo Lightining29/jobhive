@@ -14,9 +14,9 @@ import { STATUS_COLORS, capitalize } from '../../utils/format';
 
 const STAT_CARD_THEMES = [
   { cardClass: 'dark:neon-playing-card-cyan', textClass: 'dark:neon-text-cyan', badgeClass: 'dark:neon-badge-cyan' },
-  { cardClass: 'dark:neon-playing-card-pink', textClass: 'dark:neon-text-pink', badgeClass: 'dark:neon-badge-pink' },
+  { cardClass: 'dark:neon-playing-card-cyan', textClass: 'dark:neon-text-cyan', badgeClass: 'dark:neon-badge-cyan' },
   { cardClass: 'dark:neon-playing-card-yellow', textClass: 'dark:neon-text-yellow', badgeClass: 'dark:neon-badge-yellow' },
-  { cardClass: 'dark:neon-playing-card-purple', textClass: 'dark:neon-text-pink', badgeClass: 'dark:neon-badge-pink' },
+  { cardClass: 'dark:neon-playing-card-cyan', textClass: 'dark:neon-text-cyan', badgeClass: 'dark:neon-badge-cyan' },
 ];
 
 const StatCard = ({ icon: Icon, label, value, to, themeIdx = 0 }) => {
@@ -24,16 +24,16 @@ const StatCard = ({ icon: Icon, label, value, to, themeIdx = 0 }) => {
   return (
     <Link
       to={to}
-      className={`card card-hover p-5 flex items-center gap-4 rounded-[22px] ${theme.cardClass} shadow-lg transition-all duration-300 hover:scale-105 relative overflow-hidden`}
+      className={`card card-hover p-5 flex items-center gap-4 rounded-[22px] bg-white dark:!bg-[#040816] ${theme.cardClass} shadow-lg transition-all duration-300 hover:scale-105 relative overflow-hidden`}
     >
-      <span className={`h-12 w-12 rounded-xl flex items-center justify-center bg-slate-100 dark:bg-black/40 ${theme.badgeClass} shadow-md shrink-0`}>
+      <span className={`h-12 w-12 rounded-xl flex items-center justify-center bg-slate-100 dark:bg-black/60 ${theme.badgeClass} shadow-md shrink-0`}>
         <Icon className="h-5 w-5" />
       </span>
       <div className="min-w-0">
         <p className={`text-2xl sm:text-3xl font-black ${theme.textClass} text-slate-900 tracking-tight`}>
           {value}
         </p>
-        <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-300 truncate mt-0.5">
+        <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-200 truncate mt-0.5">
           {label}
         </p>
       </div>
@@ -86,7 +86,7 @@ const CandidateDashboardPage = () => {
     <DashboardLayout title={`Welcome, ${user?.name?.split(' ')[0]}`} subtitle="Real-time career telemetry and opportunity pipeline" navItems={navItems}>
       <div className="space-y-7">
         
-        {/* ── 4 Telemetry Stat Cards with Distinct Neon Playing Card Themes ── */}
+        {/* ── 4 Telemetry Stat Cards with Distinct Sky Blue & Gold Themes ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           <StatCard icon={FaGaugeHigh}    label="Profile Match"   value={`${profileCompletion}%`}  to="/candidate/profile"      themeIdx={0} />
           <StatCard icon={FaFileArrowUp}  label="Resume ATS Score" value={`${resumeScore}/100`}     to="/candidate/resume"       themeIdx={1} />
@@ -96,23 +96,23 @@ const CandidateDashboardPage = () => {
 
         {/* ── Profile Completion Glow Banner ── */}
         {profileCompletion < 100 && (
-          <div className="p-6 rounded-[24px] bg-white dark:neon-playing-card-pink border border-slate-200 shadow-xl">
+          <div className="p-6 rounded-[24px] bg-white dark:!bg-[#040816] dark:neon-playing-card-cyan border border-slate-200 shadow-xl">
             <div className="flex items-center justify-between mb-3">
               <p className="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <FaBolt className="h-4 w-4 text-pink-400" />
+                <FaBolt className="h-4 w-4 text-cyan-400" />
                 Complete your profile to unlock 98.7% AI Job Matching
               </p>
-              <span className="text-sm font-black dark:neon-text-pink text-pink-600">{profileCompletion}%</span>
+              <span className="text-sm font-black dark:neon-text-cyan text-cyan-500">{profileCompletion}%</span>
             </div>
-            <div className="h-2.5 bg-slate-100 dark:bg-black/60 rounded-full overflow-hidden p-0.5 border border-slate-200 dark:border-pink-500/40">
+            <div className="h-2.5 bg-slate-100 dark:bg-black/60 rounded-full overflow-hidden p-0.5 border border-slate-200 dark:border-cyan-500/40">
               <div
-                className="h-full bg-gradient-to-r from-pink-500 via-rose-400 to-amber-300 rounded-full shadow-[0_0_12px_#ff2d87] transition-all duration-700"
+                className="h-full bg-gradient-to-r from-cyan-500 via-sky-400 to-amber-300 rounded-full shadow-[0_0_12px_#00f0ff] transition-all duration-700"
                 style={{ width: `${profileCompletion}%` }}
               />
             </div>
             <div className="mt-4 flex justify-between items-center">
-              <span className="text-xs text-slate-500 dark:text-pink-300/80 font-medium">Add your tech stack & past experience</span>
-              <Link to="/candidate/profile" className="inline-flex items-center gap-1.5 text-xs font-black text-white px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 shadow-[0_0_15px_rgba(255,45,135,0.6)] hover:scale-105 transition-all">
+              <span className="text-xs text-slate-500 dark:text-slate-200 font-semibold">Add your tech stack & past experience</span>
+              <Link to="/candidate/profile" className="inline-flex items-center gap-1.5 text-xs font-black text-slate-950 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-sky-500 shadow-[0_0_15px_rgba(0,240,255,0.6)] hover:scale-105 transition-all">
                 Complete profile <FaArrowRight className="h-3 w-3" />
               </Link>
             </div>

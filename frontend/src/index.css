@@ -250,9 +250,61 @@
   .label {
     display: block;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
     color: #0F172A;
     margin-bottom: 0.375rem;
+  }
+
+  /* Global Dark Mode Form & Text Overrides */
+  .dark .input,
+  .dark .input-lg,
+  .dark input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='submit']):not([type='button']),
+  .dark textarea,
+  .dark select {
+    background-color: #080C1B !important;
+    border: 1.5px solid rgba(0, 240, 255, 0.45) !important;
+    color: #FFFFFF !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;
+  }
+  .dark .input:focus,
+  .dark .input-lg:focus,
+  .dark input:focus,
+  .dark textarea:focus,
+  .dark select:focus {
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.3), inset 0 2px 4px rgba(0,0,0,0.5) !important;
+  }
+  .dark .input::placeholder,
+  .dark .input-lg::placeholder,
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: #94A3B8 !important;
+  }
+  .dark .label,
+  .dark label {
+    color: #F1F5F9 !important;
+  }
+  .dark .text-ink {
+    color: #FFFFFF !important;
+  }
+  .dark .text-muted {
+    color: #CBD5E1 !important;
+  }
+  .dark .text-slate-900,
+  .dark .text-slate-800,
+  .dark .text-slate-700 {
+    color: #F8FAFC !important;
+  }
+  .dark .text-slate-600,
+  .dark .text-slate-500 {
+    color: #CBD5E1 !important;
+  }
+  .dark .bg-white {
+    background-color: #080C1B !important;
+  }
+  .dark .border-slate-200,
+  .dark .border-slate-100 {
+    border-color: rgba(0, 240, 255, 0.25) !important;
   }
   .badge {
     display: inline-flex;
