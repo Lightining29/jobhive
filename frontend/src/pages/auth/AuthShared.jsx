@@ -1,71 +1,94 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaShieldHalved, FaBolt, FaUserCheck } from 'react-icons/fa6';
-import { FaHexagonNodes } from 'react-icons/fa6';
+import {
+  FaEnvelope,
+  FaLock,
+  FaEye,
+  FaEyeSlash,
+  FaBolt,
+  FaHexagonNodes,
+  FaFire,
+} from 'react-icons/fa6';
+import { useTheme } from '../../context/ThemeContext';
 
-export const AuthLayout = ({ title, subtitle, children }) => {
+export const AuthLayout = ({ title = 'Welcome back', subtitle, children, isRegister = false }) => {
+  const { isDark } = useTheme();
+
   return (
-    <div className="min-h-screen w-full flex items-center justify-center px-4 py-8 sm:py-12 bg-gradient-to-br from-slate-50 via-sky-50/40 to-indigo-50/30 relative">
-      <div className="relative w-full max-w-5xl mx-auto z-10 my-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+    <div className="min-h-screen w-full flex items-center justify-center px-4 py-8 sm:py-14 relative overflow-hidden bg-gradient-to-br from-slate-100 via-sky-50/50 to-indigo-50/40 dark:from-[#050814] dark:via-[#090e24] dark:to-[#050814] transition-colors duration-300">
+      
+      {/* Ambient Grainy Mesh Gradients in Background (Matching Reference) */}
+      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-600/20 dark:bg-blue-600/25 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/20 dark:bg-emerald-500/25 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-amber-500/20 dark:bg-amber-500/25 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/20 dark:bg-purple-600/25 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Main Floating Auth Card (Matches Desktop & Mobile Reference Images) */}
+      <div className="relative w-full max-w-4xl mx-auto z-10 rounded-[32px] sm:rounded-[38px] bg-white dark:bg-[#09090d] border border-slate-200 dark:border-white/10 shadow-2xl dark:shadow-[0_25px_80px_rgba(0,0,0,0.95)] overflow-hidden transition-all duration-300">
+        <div className="grid grid-cols-1 md:grid-cols-12 min-h-[560px]">
           
-          {/* Left Column: Branding & Feature Badges */}
-          <div className="hidden lg:flex lg:col-span-6 flex-col justify-between space-y-8 pr-4">
-            <div>
-              <Link to="/" className="inline-flex items-center gap-2.5 mb-6 group">
-                <span className="relative h-11 w-11 flex items-center justify-center bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-500 rounded-xl text-slate-950 shadow-md border border-amber-300 group-hover:scale-105 transition-transform duration-300">
-                  <FaHexagonNodes className="h-6 w-6 text-slate-950" />
-                </span>
-                <div className="flex flex-col leading-tight">
-                  <span className="text-2xl font-black text-slate-900 tracking-wide">JobHive</span>
-                  <span className="text-[11px] font-bold text-amber-600 tracking-widest uppercase">Career Portal</span>
+          {/* ── LEFT COLUMN (Desktop): 3D Voxel Landscape Artwork Card ── */}
+          <div className="hidden md:flex md:col-span-5 p-4 sm:p-5">
+            <div className="relative w-full h-full rounded-[26px] overflow-hidden group shadow-lg">
+              <img
+                src="/assets/auth-voxel-art.jpg"
+                alt="Job Workplace AI Fantasy Landscape"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+              />
+              {/* Bottom Gradient Fade over artwork */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none" />
+
+              {/* Artwork Brand Overlay (Matches Wava AI in Reference) */}
+              <div className="absolute bottom-6 left-6 right-6 text-white z-10">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="h-7 w-7 rounded-lg bg-pink-500/30 border border-pink-400 flex items-center justify-center text-pink-400 shadow-[0_0_10px_rgba(255,45,135,0.5)]">
+                    <FaFire className="h-4 w-4" />
+                  </span>
+                  <span className="text-lg font-black tracking-tight text-white flex items-center gap-1">
+                    Job Workplace <span className="text-xs px-1.5 py-0.5 rounded bg-white/20 font-bold border border-white/20">AI</span>
+                  </span>
                 </div>
-              </Link>
-
-              <h2 className="text-4xl xl:text-5xl font-black text-slate-900 leading-tight mb-3">
-                Welcome <span className="text-primary-600">Back!</span>
-              </h2>
-              <p className="text-slate-600 text-sm xl:text-base leading-relaxed max-w-md">
-                Sign in to discover opportunities, connect with top employers, and accelerate your career.
-              </p>
-            </div>
-
-            {/* Feature Badges */}
-            <div className="grid grid-cols-3 gap-3 pt-2">
-              <div className="bg-white border border-slate-200/80 rounded-2xl p-4 text-center shadow-sm">
-                <FaShieldHalved className="h-5 w-5 text-primary-600 mx-auto mb-1.5" />
-                <p className="text-xs font-bold text-slate-900">Secure</p>
-                <p className="text-[10px] text-slate-500 leading-tight mt-0.5">Encrypted & verified</p>
-              </div>
-              <div className="bg-white border border-slate-200/80 rounded-2xl p-4 text-center shadow-sm">
-                <FaBolt className="h-5 w-5 text-amber-500 mx-auto mb-1.5" />
-                <p className="text-xs font-bold text-slate-900">Fast</p>
-                <p className="text-[10px] text-slate-500 leading-tight mt-0.5">1-click applications</p>
-              </div>
-              <div className="bg-white border border-slate-200/80 rounded-2xl p-4 text-center shadow-sm">
-                <FaUserCheck className="h-5 w-5 text-emerald-600 mx-auto mb-1.5" />
-                <p className="text-xs font-bold text-slate-900">AI Matched</p>
-                <p className="text-[10px] text-slate-500 leading-tight mt-0.5">Personalized jobs</p>
+                <p className="text-xs text-slate-300 font-medium">
+                  Your all-in-one career automation.
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Clean Light Auth Card */}
-          <div className="lg:col-span-6 w-full max-w-md mx-auto">
-            {/* Mobile Header */}
-            <div className="flex lg:hidden justify-center mb-6">
-              <Link to="/" className="inline-flex items-center gap-2 group">
-                <span className="h-10 w-10 flex items-center justify-center bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-500 rounded-xl text-slate-950 shadow-md border border-amber-300">
-                  <FaHexagonNodes className="h-5 w-5 text-slate-950" />
-                </span>
-                <span className="text-2xl font-black text-slate-900">JobHive</span>
-              </Link>
+          {/* ── MOBILE HEADER (Mobile Only): Top Artwork Banner with Fade ─ */}
+          <div className="md:hidden relative h-48 sm:h-56 w-full overflow-hidden">
+            <img
+              src="/assets/auth-voxel-art.jpg"
+              alt="Job Workplace AI"
+              className="w-full h-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-[#09090d] via-transparent to-black/40" />
+            
+            <div className="absolute top-4 left-4 flex items-center gap-2">
+              <span className="h-7 w-7 rounded-lg bg-pink-500/30 border border-pink-400 flex items-center justify-center text-pink-400">
+                <FaFire className="h-4 w-4" />
+              </span>
+              <span className="text-sm font-black text-white drop-shadow-md">
+                Job Workplace <span className="text-[10px] px-1 py-0.5 rounded bg-white/20">AI</span>
+              </span>
             </div>
+          </div>
 
-            <div className="bg-white p-7 sm:p-10 rounded-3xl border border-slate-200 shadow-xl">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-center text-slate-900 mb-2">
-                {title}
-              </h1>
-              {subtitle && <p className="text-xs sm:text-sm text-slate-500 text-center mb-6 font-medium">{subtitle}</p>}
+          {/* ── RIGHT COLUMN: Clean Sleek Dark Form Area ─────────────── */}
+          <div className="md:col-span-7 flex flex-col justify-center px-6 sm:px-10 lg:px-12 py-8 sm:py-10">
+            <div className="w-full max-w-sm mx-auto">
+              
+              <div className="mb-6 text-center md:text-left">
+                <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                  {title}
+                </h1>
+                {subtitle && (
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                    {subtitle}
+                  </p>
+                )}
+              </div>
+
               {children}
             </div>
           </div>
@@ -77,24 +100,26 @@ export const AuthLayout = ({ title, subtitle, children }) => {
 };
 
 export const Field = ({ error, children }) => (
-  <div>
+  <div className="w-full">
     {children}
-    {error && <p className="text-xs text-red-600 mt-1 font-medium">{error}</p>}
+    {error && <p className="text-xs text-rose-500 dark:text-rose-400 mt-1 font-medium pl-1">{error}</p>}
   </div>
 );
 
 export const InputWrap = ({ icon: Icon, show, toggle, children }) => {
   return (
-    <div className="relative">
-      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-        <Icon className="h-4 w-4" />
-      </span>
+    <div className="relative w-full">
+      {Icon && (
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none">
+          <Icon className="h-4 w-4" />
+        </span>
+      )}
       {children}
       {show !== undefined && (
         <button
           type="button"
           onClick={toggle}
-          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer"
           tabIndex={-1}
         >
           {show ? <FaEyeSlash className="h-4 w-4" /> : <FaEye className="h-4 w-4" />}
@@ -104,4 +129,31 @@ export const InputWrap = ({ icon: Icon, show, toggle, children }) => {
   );
 };
 
-export const Icon = { FaEnvelope, FaLock, FaEye, FaEyeSlash };
+export const GoogleAuthButton = ({ onClick, text = 'Continue with Google' }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="w-full py-3 px-6 rounded-full bg-slate-50 hover:bg-slate-100 dark:bg-[#16161c] dark:hover:bg-[#202028] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white font-bold text-sm flex items-center justify-center gap-2.5 transition-all duration-200 shadow-xs cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+  >
+    {/* Clean Multi-Color Google G Icon */}
+    <svg className="h-4 w-4" viewBox="0 0 24 24">
+      <path
+        fill="#4285F4"
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+      />
+    </svg>
+    <span>{text}</span>
+  </button>
+);
