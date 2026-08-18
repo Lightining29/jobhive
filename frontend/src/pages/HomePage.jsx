@@ -15,10 +15,13 @@ import {
 } from 'react-icons/fa6';
 import { useJobs } from '../context/JobContext';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import JobCard, { CompanyLogo } from '../components/jobs/JobCard';
 import { FadeIn } from '../components/ui/Motion';
 import { LoadingJobs } from '../components/ui/States';
 import SEOHead from '../components/seo/SEOHead';
+import DarkHeroParallaxScene from '../components/home/DarkHeroParallaxScene';
+import AlternateJobsMarquee from '../components/home/AlternateJobsMarquee';
 
 const JobRow = ({ jobs, loading, empty, cols = 4 }) => {
   if (loading) return <LoadingJobs count={cols} />;
@@ -312,6 +315,7 @@ const CandidateCTABand = () => {
 const HomePage = () => {
   const { homeData, homeLoading } = useJobs();
   const { user } = useAuth();
+  const { isDark } = useTheme();
 
   const companies = homeData?.topCompanies || [];
   const nearMe = homeData?.jobsNearMe || [];
@@ -323,7 +327,17 @@ const HomePage = () => {
         description="Search 10,000+ verified job openings in Java, Python, React, Remote & Non-Technical fields. AI-powered matching from top companies and high-growth startups."
         keywords={['jobs', 'java jobs', 'java developer', 'software engineer jobs', 'remote jobs', 'tech jobs', 'hiring', 'fresher jobs', 'internships']}
       />
-      <SearchHero />
+
+      {/* Dynamic Hero: High-Tech Cyberpunk Parallax Scene in Dark Mode, Smooth Aurora in Light Mode */}
+      {isDark ? <DarkHeroParallaxScene /> : <SearchHero />}
+
+      {/* Dual-Direction Alternate Horizontal Scrolling Jobs Marquee with Blurry Glass & Neon Borders */}
+      <AlternateJobsMarquee
+        row1Jobs={homeData?.latest || []}
+        row2Jobs={homeData?.trending || homeData?.highestPaying || []}
+        title="Active Opportunity Telemetry"
+        subtitle="Infinite live streams of verified tech, remote, and high-growth positions"
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-16 md:space-y-20">
         {homeData?.recommended?.length > 0 && (
