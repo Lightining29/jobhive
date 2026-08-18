@@ -183,23 +183,23 @@ export const ModernTechTheme = ({ portfolio, isPreview = false }) => {
             </div>
           </div>
 
-          {/* Profile Photo with Radiant Neon Ring */}
-          <div className="relative shrink-0">
-            <div className="relative h-48 w-48 sm:h-64 sm:w-64 rounded-3xl p-1.5 bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 shadow-[0_0_35px_rgba(0,240,255,0.5)]">
-              <div className="h-full w-full rounded-[22px] overflow-hidden bg-[#070e24] flex items-center justify-center">
+          {/* Profile Photo with Big Circular Radiant Neon Ring */}
+          <div className="relative shrink-0 flex items-center justify-center">
+            <div className="relative h-56 w-56 sm:h-72 sm:w-72 rounded-full p-2 bg-gradient-to-br from-cyan-400 via-sky-500 to-blue-600 shadow-[0_0_45px_rgba(0,240,255,0.65)]">
+              <div className="h-full w-full rounded-full overflow-hidden bg-[#070e24] flex items-center justify-center border-2 border-cyan-400/50">
                 {hero.avatar ? (
                   <img
                     src={formatAvatarUrl(hero.avatar)}
                     alt={hero.name || ''}
                     referrerPolicy="no-referrer"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover rounded-full"
                     onError={(e) => {
                       e.target.style.display = 'none';
                       if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
                     }}
                   />
                 ) : null}
-                <span className={`text-5xl sm:text-7xl font-black text-cyan-400 drop-shadow-[0_0_15px_#00f0ff] ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`text-6xl sm:text-8xl font-black text-cyan-400 drop-shadow-[0_0_20px_#00f0ff] ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : 'D'}
                 </span>
               </div>
@@ -207,7 +207,7 @@ export const ModernTechTheme = ({ portfolio, isPreview = false }) => {
 
             {/* Floating Experience Badge */}
             {about.experienceYears > 0 && (
-              <div className="absolute -bottom-4 -left-4 px-4 py-2 rounded-2xl bg-[#040816] border-2 border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.7)] flex items-center gap-2 text-xs font-black text-white">
+              <div className="absolute -bottom-2 -left-2 sm:bottom-2 sm:left-0 px-4 py-2 rounded-full bg-[#040816] border-2 border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.8)] flex items-center gap-2 text-xs font-black text-white">
                 <FaBolt className="h-3.5 w-3.5 text-amber-400" />
                 <span>{about.experienceYears}+ YRS EXP</span>
               </div>

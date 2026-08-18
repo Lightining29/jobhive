@@ -187,30 +187,30 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
             </div>
           </div>
 
-          {/* Profile Photo Terminal Box */}
-          <div className="relative shrink-0">
-            <div className="relative h-48 w-48 sm:h-64 sm:w-64 rounded-2xl p-1 bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600 shadow-[0_0_35px_rgba(16,185,129,0.5)]">
-              <div className="h-full w-full rounded-[14px] overflow-hidden bg-[#020b05] flex items-center justify-center border border-emerald-500/40">
+          {/* Profile Photo Circular Terminal Box */}
+          <div className="relative shrink-0 flex items-center justify-center">
+            <div className="relative h-56 w-56 sm:h-72 sm:w-72 rounded-full p-2 bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600 shadow-[0_0_45px_rgba(16,185,129,0.65)]">
+              <div className="h-full w-full rounded-full overflow-hidden bg-[#020b05] flex items-center justify-center border-2 border-emerald-500/50">
                 {hero.avatar ? (
                   <img
                     src={formatAvatarUrl(hero.avatar)}
                     alt={hero.name || ''}
                     referrerPolicy="no-referrer"
-                    className="h-full w-full object-cover grayscale contrast-125"
+                    className="h-full w-full object-cover rounded-full grayscale contrast-125"
                     onError={(e) => {
                       e.target.style.display = 'none';
                       if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
                     }}
                   />
                 ) : null}
-                <span className={`text-5xl sm:text-7xl font-black text-emerald-400 drop-shadow-[0_0_15px_#10b981] ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`text-6xl sm:text-8xl font-black text-emerald-400 drop-shadow-[0_0_20px_#10b981] ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : '01'}
                 </span>
               </div>
             </div>
 
             {about.experienceYears > 0 && (
-              <div className="absolute -bottom-3 -left-3 px-3 py-1.5 rounded-lg bg-[#041a09] border border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.7)] flex items-center gap-2 text-xs font-black text-emerald-300">
+              <div className="absolute -bottom-2 -left-2 sm:bottom-2 sm:left-0 px-3.5 py-1.5 rounded-full bg-[#041a09] border border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.8)] flex items-center gap-2 text-xs font-black text-emerald-300">
                 <FaBolt className="h-3 w-3 text-emerald-400" />
                 <span>UPTIME: {about.experienceYears}Y</span>
               </div>
@@ -316,6 +316,28 @@ export const HackerTheme = ({ portfolio, isPreview = false }) => {
                           {tech}
                         </span>
                       ))}
+                    </div>
+                    <div className="flex items-center gap-2 pt-3" onClick={(e) => e.stopPropagation()}>
+                      {project.liveUrl && (
+                        <a
+                          href={project.liveUrl.startsWith('http') ? project.liveUrl : `https://${project.liveUrl}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono font-black bg-emerald-500 text-black hover:bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.7)] transition-all"
+                        >
+                          <FaArrowUpRightFromSquare className="h-2.5 w-2.5" /> ./run_demo
+                        </a>
+                      )}
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl.startsWith('http') ? project.githubUrl : `https://${project.githubUrl}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono text-emerald-400 bg-[#020b05] border border-emerald-500/40 hover:border-emerald-400 hover:text-white transition-all"
+                        >
+                          <FaGithub className="h-3 w-3" /> git_repo
+                        </a>
+                      )}
                     </div>
                   </div>
 

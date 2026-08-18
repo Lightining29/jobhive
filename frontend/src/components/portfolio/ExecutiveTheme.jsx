@@ -155,24 +155,26 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
             </div>
           </div>
 
-          {/* Portrait Photo */}
-          <div className="relative shrink-0">
-            <div className="h-52 w-52 sm:h-64 sm:w-64 rounded-2xl overflow-hidden bg-slate-100 border-4 border-white shadow-xl flex items-center justify-center">
-              {hero.avatar ? (
-                <img
-                  src={formatAvatarUrl(hero.avatar)}
-                  alt={hero.name || ''}
-                  referrerPolicy="no-referrer"
-                  className="h-full w-full object-cover"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-              ) : null}
-              <span className={`font-serif text-6xl font-black text-slate-400 ${hero.avatar ? 'hidden' : 'flex'}`}>
-                {hero.name ? hero.name.charAt(0).toUpperCase() : 'E'}
-              </span>
+          {/* Big Circular Portrait Photo */}
+          <div className="relative shrink-0 flex items-center justify-center">
+            <div className="h-56 w-56 sm:h-72 sm:w-72 rounded-full p-2 bg-gradient-to-br from-slate-300 via-slate-100 to-amber-200 shadow-xl border border-slate-200">
+              <div className="h-full w-full rounded-full overflow-hidden bg-slate-100 flex items-center justify-center">
+                {hero.avatar ? (
+                  <img
+                    src={formatAvatarUrl(hero.avatar)}
+                    alt={hero.name || ''}
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full object-cover rounded-full"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <span className={`font-serif text-6xl sm:text-8xl font-black text-slate-400 ${hero.avatar ? 'hidden' : 'flex'}`}>
+                  {hero.name ? hero.name.charAt(0).toUpperCase() : 'E'}
+                </span>
+              </div>
             </div>
           </div>
         </section>
@@ -289,17 +291,28 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
 
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100 text-xs font-bold">
                       <span className="text-slate-900 group-hover:underline">Read Case Study →</span>
-                      {proj.liveUrl && (
-                        <a
-                          href={proj.liveUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-slate-500 hover:text-slate-900 flex items-center gap-1"
-                        >
-                          <FaArrowUpRightFromSquare className="h-3 w-3" /> Live
-                        </a>
-                      )}
+                      <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                        {proj.liveUrl && (
+                          <a
+                            href={proj.liveUrl.startsWith('http') ? proj.liveUrl : `https://${proj.liveUrl}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-slate-900 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded flex items-center gap-1 font-bold"
+                          >
+                            <FaArrowUpRightFromSquare className="h-3 w-3" /> Live
+                          </a>
+                        )}
+                        {proj.githubUrl && (
+                          <a
+                            href={proj.githubUrl.startsWith('http') ? proj.githubUrl : `https://${proj.githubUrl}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-slate-600 hover:text-slate-900 flex items-center gap-1 font-medium"
+                          >
+                            <FaGithub className="h-3.5 w-3.5" /> Code
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -437,6 +450,7 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
         <p>© {new Date().getFullYear()} {hero.name || 'Candidate'}. Professional Executive Portfolio.</p>
       </footer>
 
+      {/* Project Case Study Modal */}
       {selectedProject && (
         <ProjectDetailModal
           project={selectedProject}

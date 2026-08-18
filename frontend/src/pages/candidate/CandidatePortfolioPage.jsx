@@ -359,6 +359,138 @@ export const CandidatePortfolioPage = () => {
               />
             </div>
 
+            {/* Featured Projects & Links Management */}
+            <div className="p-6 sm:p-8 rounded-[24px] bg-white dark:bg-[#040816] border border-slate-200 dark:border-cyan-500/30 space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-cyan-400" /> Featured Projects & Links
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    Add direct live application links, GitHub repositories, and architectural highlights to your portfolio.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newProj = {
+                      title: 'New Featured Project',
+                      description: 'Comprehensive web application demonstrating scalable architecture and real-world engineering problem solving.',
+                      liveUrl: '',
+                      githubUrl: '',
+                      technologies: ['React', 'Node.js', 'TailwindCSS'],
+                      problem: '',
+                      solution: '',
+                    };
+                    setPortfolio({
+                      ...portfolio,
+                      projects: [...(portfolio.projects || []), newProj],
+                    });
+                  }}
+                  className="px-4 py-2 rounded-xl text-xs font-black bg-cyan-400 text-slate-950 hover:bg-cyan-300 shadow-[0_0_12px_rgba(0,240,255,0.6)] flex items-center gap-1.5 cursor-pointer"
+                >
+                  <FaPlus className="h-3 w-3" /> Add Project
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {(portfolio.projects || []).map((proj, pIdx) => (
+                  <div
+                    key={pIdx}
+                    className="p-5 rounded-2xl bg-slate-50 dark:bg-[#070e24] border border-slate-200 dark:border-cyan-500/30 space-y-3"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-black uppercase text-cyan-400">Project #{pIdx + 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = (portfolio.projects || []).filter((_, i) => i !== pIdx);
+                          setPortfolio({ ...portfolio, projects: updated });
+                        }}
+                        className="text-xs font-bold text-red-500 hover:text-red-400 flex items-center gap-1 cursor-pointer"
+                      >
+                        <FaTrashCan className="h-3 w-3" /> Remove
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="sm:col-span-1">
+                        <label className="text-[11px] font-bold text-slate-400">Project Title</label>
+                        <input
+                          value={proj.title || ''}
+                          onChange={(e) => {
+                            const updated = [...portfolio.projects];
+                            updated[pIdx] = { ...updated[pIdx], title: e.target.value };
+                            setPortfolio({ ...portfolio, projects: updated });
+                          }}
+                          placeholder="e.g. AI Workflow Engine"
+                          className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#040816] border border-slate-300 dark:border-cyan-500/40 text-slate-900 dark:text-white text-xs font-bold"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-bold text-slate-400">Live Demo URL</label>
+                        <input
+                          value={proj.liveUrl || ''}
+                          onChange={(e) => {
+                            const updated = [...portfolio.projects];
+                            updated[pIdx] = { ...updated[pIdx], liveUrl: e.target.value };
+                            setPortfolio({ ...portfolio, projects: updated });
+                          }}
+                          placeholder="https://myproject.com"
+                          className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#040816] border border-slate-300 dark:border-cyan-500/40 text-slate-900 dark:text-white text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-bold text-slate-400">GitHub Repository URL</label>
+                        <input
+                          value={proj.githubUrl || ''}
+                          onChange={(e) => {
+                            const updated = [...portfolio.projects];
+                            updated[pIdx] = { ...updated[pIdx], githubUrl: e.target.value };
+                            setPortfolio({ ...portfolio, projects: updated });
+                          }}
+                          placeholder="https://github.com/user/repo"
+                          className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#040816] border border-slate-300 dark:border-cyan-500/40 text-slate-900 dark:text-white text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-400">Technologies (comma separated)</label>
+                      <input
+                        value={Array.isArray(proj.technologies) ? proj.technologies.join(', ') : (proj.technologies || '')}
+                        onChange={(e) => {
+                          const updated = [...portfolio.projects];
+                          updated[pIdx] = {
+                            ...updated[pIdx],
+                            technologies: e.target.value.split(',').map((t) => t.trim()).filter(Boolean),
+                          };
+                          setPortfolio({ ...portfolio, projects: updated });
+                        }}
+                        placeholder="React, TypeScript, TailwindCSS, PostgreSQL"
+                        className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#040816] border border-slate-300 dark:border-cyan-500/40 text-slate-900 dark:text-white text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-400">Project Description</label>
+                      <textarea
+                        rows={2}
+                        value={proj.description || ''}
+                        onChange={(e) => {
+                          const updated = [...portfolio.projects];
+                          updated[pIdx] = { ...updated[pIdx], description: e.target.value };
+                          setPortfolio({ ...portfolio, projects: updated });
+                        }}
+                        placeholder="Explain the project value, technical complexity, and business impact..."
+                        className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#040816] border border-slate-300 dark:border-cyan-500/40 text-slate-900 dark:text-white text-xs"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Save Controls */}
             <div className="flex items-center justify-end gap-3 pt-4">
               <button

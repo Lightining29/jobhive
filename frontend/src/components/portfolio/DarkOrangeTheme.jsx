@@ -186,30 +186,30 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
             </div>
           </div>
 
-          {/* Profile Photo with Dark Orange Neon Ring */}
-          <div className="relative shrink-0">
-            <div className="relative h-48 w-48 sm:h-64 sm:w-64 rounded-3xl p-1.5 bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 shadow-[0_0_35px_rgba(249,115,22,0.5)]">
-              <div className="h-full w-full rounded-[22px] overflow-hidden bg-[#100a06] flex items-center justify-center">
+          {/* Profile Photo with Big Circular Dark Orange Neon Ring */}
+          <div className="relative shrink-0 flex items-center justify-center">
+            <div className="relative h-56 w-56 sm:h-72 sm:w-72 rounded-full p-2 bg-gradient-to-br from-orange-500 via-amber-500 to-red-600 shadow-[0_0_45px_rgba(249,115,22,0.65)]">
+              <div className="h-full w-full rounded-full overflow-hidden bg-[#100a06] flex items-center justify-center border-2 border-orange-500/50">
                 {hero.avatar ? (
                   <img
                     src={formatAvatarUrl(hero.avatar)}
                     alt={hero.name || ''}
                     referrerPolicy="no-referrer"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover rounded-full"
                     onError={(e) => {
                       e.target.style.display = 'none';
                       if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
                     }}
                   />
                 ) : null}
-                <span className={`text-5xl sm:text-7xl font-black text-orange-400 drop-shadow-[0_0_15px_#f97316] ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`text-6xl sm:text-8xl font-black text-orange-400 drop-shadow-[0_0_20px_#f97316] ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : 'D'}
                 </span>
               </div>
             </div>
 
             {about.experienceYears > 0 && (
-              <div className="absolute -bottom-4 -left-4 px-4 py-2 rounded-2xl bg-[#120a06] border-2 border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.7)] flex items-center gap-2 text-xs font-black text-white">
+              <div className="absolute -bottom-2 -left-2 sm:bottom-2 sm:left-0 px-4 py-2 rounded-full bg-[#120a06] border-2 border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.8)] flex items-center gap-2 text-xs font-black text-white">
                 <FaFire className="h-3.5 w-3.5 text-amber-400" />
                 <span>{about.experienceYears}+ YRS EXP</span>
               </div>
@@ -318,6 +318,28 @@ export const DarkOrangeTheme = ({ portfolio, isPreview = false }) => {
                           {tech}
                         </span>
                       ))}
+                    </div>
+                    <div className="flex items-center gap-2 pt-3" onClick={(e) => e.stopPropagation()}>
+                      {project.liveUrl && (
+                        <a
+                          href={project.liveUrl.startsWith('http') ? project.liveUrl : `https://${project.liveUrl}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black bg-orange-500 text-slate-950 hover:bg-orange-400 shadow-[0_0_12px_rgba(249,115,22,0.6)] transition-all"
+                        >
+                          <FaArrowUpRightFromSquare className="h-3 w-3" /> Live Demo
+                        </a>
+                      )}
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl.startsWith('http') ? project.githubUrl : `https://${project.githubUrl}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#140b07] border border-orange-900 text-orange-200 hover:text-white hover:border-orange-500 transition-all"
+                        >
+                          <FaGithub className="h-3 w-3" /> GitHub
+                        </a>
+                      )}
                     </div>
                   </div>
 

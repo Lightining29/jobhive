@@ -184,30 +184,30 @@ export const LightPinkTheme = ({ portfolio, isPreview = false }) => {
             </div>
           </div>
 
-          {/* Profile Photo with Soft Rose Gold Ring */}
-          <div className="relative shrink-0">
-            <div className="relative h-48 w-48 sm:h-64 sm:w-64 rounded-3xl p-1.5 bg-gradient-to-br from-pink-300 via-rose-300 to-pink-400 shadow-xl">
-              <div className="h-full w-full rounded-[22px] overflow-hidden bg-white flex items-center justify-center border border-pink-200">
+          {/* Profile Photo with Soft Rose Gold Circular Ring */}
+          <div className="relative shrink-0 flex items-center justify-center">
+            <div className="relative h-56 w-56 sm:h-72 sm:w-72 rounded-full p-2 bg-gradient-to-br from-pink-300 via-rose-300 to-pink-500 shadow-[0_0_35px_rgba(244,114,182,0.45)]">
+              <div className="h-full w-full rounded-full overflow-hidden bg-white flex items-center justify-center border-2 border-pink-200">
                 {hero.avatar ? (
                   <img
                     src={formatAvatarUrl(hero.avatar)}
                     alt={hero.name || ''}
                     referrerPolicy="no-referrer"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover rounded-full"
                     onError={(e) => {
                       e.target.style.display = 'none';
                       if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
                     }}
                   />
                 ) : null}
-                <span className={`text-5xl sm:text-7xl font-black text-pink-500 ${hero.avatar ? 'hidden' : 'flex'}`}>
+                <span className={`text-6xl sm:text-8xl font-black text-pink-500 ${hero.avatar ? 'hidden' : 'flex'}`}>
                   {hero.name ? hero.name.charAt(0).toUpperCase() : 'D'}
                 </span>
               </div>
             </div>
 
             {about.experienceYears > 0 && (
-              <div className="absolute -bottom-4 -left-4 px-4 py-2 rounded-2xl bg-white border border-pink-200 shadow-lg flex items-center gap-2 text-xs font-black text-pink-950">
+              <div className="absolute -bottom-2 -left-2 sm:bottom-2 sm:left-0 px-4 py-2 rounded-full bg-white border border-pink-200 shadow-lg flex items-center gap-2 text-xs font-black text-pink-950">
                 <FaHeart className="h-3.5 w-3.5 text-pink-500" />
                 <span>{about.experienceYears}+ YRS EXP</span>
               </div>
@@ -314,6 +314,28 @@ export const LightPinkTheme = ({ portfolio, isPreview = false }) => {
                           {tech}
                         </span>
                       ))}
+                    </div>
+                    <div className="flex items-center gap-2 pt-2" onClick={(e) => e.stopPropagation()}>
+                      {project.liveUrl && (
+                        <a
+                          href={project.liveUrl.startsWith('http') ? project.liveUrl : `https://${project.liveUrl}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black bg-pink-500 text-white hover:bg-pink-600 shadow-sm transition-all"
+                        >
+                          <FaArrowUpRightFromSquare className="h-3 w-3" /> Live Demo
+                        </a>
+                      )}
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl.startsWith('http') ? project.githubUrl : `https://${project.githubUrl}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-pink-50 border border-pink-200 text-pink-800 hover:bg-pink-100 transition-all"
+                        >
+                          <FaGithub className="h-3 w-3" /> GitHub
+                        </a>
+                      )}
                     </div>
                   </div>
 
@@ -500,7 +522,7 @@ export const LightPinkTheme = ({ portfolio, isPreview = false }) => {
 
       {/* Project Case Study Modal */}
       {selectedProject && (
-        <ProjectDetailModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+        <ProjectDetailModal project={selectedProject} onClose={() => setSelectedProject(null)} isDark={false} />
       )}
     </div>
   );

@@ -186,8 +186,6 @@ if (fs.existsSync(frontendDist)) {
   app.get('*', (req, res, next) => {
     if (
       req.path.startsWith('/api') ||
-      req.path.startsWith('/p/') ||
-      req.path.startsWith('/portfolio/') ||
       req.path.startsWith('/uploads')
     ) {
       return next();
