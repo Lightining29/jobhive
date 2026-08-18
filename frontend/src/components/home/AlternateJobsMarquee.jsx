@@ -18,19 +18,24 @@ const MarqueeJobItem = ({ job, neonColor = 'pink' }) => {
   const skills = Array.isArray(job.requiredSkills) ? job.requiredSkills.slice(0, 3) : [];
 
   const neonCardClasses = {
-    pink: 'dark:neon-acrylic-pink hover:scale-105',
-    cyan: 'dark:neon-acrylic-cyan hover:scale-105',
-    yellow: 'dark:neon-acrylic-yellow hover:scale-105',
-    purple: 'dark:neon-acrylic-purple hover:scale-105',
+    pink: 'dark:neon-playing-card-pink hover:scale-105',
+    cyan: 'dark:neon-playing-card-cyan hover:scale-105',
+    yellow: 'dark:neon-playing-card-yellow hover:scale-105',
+    purple: 'dark:neon-playing-card-purple hover:scale-105',
   };
 
   const activeCardClass = neonCardClasses[neonColor] || neonCardClasses.pink;
 
   return (
-    <div className={`w-[320px] sm:w-[360px] shrink-0 p-5 rounded-[26px] bg-white/90 dark:bg-[#080C1B]/85 ${activeCardClass} border border-slate-200 dark:border-pink-500/40 shadow-xl transition-all duration-300 group hover:-translate-y-1`}>
+    <div className={`w-[320px] sm:w-[360px] shrink-0 p-5 rounded-[24px] bg-white/90 ${activeCardClass} border border-slate-200 shadow-xl transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden will-change-transform`}>
+      {/* Playing Card Top Corner Neon Suit Mark */}
+      <div className="absolute top-2.5 right-3 text-[10px] font-black text-pink-400/40 select-none pointer-events-none">
+        ✦
+      </div>
+
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="p-0.5 rounded-full dark:neon-avatar-ring-pink">
+          <div className="p-0.5 rounded-full dark:neon-avatar-ring-pink shrink-0">
             <CompanyLogo logo={job.companyLogo} name={job.companyName} size="md" />
           </div>
           <div className="min-w-0">
@@ -49,13 +54,13 @@ const MarqueeJobItem = ({ job, neonColor = 'pink' }) => {
         </div>
 
         {job.workMode && (
-          <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-pink-500/10 dark:bg-pink-500/20 text-pink-700 dark:text-pink-300 border border-pink-500/30 dark:border-pink-500/60 shadow-[0_0_10px_rgba(255,45,135,0.25)]">
+          <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-pink-500/10 dark:neon-badge-pink">
             {job.workMode}
           </span>
         )}
       </div>
 
-      <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100 dark:border-pink-500/30 text-xs">
+      <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100 dark:border-pink-500/40 text-xs">
         <div className="flex items-center gap-1.5 font-black text-emerald-600 dark:text-emerald-300 dark:drop-shadow-[0_0_8px_#00ff88]">
           <FaSackDollar className="h-3.5 w-3.5" />
           <span>{salary !== 'Not specified' ? salary : 'Competitive'}</span>
@@ -71,7 +76,11 @@ const MarqueeJobItem = ({ job, neonColor = 'pink' }) => {
           {skills.map((s, idx) => (
             <span
               key={idx}
-              className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-amber-500/10 dark:bg-amber-400/15 text-amber-900 dark:text-amber-300 border border-amber-500/20 dark:border-amber-400/40 shadow-2xs"
+              className={`text-[10px] font-bold px-2.5 py-0.5 rounded-lg ${
+                idx % 2 === 0
+                  ? 'bg-amber-500/10 dark:neon-badge-yellow'
+                  : 'bg-cyan-500/10 dark:neon-badge-cyan'
+              }`}
             >
               {s}
             </span>
@@ -86,7 +95,7 @@ const MarqueeJobItem = ({ job, neonColor = 'pink' }) => {
         </span>
         <Link
           to={`/jobs/${job._id}`}
-          className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-slate-900 text-white dark:bg-gradient-to-r dark:from-pink-500 dark:to-rose-600 hover:scale-105 transition-all flex items-center gap-1 shadow-md dark:shadow-[0_0_15px_rgba(255,45,135,0.5)]"
+          className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-slate-900 text-white dark:bg-gradient-to-r dark:from-[#ff2d87] dark:to-rose-600 hover:scale-105 transition-all flex items-center gap-1 shadow-md dark:shadow-[0_0_15px_rgba(255,45,135,0.7)]"
         >
           View Role
           <FaArrowRight className="h-2.5 w-2.5" />

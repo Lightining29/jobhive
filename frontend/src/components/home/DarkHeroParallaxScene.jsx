@@ -1,18 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   FaMagnifyingGlass,
   FaBolt,
-  FaGlobe,
-  FaSackDollar,
   FaFire,
-  FaCircleCheck,
-  FaCode,
-  FaUsers,
-  FaArrowRight,
-  FaBuilding,
-  FaHexagonNodes,
-  FaClock,
 } from 'react-icons/fa6';
 import { FadeIn } from '../ui/Motion';
 import ScrollingNumber from '../ui/ScrollingNumber';
@@ -20,24 +11,9 @@ import LiveSmokeEffect from './LiveSmokeEffect';
 
 export const DarkHeroParallaxScene = () => {
   const [query, setQuery] = useState('');
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const heroRef = useRef(null);
   const navigate = useNavigate();
 
   const popular = ['Java Developer', 'Spring Boot', 'React', 'Python', 'Remote', 'AI / ML', 'Cloud DevOps', 'High Salary'];
-
-  // Interactive mouse shift
-  const handleMouseMove = useCallback((e) => {
-    if (!heroRef.current) return;
-    const rect = heroRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
-    const y = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
-    setMousePos({ x: x * 15, y: y * 15 });
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setMousePos({ x: 0, y: 0 });
-  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -50,12 +26,9 @@ export const DarkHeroParallaxScene = () => {
 
   return (
     <section
-      ref={heroRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="relative overflow-hidden min-h-[88vh] flex flex-col justify-center items-center bg-[#000000] text-white transition-colors duration-500 pt-16 pb-28 select-none"
+      className="relative overflow-hidden min-h-[86vh] flex flex-col justify-center items-center bg-[#000000] text-white transition-colors duration-500 pt-14 pb-24 select-none"
     >
-      {/* ── 1. Live Volumetric Smoke & Neon Fog Engine (Matching Reference) ─ */}
+      {/* ── 1. Optimized Volumetric Smoke Canvas (Silky Smooth 60fps) ─ */}
       <LiveSmokeEffect />
 
       {/* Ambient Deep Radial Backlight */}
@@ -63,11 +36,11 @@ export const DarkHeroParallaxScene = () => {
         className="absolute inset-0 pointer-events-none opacity-80"
         style={{
           background:
-            'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(168, 85, 247, 0.18) 0%, rgba(255, 45, 135, 0.12) 35%, rgba(0, 0, 0, 0.98) 75%)',
+            'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(168, 85, 247, 0.16) 0%, rgba(255, 45, 135, 0.1) 35%, rgba(0, 0, 0, 0.98) 75%)',
         }}
       />
 
-      {/* ── 2. Glowing Neon Circular Podium / Stage (Matching Reference Image) ── */}
+      {/* ── 2. Glowing Neon Circular Podium / Stage ── */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none z-10 w-full max-w-[820px] flex flex-col items-center">
         {/* Upper Tier Cylinder Podium */}
         <div className="relative w-[340px] sm:w-[500px] h-[36px] rounded-[100%] bg-gradient-to-b from-[#1a1033] to-[#0d071a] border-t-2 border-[#ff2d87] shadow-[0_-2px_20px_#ff2d87,0_0_35px_rgba(255,45,135,0.6)]">
@@ -82,19 +55,22 @@ export const DarkHeroParallaxScene = () => {
         </div>
       </div>
 
-      {/* ── 3. Centered Cinematic Content Hub (Card & Clock Removed) ── */}
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-20 text-center py-8">
+      {/* ── 3. Centered Cinematic Content Hub ──────────────────────── */}
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-20 text-center py-6">
         <FadeIn>
           
-          {/* Night Club Multi-Color Neon Title */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.08] mb-4">
-            <span className="neon-text-pink inline-block mr-3 sm:mr-4">Find Your</span>
-            <span className="neon-text-cyan inline-block">Dream Job</span>
-            <br />
-            <span className="neon-text-yellow font-extrabold text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight mt-3 inline-block">
-              Today
+          {/* Career Jobs (Pure White) & Dream Tech Jobs (BIG Neon Glow Text) */}
+          <div className="mb-4">
+            <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white tracking-widest uppercase block drop-shadow-md mb-2">
+              Career Jobs
             </span>
-          </h1>
+
+            <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight leading-[1.02]">
+              <span className="neon-text-pink inline-block mr-3 sm:mr-6">Dream</span>
+              <span className="neon-text-cyan inline-block mr-3 sm:mr-6">Tech</span>
+              <span className="neon-text-yellow inline-block">Jobs</span>
+            </h1>
+          </div>
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg md:text-xl text-slate-300 mt-5 max-w-2xl mx-auto leading-relaxed font-medium">
@@ -103,7 +79,7 @@ export const DarkHeroParallaxScene = () => {
 
           {/* Wide Glowing Command Search Input Box */}
           <form onSubmit={handleSearch} className="mt-8 max-w-2xl mx-auto">
-            <div className="relative p-[2px] rounded-2xl bg-gradient-to-r from-[#ff2d87] via-[#a855f7] to-[#00f0ff] shadow-[0_0_40px_rgba(255,45,135,0.45)] transition-all duration-300 focus-within:shadow-[0_0_60px_rgba(0,240,255,0.7)]">
+            <div className="relative p-[2px] rounded-2xl bg-gradient-to-r from-[#ff2d87] via-[#a855f7] to-[#00f0ff] shadow-[0_0_35px_rgba(255,45,135,0.45)] transition-all duration-300 focus-within:shadow-[0_0_55px_rgba(0,240,255,0.7)]">
               <div className="flex items-center gap-2 rounded-[14px] bg-[#050711]/95 backdrop-blur-2xl p-2.5 pl-5">
                 <FaMagnifyingGlass className="h-5 w-5 text-cyan-400 shrink-0 drop-shadow-[0_0_10px_#00f0ff]" />
                 <input
@@ -124,21 +100,21 @@ export const DarkHeroParallaxScene = () => {
             </div>
           </form>
 
-          {/* Trending Hot Skill Neon Pills */}
+          {/* Trending Hot Skill Neon Badges (Freepik Neon Playing Card Aesthetic) */}
           <div className="flex flex-wrap justify-center items-center gap-2.5 mt-7 max-w-3xl mx-auto">
-            <span className="text-xs font-black uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1">
+            <span className="text-xs font-black uppercase tracking-wider text-slate-300 mr-1 flex items-center gap-1">
               <FaFire className="h-3.5 w-3.5 text-pink-400 animate-pulse" /> Hot Skills:
             </span>
             {popular.map((item, idx) => (
               <Link
                 key={item}
                 to={`/jobs?search=${encodeURIComponent(item)}`}
-                className={`text-xs font-bold px-3.5 py-1.5 rounded-xl backdrop-blur-xl bg-[#080C1E]/80 border transition-all duration-200 ${
+                className={`text-xs font-bold px-3.5 py-1.5 rounded-xl transition-all duration-200 hover:scale-105 ${
                   idx % 3 === 0
-                    ? 'border-pink-500/60 text-pink-300 hover:border-pink-400 hover:shadow-[0_0_18px_rgba(255,45,135,0.5)]'
+                    ? 'dark:neon-badge-pink'
                     : idx % 3 === 1
-                    ? 'border-cyan-500/60 text-cyan-300 hover:border-cyan-400 hover:shadow-[0_0_18px_rgba(0,240,255,0.5)]'
-                    : 'border-amber-400/60 text-amber-300 hover:border-amber-300 hover:shadow-[0_0_18px_rgba(250,204,21,0.5)]'
+                    ? 'dark:neon-badge-cyan'
+                    : 'dark:neon-badge-yellow'
                 }`}
               >
                 {item}
@@ -146,10 +122,10 @@ export const DarkHeroParallaxScene = () => {
             ))}
           </div>
 
-          {/* ── 4. Live Mechanical Rolling Number Ticker Telemetry (Orionix Style) ── */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-12 pt-8 border-t border-slate-800/80 max-w-3xl mx-auto">
+          {/* ── 4. Live Mechanical Rolling Number Ticker Telemetry ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-10 pt-7 border-t border-slate-800/80 max-w-3xl mx-auto">
             {/* Live Jobs Pillar */}
-            <div className="p-4 rounded-2xl backdrop-blur-xl bg-[#080C1E]/60 border border-cyan-500/30 shadow-[0_0_20px_rgba(0,240,255,0.2)] flex flex-col items-center">
+            <div className="p-4 rounded-2xl dark:neon-playing-card-cyan flex flex-col items-center">
               <div className="h-10 flex items-center">
                 <ScrollingNumber value="10,480+" height={38} width={22} fontSize="text-2xl sm:text-3xl" className="neon-text-cyan" />
               </div>
@@ -157,7 +133,7 @@ export const DarkHeroParallaxScene = () => {
             </div>
 
             {/* Average Package Pillar */}
-            <div className="p-4 rounded-2xl backdrop-blur-xl bg-[#080C1E]/60 border border-pink-500/30 shadow-[0_0_20px_rgba(255,45,135,0.2)] flex flex-col items-center">
+            <div className="p-4 rounded-2xl dark:neon-playing-card-pink flex flex-col items-center">
               <div className="h-10 flex items-center">
                 <ScrollingNumber value="₹18-34 LPA" height={38} width={22} fontSize="text-2xl sm:text-3xl" className="neon-text-pink" />
               </div>
@@ -165,7 +141,7 @@ export const DarkHeroParallaxScene = () => {
             </div>
 
             {/* AI Accuracy Pillar */}
-            <div className="p-4 rounded-2xl backdrop-blur-xl bg-[#080C1E]/60 border border-amber-400/30 shadow-[0_0_20px_rgba(250,204,21,0.2)] flex flex-col items-center">
+            <div className="p-4 rounded-2xl dark:neon-playing-card-yellow flex flex-col items-center">
               <div className="h-10 flex items-center">
                 <ScrollingNumber value="98.7%" height={38} width={22} fontSize="text-2xl sm:text-3xl" className="neon-text-yellow" />
               </div>

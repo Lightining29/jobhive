@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 
 /**
- * High-performance 60fps Volumetric Live Smoke & Neon Cloud Particle Canvas
- * Generates billowing purple/magenta & cyan volumetric smoke puffs with procedural fluid physics.
+ * Ultra-Lightweight 60fps Volumetric Live Smoke & Neon Cloud Particle Canvas
+ * Highly optimized with zero CSS blur filter overhead for silky smooth performance.
  */
 export const LiveSmokeEffect = ({ className = '' }) => {
   const canvasRef = useRef(null);
@@ -10,29 +10,27 @@ export const LiveSmokeEffect = ({ className = '' }) => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     let animationFrameId;
-    let width = (canvas.width = canvas.offsetWidth);
-    let height = (canvas.height = canvas.offsetHeight);
+    let width = (canvas.width = canvas.offsetWidth || window.innerWidth);
+    let height = (canvas.height = canvas.offsetHeight || 600);
 
     const handleResize = () => {
       if (!canvas) return;
-      width = canvas.width = canvas.offsetWidth;
-      height = canvas.height = canvas.offsetHeight;
+      width = canvas.width = canvas.offsetWidth || window.innerWidth;
+      height = canvas.height = canvas.offsetHeight || 600;
     };
 
     window.addEventListener('resize', handleResize);
 
-    // Volumetric Smoke Particle Class
     const colors = [
-      { r: 168, g: 85, b: 247 },  // Purple #a855f7
-      { r: 255, g: 45, b: 135 },  // Hot Pink #ff2d87
-      { r: 0, g: 240, b: 255 },    // Electric Cyan #00f0ff
-      { r: 120, g: 40, b: 200 },   // Deep Violet
+      { r: 168, g: 85, b: 247 }, // Purple #a855f7
+      { r: 255, g: 45, b: 135 }, // Hot Pink #ff2d87
+      { r: 0, g: 240, b: 255 },   // Electric Cyan #00f0ff
     ];
 
     const particles = [];
-    const maxParticles = 65;
+    const maxParticles = 18; // Lightweight for 60fps silky smooth performance
 
     class SmokeParticle {
       constructor(isInitial = false) {
@@ -44,35 +42,31 @@ export const LiveSmokeEffect = ({ className = '' }) => {
         this.y = isInitial
           ? height * (0.3 + Math.random() * 0.7)
           : height * (0.75 + Math.random() * 0.25);
-        this.radius = 90 + Math.random() * 160;
-        this.maxRadius = this.radius * (1.8 + Math.random() * 0.8);
-        this.growthRate = 0.35 + Math.random() * 0.5;
-        this.vx = (Math.random() - 0.5) * 0.7;
-        this.vy = -(0.4 + Math.random() * 0.8);
+        this.radius = 110 + Math.random() * 140;
+        this.maxRadius = this.radius * 1.8;
+        this.growthRate = 0.35;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = -(0.4 + Math.random() * 0.6);
         this.alpha = 0.01;
-        this.maxAlpha = 0.12 + Math.random() * 0.18;
-        this.life = isInitial ? Math.random() * 300 : 0;
-        this.maxLife = 320 + Math.random() * 200;
+        this.maxAlpha = 0.14 + Math.random() * 0.12;
+        this.life = isInitial ? Math.random() * 260 : 0;
+        this.maxLife = 280 + Math.random() * 160;
         this.color = colors[Math.floor(Math.random() * colors.length)];
-        this.rotation = Math.random() * Math.PI * 2;
-        this.vRot = (Math.random() - 0.5) * 0.006;
       }
 
       update() {
         this.life++;
         this.x += this.vx;
         this.y += this.vy;
-        this.rotation += this.vRot;
         if (this.radius < this.maxRadius) {
           this.radius += this.growthRate;
         }
 
-        // Fade in then fade out
         const progress = this.life / this.maxLife;
         if (progress < 0.25) {
           this.alpha = (progress / 0.25) * this.maxAlpha;
-        } else if (progress > 0.6) {
-          this.alpha = ((1 - progress) / 0.4) * this.maxAlpha;
+        } else if (progress > 0.65) {
+          this.alpha = ((1 - progress) / 0.35) * this.maxAlpha;
         }
 
         if (this.life >= this.maxLife || this.y < -this.radius) {
@@ -81,26 +75,27 @@ export const LiveSmokeEffect = ({ className = '' }) => {
       }
 
       draw(c) {
-        c.save();
-        c.translate(this.x, this.y);
-        c.rotate(this.rotation);
-
-        const gradient = c.createRadialGradient(0, 0, 0, 0, 0, this.radius);
+        const gradient = c.createRadialGradient(
+          this.x,
+          this.y,
+          0,
+          this.x,
+          this.y,
+          this.radius
+        );
         const { r, g, b } = this.color;
-        gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${this.alpha * 1.4})`);
-        gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${this.alpha * 0.8})`);
-        gradient.addColorStop(0.75, `rgba(${r}, ${g}, ${b}, ${this.alpha * 0.25})`);
+        gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${this.alpha * 1.2})`);
+        gradient.addColorStop(0.45, `rgba(${r}, ${g}, ${b}, ${this.alpha * 0.6})`);
+        gradient.addColorStop(0.8, `rgba(${r}, ${g}, ${b}, ${this.alpha * 0.15})`);
         gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
 
         c.fillStyle = gradient;
         c.beginPath();
-        c.arc(0, 0, this.radius, 0, Math.PI * 2);
+        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         c.fill();
-        c.restore();
       }
     }
 
-    // Initialize particles
     for (let i = 0; i < maxParticles; i++) {
       particles.push(new SmokeParticle(true));
     }
@@ -110,12 +105,10 @@ export const LiveSmokeEffect = ({ className = '' }) => {
     const render = (time) => {
       animationFrameId = requestAnimationFrame(render);
       const delta = time - lastTime;
-      if (delta < 14) return; // Cap at ~60fps
+      if (delta < 20) return; // Cap at smooth 50-60fps
       lastTime = time;
 
       ctx.clearRect(0, 0, width, height);
-
-      // Global composite blend for realistic luminous smoke
       ctx.globalCompositeOperation = 'screen';
 
       for (let i = 0; i < particles.length; i++) {
@@ -135,19 +128,19 @@ export const LiveSmokeEffect = ({ className = '' }) => {
   }, []);
 
   return (
-    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
+    <div className={`absolute inset-0 overflow-hidden pointer-events-none will-change-transform ${className}`}>
       {/* Background canvas for live billowing smoke */}
       <canvas
         ref={canvasRef}
-        className="w-full h-full block opacity-90 filter blur-[10px] scale-105"
+        className="w-full h-full block opacity-85"
       />
 
       {/* Atmospheric ambient layered fog overlays */}
       <div
-        className="absolute inset-0 opacity-40 mix-blend-color-dodge pointer-events-none"
+        className="absolute inset-0 opacity-35 mix-blend-color-dodge pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse 70% 50% at 50% 65%, rgba(168,85,247,0.3) 0%, rgba(255,45,135,0.2) 40%, rgba(0,240,255,0.15) 70%, transparent 100%)',
+            'radial-gradient(ellipse 70% 50% at 50% 65%, rgba(168,85,247,0.25) 0%, rgba(255,45,135,0.18) 40%, rgba(0,240,255,0.12) 70%, transparent 100%)',
         }}
       />
     </div>

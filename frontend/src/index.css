@@ -555,84 +555,117 @@
     0 0 55px #009944 !important;
 }
 
-/* ===== Authentic Holographic Transparent Neon Glass Card (Matching Paloma Branches Ref) ===== */
-.neon-acrylic-pink {
-  background: rgba(10, 14, 30, 0.45) !important;
-  backdrop-filter: blur(24px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
-  border: 1.5px solid rgba(255, 45, 135, 0.85) !important;
+/* ===== Freepik Style Neon Playing Card Borders & Holographic Laser Glass ===== */
+.neon-playing-card-pink {
+  background: radial-gradient(circle at 50% 0%, rgba(255, 45, 135, 0.16) 0%, rgba(8, 10, 20, 0.95) 75%) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 2px solid #ff2d87 !important;
   box-shadow:
-    0 0 22px rgba(255, 45, 135, 0.5),
-    0 0 45px rgba(255, 45, 135, 0.25),
-    inset 0 0 18px rgba(255, 45, 135, 0.25),
-    0 16px 45px rgba(0, 0, 0, 0.8) !important;
+    0 0 16px rgba(255, 45, 135, 0.7),
+    0 0 35px rgba(255, 45, 135, 0.35),
+    inset 0 0 14px rgba(255, 45, 135, 0.3),
+    0 12px 35px rgba(0, 0, 0, 0.85) !important;
 }
 
-.neon-acrylic-cyan {
-  background: rgba(8, 16, 32, 0.45) !important;
-  backdrop-filter: blur(24px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
-  border: 1.5px solid rgba(0, 240, 255, 0.85) !important;
+.neon-playing-card-cyan {
+  background: radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.16) 0%, rgba(6, 12, 24, 0.95) 75%) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 2px solid #00f0ff !important;
   box-shadow:
-    0 0 22px rgba(0, 240, 255, 0.5),
-    0 0 45px rgba(0, 240, 255, 0.25),
-    inset 0 0 18px rgba(0, 240, 255, 0.25),
-    0 16px 45px rgba(0, 0, 0, 0.8) !important;
+    0 0 16px rgba(0, 240, 255, 0.7),
+    0 0 35px rgba(0, 240, 255, 0.35),
+    inset 0 0 14px rgba(0, 240, 255, 0.3),
+    0 12px 35px rgba(0, 0, 0, 0.85) !important;
 }
 
-.neon-acrylic-yellow {
-  background: rgba(18, 16, 10, 0.45) !important;
-  backdrop-filter: blur(24px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
-  border: 1.5px solid rgba(250, 204, 21, 0.85) !important;
+.neon-playing-card-yellow {
+  background: radial-gradient(circle at 50% 0%, rgba(250, 204, 21, 0.16) 0%, rgba(16, 14, 8, 0.95) 75%) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 2px solid #facc15 !important;
   box-shadow:
-    0 0 22px rgba(250, 204, 21, 0.5),
-    0 0 45px rgba(250, 204, 21, 0.25),
-    inset 0 0 18px rgba(250, 204, 21, 0.25),
-    0 16px 45px rgba(0, 0, 0, 0.8) !important;
+    0 0 16px rgba(250, 204, 21, 0.7),
+    0 0 35px rgba(250, 204, 21, 0.35),
+    inset 0 0 14px rgba(250, 204, 21, 0.3),
+    0 12px 35px rgba(0, 0, 0, 0.85) !important;
 }
 
-.neon-acrylic-purple {
-  background: rgba(18, 10, 32, 0.45) !important;
-  backdrop-filter: blur(24px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
-  border: 1.5px solid rgba(192, 132, 252, 0.85) !important;
+.neon-playing-card-purple {
+  background: radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.16) 0%, rgba(14, 8, 26, 0.95) 75%) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 2px solid #a855f7 !important;
   box-shadow:
-    0 0 22px rgba(192, 132, 252, 0.5),
-    0 0 45px rgba(192, 132, 252, 0.25),
-    inset 0 0 18px rgba(192, 132, 252, 0.25),
-    0 16px 45px rgba(0, 0, 0, 0.8) !important;
+    0 0 16px rgba(168, 85, 247, 0.7),
+    0 0 35px rgba(168, 85, 247, 0.35),
+    inset 0 0 14px rgba(168, 85, 247, 0.3),
+    0 12px 35px rgba(0, 0, 0, 0.85) !important;
+}
+
+/* ===== Neon Badges & Pill Tags (Playing Cards Theme) ===== */
+.neon-badge-pink {
+  background: rgba(255, 45, 135, 0.15) !important;
+  border: 1.5px solid #ff2d87 !important;
+  color: #ff70ad !important;
+  text-shadow: 0 0 8px rgba(255, 45, 135, 0.8) !important;
+  box-shadow: 0 0 10px rgba(255, 45, 135, 0.4), inset 0 0 6px rgba(255, 45, 135, 0.25) !important;
+}
+
+.neon-badge-cyan {
+  background: rgba(0, 240, 255, 0.15) !important;
+  border: 1.5px solid #00f0ff !important;
+  color: #6bf2ff !important;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.8) !important;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4), inset 0 0 6px rgba(0, 240, 255, 0.25) !important;
+}
+
+.neon-badge-yellow {
+  background: rgba(250, 204, 21, 0.15) !important;
+  border: 1.5px solid #facc15 !important;
+  color: #fef08a !important;
+  text-shadow: 0 0 8px rgba(250, 204, 21, 0.8) !important;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.4), inset 0 0 6px rgba(250, 204, 21, 0.25) !important;
+}
+
+.neon-badge-emerald {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border: 1.5px solid #10b981 !important;
+  color: #6ee7b7 !important;
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.8) !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4), inset 0 0 6px rgba(16, 185, 129, 0.25) !important;
 }
 
 /* Neon Avatar Halo Ring */
 .neon-avatar-ring-pink {
-  border: 2.5px solid #ff2d87;
+  border: 2px solid #ff2d87;
   box-shadow:
-    0 0 15px #ff2d87,
-    0 0 30px rgba(255, 45, 135, 0.6),
-    inset 0 0 10px #ff2d87;
+    0 0 12px #ff2d87,
+    0 0 24px rgba(255, 45, 135, 0.6),
+    inset 0 0 8px #ff2d87;
 }
 
 .neon-avatar-ring-cyan {
-  border: 2.5px solid #00f0ff;
+  border: 2px solid #00f0ff;
   box-shadow:
-    0 0 15px #00f0ff,
-    0 0 30px rgba(0, 240, 255, 0.6),
-    inset 0 0 10px #00f0ff;
+    0 0 12px #00f0ff,
+    0 0 24px rgba(0, 240, 255, 0.6),
+    inset 0 0 8px #00f0ff;
 }
 
 /* Global Dark Mode Card Glow */
 .dark .card {
-  background-color: rgba(11, 15, 29, 0.7) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 45, 135, 0.3) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 12px rgba(255, 45, 135, 0.15) !important;
+  background-color: rgba(10, 12, 22, 0.9) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 2px solid rgba(255, 45, 135, 0.6) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 16px rgba(255, 45, 135, 0.4) !important;
 }
 
 .dark .card:hover {
-  border-color: rgba(0, 240, 255, 0.7) !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7), 0 0 22px rgba(0, 240, 255, 0.4), inset 0 0 12px rgba(0, 240, 255, 0.15) !important;
+  border-color: #00f0ff !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 240, 255, 0.7), inset 0 0 12px rgba(0, 240, 255, 0.25) !important;
 }
 
 @keyframes neonBorderRotate {

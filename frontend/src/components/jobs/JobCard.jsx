@@ -171,8 +171,13 @@ const JobCard = ({ job, match }) => {
   const showMatch = typeof match === 'number';
 
   return (
-    <ParallaxCard maxRotation={5} scale={1.015} className="h-full">
-      <div className="card card-hover p-5 flex flex-col h-full bg-white dark:bg-[#080C1B]/90 dark:neon-acrylic-pink dark:border-pink-500/60 dark:hover:border-cyan-400 dark:hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] transition-all duration-300 rounded-[24px]">
+    <ParallaxCard maxRotation={4} scale={1.012} className="h-full">
+      <div className="card card-hover p-5 flex flex-col h-full bg-white dark:neon-playing-card-pink dark:hover:neon-playing-card-cyan transition-all duration-300 rounded-[24px] relative overflow-hidden">
+        {/* Playing card corner accent mark */}
+        <div className="absolute top-2.5 right-3 text-[10px] font-black text-pink-400/40 select-none pointer-events-none">
+          ❖
+        </div>
+
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0">
             <div className="p-0.5 rounded-full dark:neon-avatar-ring-pink shrink-0">
@@ -186,7 +191,7 @@ const JobCard = ({ job, match }) => {
               >
                 {job.jobTitle}
               </Link>
-              <p className="text-[11px] font-medium text-amber-800 dark:text-amber-300 bg-amber-500/10 dark:bg-amber-400/15 border border-amber-500/25 dark:border-amber-400/30 px-2 py-0.5 rounded-md mt-1 line-clamp-1 max-w-full">
+              <p className="text-[11px] font-medium text-amber-800 dark:text-amber-300 bg-amber-500/10 dark:neon-badge-yellow px-2 py-0.5 rounded-md mt-1 line-clamp-1 max-w-full">
                 {job.headline && job.headline.trim() ? job.headline : `${job.jobTitle}${job.companyName ? ` at ${job.companyName}` : ''}`}
               </p>
               <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1 min-w-0">
@@ -201,7 +206,7 @@ const JobCard = ({ job, match }) => {
           {showSave && (
             <button
               onClick={() => toggleSaved(job._id)}
-              className={`shrink-0 p-2 rounded-lg transition-colors ${isSaved ? 'text-amber-500 bg-amber-500/10' : 'text-slate-300 dark:text-slate-600 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+              className={`shrink-0 p-2 rounded-lg transition-colors ${isSaved ? 'text-amber-500 bg-amber-500/10' : 'text-slate-300 dark:text-slate-500 hover:text-slate-900 dark:hover:text-pink-300 hover:bg-slate-100 dark:hover:bg-slate-800/80'}`}
               title={isSaved ? 'Remove from saved' : 'Save job'}
             >
               {isSaved ? <FaBookmark className="h-4 w-4" /> : <FaRegBookmark className="h-4 w-4" />}
@@ -213,20 +218,20 @@ const JobCard = ({ job, match }) => {
           {workMode && (() => {
             const ModeIcon = WORK_MODE_BADGES[workMode].icon;
             return (
-              <span className={`badge ${WORK_MODE_BADGES[workMode].cls} dark:bg-slate-800 dark:border-slate-700`}>
+              <span className={`badge ${WORK_MODE_BADGES[workMode].cls} dark:neon-badge-pink`}>
                 <ModeIcon className="h-2.5 w-2.5" />
                 {WORK_MODE_BADGES[workMode].label}
               </span>
             );
           })()}
           {employment && (
-            <span className="badge border bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700">
+            <span className="badge border bg-slate-50 dark:neon-badge-cyan text-slate-600 dark:text-cyan-300">
               <FaBriefcase className="h-2.5 w-2.5" />
               {employment}
             </span>
           )}
           {job.experienceLevel && (
-            <span className="badge border bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700">
+            <span className="badge border bg-slate-50 dark:neon-badge-yellow text-slate-600 dark:text-amber-300">
               {capitalize(job.experienceLevel)}
             </span>
           )}
