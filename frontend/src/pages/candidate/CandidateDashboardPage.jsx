@@ -87,12 +87,13 @@ const CandidateDashboardPage = () => {
     <DashboardLayout title={`Welcome, ${user?.name?.split(' ')[0]}`} subtitle="Real-time career telemetry and opportunity pipeline" navItems={navItems}>
       <div className="space-y-7">
         
-        {/* ── 4 Telemetry Stat Cards with Distinct Sky Blue & Gold Themes ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-          <StatCard icon={FaGaugeHigh}    label="Profile Match"   value={`${profileCompletion}%`}  to="/candidate/profile"      themeIdx={0} />
-          <StatCard icon={FaFileArrowUp}  label="Resume ATS Score" value={`${resumeScore}/100`}     to="/candidate/resume"       themeIdx={1} />
-          <StatCard icon={FaRegBookmark}  label="Saved Jobs"       value={stats.saved}              to="/candidate/saved-jobs"   themeIdx={2} />
-          <StatCard icon={FaBriefcase}    label="Applications"     value={stats.applied}            to="/candidate/applications" themeIdx={3} />
+        {/* ── 5 Telemetry Stat Cards with AI Portfolio Spotlight ── */}
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
+          <StatCard icon={FaWandMagicSparkles} label="Live AI Portfolio" value="Studio"           to="/candidate/portfolio"    themeIdx={0} />
+          <StatCard icon={FaGaugeHigh}         label="Profile Match"     value={`${profileCompletion}%`}  to="/candidate/profile"      themeIdx={1} />
+          <StatCard icon={FaFileArrowUp}       label="Resume ATS Score"  value={`${resumeScore}/100`}     to="/candidate/resume"       themeIdx={2} />
+          <StatCard icon={FaRegBookmark}       label="Saved Jobs"        value={stats.saved}              to="/candidate/saved-jobs"   themeIdx={3} />
+          <StatCard icon={FaBriefcase}         label="Applications"      value={stats.applied}            to="/candidate/applications" themeIdx={0} />
         </div>
 
         {/* ── 1-Click AI Portfolio Studio Banner ── */}

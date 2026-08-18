@@ -13,7 +13,8 @@ import api from '../../services/api';
 const navItems = [
   { to: '/candidate/dashboard',    label: 'Overview',         icon: FaGaugeHigh },
   { to: '/candidate/profile',      label: 'My Profile',       icon: FaUser },
-  { to: '/candidate/recommended',  label: 'Recommended',      icon: FaWandMagicSparkles },
+  { to: '/candidate/portfolio',    label: 'AI Portfolio Studio', icon: FaWandMagicSparkles },
+  { to: '/candidate/recommended',  label: 'Recommended',      icon: FaBriefcase },
   { to: '/candidate/saved-jobs',   label: 'Saved Jobs',       icon: FaRegBookmark },
   { to: '/candidate/applications', label: 'My Applications',  icon: FaBriefcase },
   { to: '/candidate/resume',       label: 'Resume Hub',       icon: FaFileArrowUp },

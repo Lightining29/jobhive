@@ -57,7 +57,17 @@ export const CandidatePortfolioPage = () => {
         setPortfolio(res.data.portfolio);
         setPreviewTheme(res.data.portfolio.theme || 'modern_tech');
       } else {
-        setHasPortfolio(false);
+        // Automatically auto-fetch and generate from candidate dashboard info
+        try {
+          const genRes = await portfolioService.generate();
+          if (genRes?.data?.portfolio) {
+            setPortfolio(genRes.data.portfolio);
+            setHasPortfolio(true);
+            setPreviewTheme(genRes.data.portfolio.theme || 'modern_tech');
+          }
+        } catch {
+          setHasPortfolio(false);
+        }
       }
     } catch (err) {
       toast.error(err.message || 'Failed to fetch portfolio');

@@ -10,7 +10,8 @@ import { EmptyState, LoadingJobs } from '../../components/ui/States';
 const navItems = [
   { to: '/candidate/dashboard',    label: 'Overview',         icon: FaGaugeHigh },
   { to: '/candidate/profile',      label: 'My Profile',       icon: FaUser },
-  { to: '/candidate/recommended',  label: 'Recommended Jobs', icon: FaWandMagicSparkles },
+  { to: '/candidate/portfolio',    label: 'AI Portfolio Studio', icon: FaWandMagicSparkles },
+  { to: '/candidate/recommended',  label: 'Recommended Jobs', icon: FaBriefcase },
   { to: '/candidate/saved-jobs',   label: 'Saved Jobs',       icon: FaRegBookmark },
   { to: '/candidate/applications', label: 'My Applications',  icon: FaBriefcase },
   { to: '/candidate/resume',       label: 'Resume Hub',       icon: FaFileArrowUp },

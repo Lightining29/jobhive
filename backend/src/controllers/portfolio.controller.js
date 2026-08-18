@@ -203,9 +203,9 @@ const generatePortfolio = asyncHandler(async (req, res, next) => {
     verificationUrl: c.link || c.verificationUrl || '',
   }));
 
-  // Clean projects
+  // Clean projects or synthesize from candidate stack
   const projList = Array.isArray(rawUser.projects) ? rawUser.projects : [];
-  const formattedProjects = projList.map((p) => ({
+  let formattedProjects = projList.map((p) => ({
     title: p.title || p.name || 'Software Project',
     description: p.description || 'Full-stack software application built with modern architecture and modular design.',
     problem: p.problem || 'Solving user workflow challenges with real-time digital automation.',
@@ -216,6 +216,20 @@ const generatePortfolio = asyncHandler(async (req, res, next) => {
     liveUrl: p.liveUrl || p.link || '',
     imageUrl: p.imageUrl || '',
   }));
+
+  if (!formattedProjects.length && (skillsList.length || expList.length)) {
+    const topSkills = skillsList.length ? skillsList.slice(0, 4) : ['Full Stack Development', 'REST APIs', 'Cloud Architecture'];
+    formattedProjects.push({
+      title: `${headline || 'Enterprise'} Core Platform`,
+      description: `Engineered a scalable software platform leveraging ${topSkills.join(', ')} to deliver low-latency services, reactive UI components, and reliable data pipelines.`,
+      problem: `Needed an enterprise-grade solution capable of handling high-frequency operations with 99.9% uptime and streamlined state synchronization.`,
+      solution: `Architected clean modular services utilizing modern software patterns with performant caching and secure authentication flows.`,
+      features: ['Modular architecture with clear separation of concerns', 'Low-latency API integration', 'Automated validation and error telemetry'],
+      technologies: topSkills,
+      githubUrl: (rawUser.socialLinks && rawUser.socialLinks.github) || '',
+      liveUrl: (rawUser.socialLinks && rawUser.socialLinks.portfolio) || '',
+    });
+  }
 
   // Extract social links
   const social = rawUser.socialLinks || {};

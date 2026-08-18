@@ -11,6 +11,7 @@ import {
   FaShieldHalved,
   FaSun,
   FaMoon,
+  FaWandMagicSparkles,
 } from 'react-icons/fa6';
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
@@ -58,13 +59,24 @@ const Navbar = () => {
               <p className="text-xs text-slate-500 dark:text-slate-400 truncate capitalize font-medium">{user.role} • {user.email}</p>
             </div>
           </div>
-          <Link
-            to={dashboardPath}
-            onClick={() => setOpen(false)}
-            className="w-full py-2.5 rounded-xl text-xs font-black justify-center shadow-md flex items-center gap-1.5 bg-amber-400 text-slate-950 hover:bg-amber-300 dark:bg-transparent dark:text-[#00f0ff] dark:border-2 dark:border-[#00f0ff] dark:shadow-[0_0_15px_rgba(0,240,255,0.6)]"
-          >
-            Enter Dashboard →
-          </Link>
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <Link
+              to={dashboardPath}
+              onClick={() => setOpen(false)}
+              className="py-2.5 px-3 rounded-xl text-xs font-black text-center shadow-md bg-amber-400 text-slate-950 hover:bg-amber-300 dark:bg-transparent dark:text-[#00f0ff] dark:border-2 dark:border-[#00f0ff] dark:shadow-[0_0_15px_rgba(0,240,255,0.6)]"
+            >
+              Dashboard
+            </Link>
+            {user.role === 'candidate' && (
+              <Link
+                to="/candidate/portfolio"
+                onClick={() => setOpen(false)}
+                className="py-2.5 px-3 rounded-xl text-xs font-black text-center shadow-md bg-gradient-to-r from-cyan-400 to-sky-400 text-slate-950 flex items-center justify-center gap-1.5"
+              >
+                <FaWandMagicSparkles className="h-3 w-3" /> AI Portfolio
+              </Link>
+            )}
+          </div>
         </div>
       ) : null}
 
@@ -321,7 +333,16 @@ const Navbar = () => {
                       ) : (
                         <>
                           <Link to={dashboardPath} onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm font-semibold text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-950/40 hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors">Go to Dashboard</Link>
-                          <Link to="/candidate/saved-jobs" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors">Saved Jobs</Link>
+                          {user.role === 'candidate' && (
+                            <>
+                              <Link to="/candidate/portfolio" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-black text-cyan-400 dark:neon-text-cyan hover:bg-cyan-500/10 transition-colors">
+                                <FaWandMagicSparkles className="h-3.5 w-3.5 text-cyan-400" /> AI Portfolio Studio
+                              </Link>
+                              <Link to="/candidate/profile" onClick={() => setProfileOpen(false)} className="block px-3 py-1.5 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors">My Profile</Link>
+                              <Link to="/candidate/saved-jobs" onClick={() => setProfileOpen(false)} className="block px-3 py-1.5 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors">Saved Jobs</Link>
+                              <Link to="/candidate/applications" onClick={() => setProfileOpen(false)} className="block px-3 py-1.5 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors">My Applications</Link>
+                            </>
+                          )}
                           {user.role === 'recruiter' && (
                             <Link to="/recruiter/post-job" onClick={() => setProfileOpen(false)} className="block px-3 py-2 rounded-xl text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors">Post a Job</Link>
                           )}
