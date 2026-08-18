@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
-  FaBuilding, FaBriefcase, FaUsers, FaCalendarDays, FaGaugeHigh, FaPlus, FaUserTie, FaCircleCheck,
+  FaBuilding, FaBriefcase, FaUsers, FaCalendarDays, FaGaugeHigh, FaPlus, FaUserTie, FaCircleCheck, FaArrowRight,
 } from 'react-icons/fa6';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
 import { recruiterService } from '../../services';
@@ -14,6 +14,13 @@ const navItems = [
   { to: '/recruiter/post-job', label: 'Post a Job', icon: FaPlus },
   { to: '/recruiter/my-jobs', label: 'My Jobs', icon: FaBriefcase },
   { to: '/recruiter/applications', label: 'Applications', icon: FaUsers },
+];
+
+const STAT_THEMES = [
+  { card: 'dark:neon-playing-card-cyan', text: 'dark:neon-text-cyan', badge: 'dark:neon-badge-cyan' },
+  { card: 'dark:neon-playing-card-pink', text: 'dark:neon-text-pink', badge: 'dark:neon-badge-pink' },
+  { card: 'dark:neon-playing-card-yellow', text: 'dark:neon-text-yellow', badge: 'dark:neon-badge-yellow' },
+  { card: 'dark:neon-playing-card-purple', text: 'dark:neon-text-pink', badge: 'dark:neon-badge-pink' },
 ];
 
 const RecruiterDashboardPage = () => {
@@ -37,87 +44,91 @@ const RecruiterDashboardPage = () => {
 
   const stats = [
     { label: 'Total Jobs', value: data?.stats?.totalJobs ?? 0, icon: FaBriefcase, to: '/recruiter/my-jobs' },
-    { label: 'Active Jobs', value: data?.stats?.activeJobs ?? 0, icon: FaCircleCheck, to: '/recruiter/my-jobs' },
+    { label: 'Active Openings', value: data?.stats?.activeJobs ?? 0, icon: FaCircleCheck, to: '/recruiter/my-jobs' },
     { label: 'Applicants', value: data?.stats?.applicants ?? 0, icon: FaUsers, to: '/recruiter/applications' },
     { label: 'Interviews', value: data?.stats?.interviews ?? 0, icon: FaCalendarDays, to: '/recruiter/applications' },
   ];
 
   return (
-    <DashboardLayout title="Recruiter Dashboard" subtitle="Manage your company, jobs, and applicants" navItems={navItems}>
+    <DashboardLayout title="Recruiter Command Hub" subtitle="Talent pipeline, posted roles, and applicant analytics" navItems={navItems}>
       {loading ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => <div key={i} className="card p-5 skeleton h-28" />)}
         </div>
       ) : (
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {stats.map((s) => (
-              <Link key={s.label} to={s.to} className="card card-hover p-5">
-                <span className="h-11 w-11 rounded-xl bg-accent/15 flex items-center justify-center text-ink mb-3">
-                  <s.icon className="h-5 w-5" />
-                </span>
-                <p className="text-2xl font-extrabold">{s.value}</p>
-                <p className="text-sm text-muted">{s.label}</p>
-              </Link>
-            ))}
+        <div className="space-y-7">
+          {/* ── 4 Telemetry Stat Cards ── */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            {stats.map((s, idx) => {
+              const th = STAT_THEMES[idx % STAT_THEMES.length];
+              return (
+                <Link
+                  key={s.label}
+                  to={s.to}
+                  className={`card card-hover p-5 rounded-[22px] ${th.card} shadow-lg transition-all duration-300 hover:scale-105 relative overflow-hidden`}
+                >
+                  <span className={`h-11 w-11 rounded-xl flex items-center justify-center bg-slate-100 dark:bg-black/40 ${th.badge} shadow-md mb-3`}>
+                    <s.icon className="h-5 w-5" />
+                  </span>
+                  <p className={`text-2xl sm:text-3xl font-black ${th.text} text-slate-900 tracking-tight`}>{s.value}</p>
+                  <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-300 mt-0.5">{s.label}</p>
+                </Link>
+              );
+            })}
           </div>
 
           {!data?.company && (
-            <div className="card p-6 bg-accent/10 border-accent/40 flex flex-wrap items-center justify-between gap-4">
+            <div className="p-6 rounded-[24px] bg-white dark:neon-playing-card-yellow border border-slate-200 shadow-xl flex flex-wrap items-center justify-between gap-4">
               <div>
-                <p className="font-bold text-lg">Register your company</p>
-                <p className="text-sm text-muted">You need a company profile before posting jobs.</p>
+                <p className="font-black text-lg text-slate-900 dark:text-white">Register your company profile</p>
+                <p className="text-sm text-slate-500 dark:text-amber-300/80 font-medium">You need a verified company profile before publishing job openings.</p>
               </div>
-              <Link to="/recruiter/company" className="btn-primary">Register Company</Link>
-            </div>
-          )}
-
-          {data?.company && (
-            <div className="card p-5 flex flex-wrap items-center gap-4">
-              <span className="h-14 w-14 rounded-2xl bg-accent/15 flex items-center justify-center text-ink">
-                <FaBuilding className="h-7 w-7" />
-              </span>
-              <div className="flex-1">
-                <p className="font-bold text-lg flex items-center gap-2">
-                  {data.company.name}
-                  {data.company.verified ? (
-                    <span className="badge bg-emerald-50 text-emerald-700 border border-emerald-200"><FaCircleCheck className="h-3 w-3" /> Verified</span>
-                  ) : (
-                    <span className="badge bg-orange-50 text-orange-700 border border-orange-200">Pending verification</span>
-                  )}
-                </p>
-                <p className="text-sm text-muted">{data.company.industry || 'No industry'} • {data.company.headquarters || 'No location'}</p>
-              </div>
-              <Link to="/recruiter/company" className="btn-outline">Edit</Link>
+              <Link to="/recruiter/company" className="px-5 py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 shadow-[0_0_15px_rgba(250,204,21,0.5)] hover:scale-105 transition-all">
+                Register Company
+              </Link>
             </div>
           )}
 
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-bold text-lg">Recent Applications</h2>
-              <Link to="/recruiter/applications" className="text-sm font-semibold text-ink hover:underline">View all</Link>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-black text-xl text-slate-900 dark:text-white flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#00f0ff]" />
+                Recent Applicants
+              </h2>
+              <Link to="/recruiter/applications" className="text-xs sm:text-sm font-bold text-pink-600 dark:neon-text-pink hover:underline flex items-center gap-1">
+                View all <FaArrowRight className="h-3 w-3" />
+              </Link>
             </div>
-            <div className="card overflow-hidden">
-              {data?.recentApplications?.length ? (
-                <div className="divide-y divide-line">
-                  {data.recentApplications.map((app) => (
-                    <div key={app._id} className="p-4 flex flex-wrap items-center gap-3">
-                      <span className="h-9 w-9 rounded-full bg-accent/15 flex items-center justify-center text-ink font-bold text-sm">
-                        <FaUserTie className="h-4 w-4" />
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm truncate">{app.job?.jobTitle}</p>
-                        <p className="text-xs text-muted">Applied {formatDateTime(app.createdAt)}</p>
+            
+            {data?.recentApplications?.length === 0 ? (
+              <div className="p-8 rounded-[24px] bg-white dark:neon-playing-card-cyan text-center border border-slate-200 shadow-xl">
+                <p className="text-sm font-medium text-slate-400">No applicants yet. Post a job to start receiving candidate submissions.</p>
+                <Link to="/recruiter/post-job" className="btn-primary mt-4 !py-2 text-xs font-bold inline-flex">
+                  Post a Job Opening
+                </Link>
+              </div>
+            ) : (
+              <div className="rounded-[24px] bg-white dark:neon-playing-card-pink border border-slate-200 overflow-hidden shadow-xl">
+                <div className="divide-y divide-slate-100 dark:divide-pink-500/20">
+                  {data?.recentApplications?.map((app) => (
+                    <div key={app._id} className="p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-pink-500/5 transition-colors">
+                      <div>
+                        <p className="font-black text-sm text-slate-900 dark:text-white">{app.applicantName || app.candidate?.name}</p>
+                        <p className="text-xs text-slate-500 dark:text-pink-300 font-medium">Applied for <strong className="text-slate-700 dark:text-white">{app.job?.jobTitle}</strong></p>
                       </div>
-                      <span className={`badge border ${STATUS_COLORS[app.status] || STATUS_COLORS.pending}`}>{capitalize(app.status)}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-full dark:neon-badge-yellow">
+                          {app.status}
+                        </span>
+                        <span className="text-xs text-slate-400 font-medium">{formatDateTime(app.createdAt)}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="p-8 text-center text-sm text-muted">No applications yet. Applications will appear here once candidates apply.</div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
+
         </div>
       )}
     </DashboardLayout>
