@@ -17,6 +17,8 @@ import {
   FaHexagonNodes,
 } from 'react-icons/fa6';
 import { FadeIn } from '../ui/Motion';
+import ScrollingClock from '../ui/ScrollingClock';
+import ScrollingNumber from '../ui/ScrollingNumber';
 
 export const DarkHeroParallaxScene = () => {
   const [query, setQuery] = useState('');
@@ -152,8 +154,13 @@ export const DarkHeroParallaxScene = () => {
                 Connect directly with verified tech leaders and AI startups. Real-time matching for Java Developers, Python Engineers, and Remote Specialists worldwide.
               </p>
 
-              {/* Neon Cyan & Pink Glowing Search Command */}
-              <form onSubmit={handleSearch} className="mt-8 max-w-xl">
+              {/* Scrolling Live Digital Clock (Orionix Style Number Scroll) */}
+              <div className="mb-6">
+                <ScrollingClock size="md" neonColor="pink" showTimezone={true} />
+              </div>
+
+              {/* Glowing Search Command Input */}
+              <form onSubmit={handleSearch} className="mt-4 max-w-xl">
                 <div className="relative p-[2px] rounded-2xl bg-gradient-to-r from-[#ff2d87] via-[#a855f7] to-[#00f0ff] shadow-[0_0_35px_rgba(255,45,135,0.45)] transition-all duration-300 focus-within:shadow-[0_0_50px_rgba(0,240,255,0.6)]">
                   <div className="flex items-center gap-2 rounded-[14px] bg-[#070b18]/95 backdrop-blur-2xl p-2 pl-4">
                     <FaMagnifyingGlass className="h-5 w-5 text-cyan-400 shrink-0 drop-shadow-[0_0_8px_#00f0ff]" />
@@ -195,19 +202,25 @@ export const DarkHeroParallaxScene = () => {
                 ))}
               </div>
 
-              {/* Glowing Impact Stats */}
+              {/* Glowing Impact Stats with Rolling Mechanical Digits (Orionix Style) */}
               <div className="grid grid-cols-3 gap-4 mt-10 pt-8 border-t border-slate-800 max-w-xl">
                 <div>
-                  <p className="text-2xl sm:text-3xl font-black neon-text-cyan">10,000+</p>
-                  <p className="text-xs font-bold text-slate-300 mt-1 uppercase tracking-wide">Live Jobs</p>
+                  <div className="h-10 flex items-center">
+                    <ScrollingNumber value="10,480+" height={36} width={20} fontSize="text-xl sm:text-2xl" className="neon-text-cyan" />
+                  </div>
+                  <p className="text-xs font-bold text-slate-300 mt-1 uppercase tracking-wide">Live Tech Jobs</p>
                 </div>
                 <div className="border-l border-slate-800 pl-4">
-                  <p className="text-2xl sm:text-3xl font-black neon-text-pink">₹14–32 LPA</p>
-                  <p className="text-xs font-bold text-slate-300 mt-1 uppercase tracking-wide">Top Salary</p>
+                  <div className="h-10 flex items-center">
+                    <ScrollingNumber value="₹18-34 LPA" height={36} width={20} fontSize="text-xl sm:text-2xl" className="neon-text-pink" />
+                  </div>
+                  <p className="text-xs font-bold text-slate-300 mt-1 uppercase tracking-wide">Avg Package</p>
                 </div>
                 <div className="border-l border-slate-800 pl-4">
-                  <p className="text-2xl sm:text-3xl font-black neon-text-yellow">98.4%</p>
-                  <p className="text-xs font-bold text-slate-300 mt-1 uppercase tracking-wide">AI Match</p>
+                  <div className="h-10 flex items-center">
+                    <ScrollingNumber value="98.7%" height={36} width={20} fontSize="text-xl sm:text-2xl" className="neon-text-yellow" />
+                  </div>
+                  <p className="text-xs font-bold text-slate-300 mt-1 uppercase tracking-wide">AI Accuracy</p>
                 </div>
               </div>
             </FadeIn>
@@ -263,19 +276,19 @@ export const DarkHeroParallaxScene = () => {
                 <span>@aarav.dev • Pune, India</span>
               </p>
 
-              {/* 3-Column Glass Stats Grid (Matching 18 POSTS, 7846 FOLLOWERS) */}
+              {/* 3-Column Glass Stats Grid (Matching 18 POSTS, 7846 FOLLOWERS with Rolling Mechanical Digits) */}
               <div className="grid grid-cols-3 gap-2 w-full mt-5 py-3 border-y border-pink-500/30">
-                <div className="text-center">
-                  <p className="text-base font-black text-white drop-shadow-[0_0_8px_#fff]">12+</p>
+                <div className="text-center flex flex-col items-center">
+                  <ScrollingNumber value="12+" height={24} width={14} fontSize="text-sm font-black" className="neon-text-pink" />
                   <p className="text-[9px] font-bold text-pink-300 uppercase tracking-wider mt-0.5">Years Exp</p>
                 </div>
-                <div className="text-center border-x border-pink-500/30">
-                  <p className="text-base font-black text-amber-300 drop-shadow-[0_0_8px_#ffd700]">₹28 LPA</p>
+                <div className="text-center border-x border-pink-500/30 flex flex-col items-center">
+                  <ScrollingNumber value="₹28L" height={24} width={14} fontSize="text-sm font-black" className="neon-text-yellow" />
                   <p className="text-[9px] font-bold text-slate-300 uppercase tracking-wider mt-0.5">Offered</p>
                 </div>
-                <div className="text-center">
-                  <p className="text-base font-black text-cyan-300 drop-shadow-[0_0_8px_#00f0ff]">99.2%</p>
-                  <p className="text-[9px] font-bold text-cyan-300 uppercase tracking-wider mt-0.5">Match Score</p>
+                <div className="text-center flex flex-col items-center">
+                  <ScrollingNumber value="99%" height={24} width={14} fontSize="text-sm font-black" className="neon-text-cyan" />
+                  <p className="text-[9px] font-bold text-cyan-300 uppercase tracking-wider mt-0.5">Match</p>
                 </div>
               </div>
 
