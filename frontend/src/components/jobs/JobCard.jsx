@@ -172,14 +172,16 @@ const JobCard = ({ job, match }) => {
 
   return (
     <ParallaxCard maxRotation={5} scale={1.015} className="h-full">
-      <div className="card card-hover p-5 flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 dark:shadow-[0_4px_20px_rgba(0,0,0,0.35)] dark:hover:border-primary-500/40 transition-colors duration-300">
+      <div className="card card-hover p-5 flex flex-col h-full bg-white dark:neon-acrylic-pink dark:border-pink-500/60 dark:hover:border-cyan-400 dark:hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] transition-all duration-300 rounded-[24px]">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0">
-            <CompanyLogo logo={job.companyLogo} name={job.companyName} />
+            <div className="p-0.5 rounded-full dark:neon-avatar-ring-pink shrink-0">
+              <CompanyLogo logo={job.companyLogo} name={job.companyName} />
+            </div>
             <div className="min-w-0">
               <Link
                 to={`/jobs/${job._id}`}
-                className="block font-semibold text-slate-900 dark:text-white leading-snug hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                className="block font-black text-slate-900 dark:text-white leading-snug hover:text-primary-600 dark:hover:neon-text-pink transition-all"
                 style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
               >
                 {job.jobTitle}

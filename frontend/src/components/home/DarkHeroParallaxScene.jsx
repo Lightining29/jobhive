@@ -14,6 +14,7 @@ import {
   FaUsers,
   FaArrowRight,
   FaBuilding,
+  FaHexagonNodes,
 } from 'react-icons/fa6';
 import { FadeIn } from '../ui/Motion';
 
@@ -24,9 +25,9 @@ export const DarkHeroParallaxScene = () => {
   const heroRef = useRef(null);
   const navigate = useNavigate();
 
-  const popular = ['Java', 'React', 'Python', 'Remote', 'AI / ML', 'Cloud DevOps', 'High Salary'];
+  const popular = ['Java', 'React', 'Python', 'Remote', 'AI / ML', 'Cloud DevOps', 'Spring Boot'];
 
-  // Scroll-based parallax tracker
+  // Parallax scroll listener
   useEffect(() => {
     let ticking = false;
     const onScroll = () => {
@@ -42,21 +43,20 @@ export const DarkHeroParallaxScene = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // 3D Perspective Mouse Tracker
+  // 3D Perspective interactive mouse listener
   const handleMouseMove = useCallback((e) => {
     if (!heroRef.current) return;
     const rect = heroRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
-    // Normalize -1 to 1
     const nx = x / (rect.width / 2);
     const ny = y / (rect.height / 2);
 
     setMousePos({
-      x: nx * 20, // px translation
-      y: ny * 20,
-      rx: -ny * 10, // deg tilt
-      ry: nx * 10,
+      x: nx * 24, // px offset
+      y: ny * 24,
+      rx: -ny * 12, // deg 3d tilt
+      ry: nx * 12,
     });
   }, []);
 
@@ -78,95 +78,95 @@ export const DarkHeroParallaxScene = () => {
       ref={heroRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative overflow-hidden min-h-[92vh] flex items-center bg-[#070B14] transition-colors duration-500 pt-16 pb-20 select-none"
+      className="relative overflow-hidden min-h-[92vh] flex items-center bg-[#050711] transition-colors duration-500 pt-16 pb-20 select-none"
     >
-      {/* ── 1. Looping Background Video for Dark Mode ───────────────── */}
+      {/* ── 1. Looping High-Tech Particle Video Layer ────────────────── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="w-full h-full object-cover opacity-25 mix-blend-screen scale-105"
+          className="w-full h-full object-cover opacity-30 mix-blend-screen scale-105"
         >
-          {/* Cyberpunk tech particle mesh background video */}
           <source
             src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-code-and-data-31911-large.mp4"
             type="video/mp4"
           />
         </video>
-        {/* Fallback ambient generative neon glow if video is loading */}
+        {/* Deep ambient dark backdrop overlay */}
         <div
-          className="absolute inset-0 opacity-80"
+          className="absolute inset-0 opacity-85"
           style={{
             background:
-              'radial-gradient(ellipse 80% 60% at 50% 10%, rgba(250, 204, 21, 0.12) 0%, rgba(56, 189, 248, 0.08) 40%, rgba(7, 11, 20, 0.95) 85%)',
+              'radial-gradient(ellipse 90% 70% at 50% 15%, rgba(255, 45, 135, 0.12) 0%, rgba(0, 240, 255, 0.10) 35%, rgba(5, 7, 17, 0.96) 80%)',
           }}
         />
       </div>
 
-      {/* ── 2. Background Cyberpunk Grid & Depth Blobs ──────────────── */}
-      <div className="pattern-grid absolute inset-0 opacity-20 pointer-events-none z-1" />
+      {/* ── 2. Ambient Neon Glow Spheres ────────────────────────────── */}
+      <div className="pattern-grid absolute inset-0 opacity-25 pointer-events-none z-1" />
       <div
-        className="aurora-blob -top-32 -left-20 h-[500px] w-[500px] pointer-events-none z-1 will-change-transform opacity-40"
+        className="aurora-blob -top-28 -left-20 h-[520px] w-[520px] pointer-events-none z-1 will-change-transform opacity-60"
         style={{
-          transform: `translateY(${scrollY * 0.15}px) translate(${mousePos.x * 0.5}px, ${mousePos.y * 0.5}px)`,
-          background: 'radial-gradient(circle, rgba(250,204,21,0.3) 0%, rgba(250,204,21,0) 65%)',
+          transform: `translateY(${scrollY * 0.15}px) translate(${mousePos.x * 0.6}px, ${mousePos.y * 0.6}px)`,
+          background: 'radial-gradient(circle, rgba(255,45,135,0.35) 0%, rgba(255,45,135,0) 65%)',
         }}
       />
       <div
-        className="aurora-blob top-1/3 -right-32 h-[550px] w-[550px] pointer-events-none z-1 will-change-transform opacity-30"
+        className="aurora-blob top-1/3 -right-32 h-[550px] w-[550px] pointer-events-none z-1 will-change-transform opacity-50"
         style={{
-          transform: `translateY(${scrollY * -0.2}px) translate(${mousePos.x * -0.4}px, ${mousePos.y * -0.4}px)`,
-          background: 'radial-gradient(circle, rgba(56,189,248,0.25) 0%, rgba(56,189,248,0) 65%)',
+          transform: `translateY(${scrollY * -0.2}px) translate(${mousePos.x * -0.5}px, ${mousePos.y * -0.5}px)`,
+          background: 'radial-gradient(circle, rgba(0,240,255,0.3) 0%, rgba(0,240,255,0) 65%)',
         }}
       />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
-          {/* ── LEFT COLUMN: High-Impact Cyber Command Center ───────── */}
+          {/* ── LEFT: Night Club Style Glowing Neon Typography & Search ── */}
           <div className="lg:col-span-7 text-left">
             <FadeIn>
               {/* Pulsing AI Live Status Badge */}
-              <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-amber-400/40 bg-slate-900/80 backdrop-blur-xl shadow-[0_0_20px_rgba(250,204,21,0.25)] text-amber-300 mb-6">
+              <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-pink-500/60 bg-slate-950/80 backdrop-blur-xl shadow-[0_0_20px_rgba(255,45,135,0.4)] text-pink-300 mb-6">
                 <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-500 opacity-80" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-pink-400" />
                 </span>
                 <span className="text-xs font-black uppercase tracking-widest">
-                  AI Job Telemetry • Live Grid
+                  AI Smart Match • Live Neon Grid
                 </span>
               </div>
 
-              {/* Main Glowing Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight text-white leading-[1.06]">
-                Command Your <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 drop-shadow-[0_0_25px_rgba(250,204,21,0.4)]">
-                  Dream Career
-                </span>{' '}
-                In Tech.
+              {/* Night Club Style Multi-Color Neon Title */}
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.08] mb-4">
+                <span className="neon-text-pink inline-block mr-3">Night</span>
+                <span className="neon-text-cyan inline-block">Careers</span>
+                <br />
+                <span className="text-white font-extrabold text-3xl sm:text-5xl lg:text-6xl tracking-tight mt-2 block">
+                  Find Your <span className="neon-text-yellow">Dream Job</span>
+                </span>
               </h1>
 
-              <p className="text-base sm:text-lg text-slate-300 mt-6 max-w-xl leading-relaxed">
-                Connect directly with verified tech leaders and AI startups. Real-time matching for Java Developers, Python Engineers, and Remote Tech Specialists.
+              <p className="text-base sm:text-lg text-slate-200 mt-6 max-w-xl leading-relaxed">
+                Connect directly with verified tech leaders and AI startups. Real-time matching for Java Developers, Python Engineers, and Remote Specialists worldwide.
               </p>
 
-              {/* Glowing Search Command Input */}
+              {/* Neon Cyan & Pink Glowing Search Command */}
               <form onSubmit={handleSearch} className="mt-8 max-w-xl">
-                <div className="relative p-1 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 shadow-[0_0_30px_rgba(250,204,21,0.3)] transition-all duration-300 focus-within:shadow-[0_0_40px_rgba(250,204,21,0.5)]">
-                  <div className="flex items-center gap-2 rounded-[14px] bg-slate-950/95 backdrop-blur-2xl p-2 pl-4">
-                    <FaMagnifyingGlass className="h-5 w-5 text-amber-400 shrink-0" />
+                <div className="relative p-[2px] rounded-2xl bg-gradient-to-r from-[#ff2d87] via-[#a855f7] to-[#00f0ff] shadow-[0_0_35px_rgba(255,45,135,0.45)] transition-all duration-300 focus-within:shadow-[0_0_50px_rgba(0,240,255,0.6)]">
+                  <div className="flex items-center gap-2 rounded-[14px] bg-[#070b18]/95 backdrop-blur-2xl p-2 pl-4">
+                    <FaMagnifyingGlass className="h-5 w-5 text-cyan-400 shrink-0 drop-shadow-[0_0_8px_#00f0ff]" />
                     <input
                       type="text"
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Java Developer, Cloud, Remote, Pune, Bengaluru..."
-                      className="w-full bg-transparent border-none outline-none text-white text-base placeholder:text-slate-500 py-2.5 pr-2 focus:ring-0"
+                      placeholder="Java Developer, Full Stack, Remote, Pune, Bengaluru..."
+                      className="w-full bg-transparent border-none outline-none text-white text-base placeholder:text-slate-400 py-2.5 pr-2 focus:ring-0"
                     />
                     <button
                       type="submit"
-                      className="shrink-0 px-6 py-3 rounded-xl font-black text-sm bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 shadow-md transition-all duration-200 cursor-pointer flex items-center gap-1.5 hover:scale-105 active:scale-95"
+                      className="shrink-0 px-6 py-3 rounded-xl font-black text-sm bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:from-pink-400 hover:to-amber-300 text-white shadow-[0_0_20px_rgba(255,45,135,0.6)] transition-all duration-200 cursor-pointer flex items-center gap-1.5 hover:scale-105 active:scale-95"
                     >
                       <FaBolt className="h-4 w-4" />
                       Search
@@ -177,135 +177,174 @@ export const DarkHeroParallaxScene = () => {
 
               {/* Popular Glowing Neon Keyword Pills */}
               <div className="flex flex-wrap items-center gap-2 mt-6">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1">Trending:</span>
-                {popular.map((item) => (
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1">Hot Skills:</span>
+                {popular.map((item, idx) => (
                   <Link
                     key={item}
                     to={`/jobs?search=${encodeURIComponent(item)}`}
-                    className="text-xs font-bold px-3 py-1.5 rounded-lg backdrop-blur-md bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-amber-300 hover:border-amber-400/50 hover:shadow-[0_0_15px_rgba(250,204,21,0.25)] transition-all duration-200"
+                    className={`text-xs font-bold px-3 py-1.5 rounded-lg backdrop-blur-md bg-slate-900/80 border transition-all duration-200 ${
+                      idx % 3 === 0
+                        ? 'border-pink-500/50 text-pink-300 hover:border-pink-400 hover:shadow-[0_0_15px_rgba(255,45,135,0.4)]'
+                        : idx % 3 === 1
+                        ? 'border-cyan-500/50 text-cyan-300 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(0,240,255,0.4)]'
+                        : 'border-amber-400/50 text-amber-300 hover:border-amber-300 hover:shadow-[0_0_15px_rgba(250,204,21,0.4)]'
+                    }`}
                   >
                     {item}
                   </Link>
                 ))}
               </div>
 
-              {/* Live Impact Counters */}
-              <div className="grid grid-cols-3 gap-4 mt-10 pt-8 border-t border-slate-800/80 max-w-xl">
+              {/* Glowing Impact Stats */}
+              <div className="grid grid-cols-3 gap-4 mt-10 pt-8 border-t border-slate-800 max-w-xl">
                 <div>
-                  <p className="text-2xl sm:text-3xl font-black text-white">10,000+</p>
-                  <p className="text-xs font-semibold text-slate-400 mt-0.5">Verified Roles</p>
+                  <p className="text-2xl sm:text-3xl font-black neon-text-cyan">10,000+</p>
+                  <p className="text-xs font-bold text-slate-300 mt-1 uppercase tracking-wide">Live Jobs</p>
                 </div>
                 <div className="border-l border-slate-800 pl-4">
-                  <p className="text-2xl sm:text-3xl font-black text-amber-400">₹14–32 LPA</p>
-                  <p className="text-xs font-semibold text-slate-400 mt-0.5">Avg Tech Salary</p>
+                  <p className="text-2xl sm:text-3xl font-black neon-text-pink">₹14–32 LPA</p>
+                  <p className="text-xs font-bold text-slate-300 mt-1 uppercase tracking-wide">Top Salary</p>
                 </div>
                 <div className="border-l border-slate-800 pl-4">
-                  <p className="text-2xl sm:text-3xl font-black text-emerald-400">98.4%</p>
-                  <p className="text-xs font-semibold text-slate-400 mt-0.5">AI Match Ratio</p>
+                  <p className="text-2xl sm:text-3xl font-black neon-text-yellow">98.4%</p>
+                  <p className="text-xs font-bold text-slate-300 mt-1 uppercase tracking-wide">AI Match</p>
                 </div>
               </div>
             </FadeIn>
           </div>
 
-          {/* ── RIGHT COLUMN: Multi-Plane 3D Parallax Hologram Scene ─── */}
-          <div className="lg:col-span-5 relative flex items-center justify-center min-h-[460px] perspective-1200">
+          {/* ── RIGHT: Authentic Transparent Neon Acrylic Glass Card ─────── */}
+          {/* Matches the Paloma Branches Reference Image */}
+          <div className="lg:col-span-5 relative flex items-center justify-center min-h-[500px] perspective-1200">
             
-            {/* Center Anchor: 3D Holographic Verified Candidate Card with Neon Border */}
+            {/* Center Anchor Card: Holographic Transparent Neon Pink Glass */}
             <div
               style={{
                 transform: `rotateX(${mousePos.rx}deg) rotateY(${mousePos.ry}deg) translate3d(${mousePos.x * 0.8}px, ${mousePos.y * 0.8}px, 30px)`,
                 transition: 'transform 0.12s ease-out',
               }}
-              className="w-full max-w-[370px] rounded-3xl p-6 backdrop-blur-2xl bg-slate-900/85 border border-cyan-500/40 shadow-[0_0_40px_rgba(56,189,248,0.25)] relative z-20"
+              className="w-full max-w-[340px] sm:max-w-[360px] rounded-[32px] p-6 neon-acrylic-pink relative z-20 flex flex-col items-center text-center select-none"
             >
-              {/* Glowing Top Chip */}
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-400">
-                    <FaCode className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-black text-white">Lead Java Architect</p>
-                    <p className="text-[10px] text-slate-400">Full-Stack Cloud Core</p>
-                  </div>
+              {/* Top Neon Hexagon Icon (like Instagram icon in reference) */}
+              <div className="w-full flex items-center justify-between mb-4">
+                <div className="h-10 w-10 rounded-2xl border-2 border-pink-500 flex items-center justify-center text-pink-400 shadow-[0_0_15px_#ff2d87,inset_0_0_8px_#ff2d87]">
+                  <FaHexagonNodes className="h-5 w-5" />
                 </div>
-                <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
-                  <FaCircleCheck className="h-2.5 w-2.5" /> 99% Match
+                <span className="text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/60 shadow-[0_0_12px_rgba(255,45,135,0.4)]">
+                  Verified Candidate
                 </span>
               </div>
 
-              {/* Skills Tags */}
-              <div className="space-y-2 mb-5">
-                <div className="flex justify-between text-xs font-semibold">
-                  <span className="text-slate-300">Java • Spring Boot • Microservices</span>
-                  <span className="text-amber-400 font-black">₹24 LPA</span>
+              {/* Glowing Circular Avatar with Neon Pink Halo Ring */}
+              <div className="relative my-2">
+                <div className="h-28 w-28 rounded-full overflow-hidden neon-avatar-ring-pink p-1 bg-slate-950">
+                  <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"
+                    alt="Verified Candidate"
+                    className="h-full w-full object-cover rounded-full"
+                  />
                 </div>
-                <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-cyan-400 to-amber-400 w-11/12 rounded-full animate-pulse" />
+                <span className="absolute bottom-1 right-1 h-6 w-6 rounded-full bg-emerald-500 border-2 border-slate-950 shadow-[0_0_10px_#10b981] flex items-center justify-center text-slate-950 text-xs">
+                  <FaCircleCheck className="h-3.5 w-3.5 text-white" />
+                </span>
+              </div>
+
+              {/* Candidate Name in Crisp Glowing White Font */}
+              <h3 className="text-xl sm:text-2xl font-black text-white mt-3 tracking-tight drop-shadow-[0_0_12px_rgba(255,255,255,0.7)]">
+                Aarav Sharma
+              </h3>
+              <p className="text-xs font-bold text-pink-300 tracking-wide mt-0.5">
+                Lead Java & AI Architect
+              </p>
+
+              {/* Profile Handle */}
+              <p className="text-xs font-semibold text-slate-300 mt-2 flex items-center gap-1.5">
+                <FaCode className="h-3.5 w-3.5 text-pink-400" />
+                <span>@aarav.dev • Pune, India</span>
+              </p>
+
+              {/* 3-Column Glass Stats Grid (Matching 18 POSTS, 7846 FOLLOWERS) */}
+              <div className="grid grid-cols-3 gap-2 w-full mt-5 py-3 border-y border-pink-500/30">
+                <div className="text-center">
+                  <p className="text-base font-black text-white drop-shadow-[0_0_8px_#fff]">12+</p>
+                  <p className="text-[9px] font-bold text-pink-300 uppercase tracking-wider mt-0.5">Years Exp</p>
+                </div>
+                <div className="text-center border-x border-pink-500/30">
+                  <p className="text-base font-black text-amber-300 drop-shadow-[0_0_8px_#ffd700]">₹28 LPA</p>
+                  <p className="text-[9px] font-bold text-slate-300 uppercase tracking-wider mt-0.5">Offered</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-base font-black text-cyan-300 drop-shadow-[0_0_8px_#00f0ff]">99.2%</p>
+                  <p className="text-[9px] font-bold text-cyan-300 uppercase tracking-wider mt-0.5">Match Score</p>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-2.5">
+              {/* Glowing Email / Contact Line */}
+              <p className="text-[11px] font-medium text-slate-300 mt-3.5 tracking-tight">
+                aarav.sharma.dev@jobworkplace.com
+              </p>
+
+              {/* Bottom Quick Action */}
+              <div className="w-full mt-4 flex gap-2">
                 <Link
                   to="/jobs"
-                  className="flex-1 py-2.5 rounded-xl font-extrabold text-xs text-center bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-[0_0_15px_rgba(250,204,21,0.3)] transition-all flex items-center justify-center gap-1.5"
+                  className="flex-1 py-2.5 rounded-xl font-extrabold text-xs bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 text-white shadow-[0_0_18px_rgba(255,45,135,0.6)] transition-all flex items-center justify-center gap-1.5"
                 >
-                  <FaBolt className="h-3 w-3" /> Quick Apply
+                  <FaBolt className="h-3 w-3" /> Hire Candidate
                 </Link>
                 <Link
-                  to="/candidate/resume-upload"
-                  className="py-2.5 px-3 rounded-xl font-bold text-xs bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 transition-all flex items-center justify-center"
+                  to="/auth/register"
+                  className="py-2.5 px-3.5 rounded-xl font-bold text-xs bg-slate-900/80 hover:bg-slate-800 text-white border border-pink-500/40 transition-all flex items-center justify-center shadow-xs"
                 >
-                  AI Resume Scan
+                  Get Smart I-Card
                 </Link>
               </div>
             </div>
 
-            {/* Parallax Layer 2: Floating Remote OK Neon Badge (Top-Left) */}
+            {/* Parallax Floating Layer 2: Neon Cyan Acrylic Badge (Top-Left) */}
             <div
               style={{
-                transform: `translate3d(${mousePos.x * -1.2}px, ${mousePos.y * -1.2 - scrollY * 0.1}px, 60px) rotate(-4deg)`,
+                transform: `translate3d(${mousePos.x * -1.3}px, ${mousePos.y * -1.3 - scrollY * 0.1}px, 60px) rotate(-5deg)`,
                 transition: 'transform 0.15s ease-out',
               }}
-              className="absolute -top-6 -left-6 sm:-left-10 z-30 p-3.5 rounded-2xl backdrop-blur-xl bg-slate-900/90 border border-amber-400/50 shadow-[0_0_25px_rgba(250,204,21,0.3)] flex items-center gap-3"
+              className="absolute -top-6 -left-6 sm:-left-10 z-30 p-3.5 rounded-2xl neon-acrylic-cyan flex items-center gap-3"
             >
-              <span className="h-10 w-10 rounded-xl bg-amber-400/20 text-amber-300 border border-amber-400/30 flex items-center justify-center">
-                <FaGlobe className="h-5 w-5 animate-spin-slow" />
+              <span className="h-10 w-10 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400 flex items-center justify-center shadow-[0_0_12px_#00f0ff]">
+                <FaGlobe className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-xs font-black text-white">100% Remote Hub</p>
-                <p className="text-[10px] text-amber-300 font-semibold">Worldwide & India</p>
+                <p className="text-xs font-black text-white drop-shadow-[0_0_8px_#fff]">100% Remote Hub</p>
+                <p className="text-[10px] text-cyan-300 font-bold">Worldwide & India</p>
               </div>
             </div>
 
-            {/* Parallax Layer 3: Floating High Compensation Badge (Bottom-Right) */}
+            {/* Parallax Floating Layer 3: Neon Gold Acrylic Badge (Bottom-Right) */}
             <div
               style={{
-                transform: `translate3d(${mousePos.x * 1.4}px, ${mousePos.y * 1.4 + scrollY * 0.08}px, 70px) rotate(3deg)`,
+                transform: `translate3d(${mousePos.x * 1.5}px, ${mousePos.y * 1.5 + scrollY * 0.08}px, 70px) rotate(4deg)`,
                 transition: 'transform 0.15s ease-out',
               }}
-              className="absolute -bottom-8 -right-4 sm:-right-8 z-30 p-3.5 rounded-2xl backdrop-blur-xl bg-slate-900/90 border border-emerald-400/50 shadow-[0_0_25px_rgba(16,185,129,0.3)] flex items-center gap-3"
+              className="absolute -bottom-8 -right-4 sm:-right-8 z-30 p-3.5 rounded-2xl neon-acrylic-yellow flex items-center gap-3"
             >
-              <span className="h-10 w-10 rounded-xl bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 flex items-center justify-center">
+              <span className="h-10 w-10 rounded-xl bg-amber-400/20 text-amber-300 border border-amber-400 flex items-center justify-center shadow-[0_0_12px_#ffd700]">
                 <FaSackDollar className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-xs font-black text-white">Instant Hiring</p>
-                <p className="text-[10px] text-emerald-300 font-semibold">Verified Employers</p>
+                <p className="text-xs font-black text-white drop-shadow-[0_0_8px_#fff]">Instant Hiring</p>
+                <p className="text-[10px] text-amber-300 font-bold">500+ Top Employers</p>
               </div>
             </div>
 
-            {/* Parallax Layer 4: Floating Tech Nodes Ring (Top-Right) */}
+            {/* Parallax Floating Layer 4: Neon Purple Hot Badge (Top-Right) */}
             <div
               style={{
-                transform: `translate3d(${mousePos.x * -0.7}px, ${mousePos.y * -0.7}px, 40px)`,
+                transform: `translate3d(${mousePos.x * -0.8}px, ${mousePos.y * -0.8}px, 45px)`,
                 transition: 'transform 0.18s ease-out',
               }}
-              className="absolute top-8 right-0 sm:-right-4 z-10 p-2.5 rounded-xl backdrop-blur-md bg-slate-900/70 border border-cyan-500/30 shadow-md text-cyan-300 flex items-center gap-2 text-xs font-bold"
+              className="absolute top-6 right-0 sm:-right-4 z-10 p-2.5 rounded-xl neon-acrylic-purple text-purple-300 flex items-center gap-2 text-xs font-bold"
             >
-              <FaFire className="h-4 w-4 text-rose-400" />
-              <span>320+ Jobs Posted Today</span>
+              <FaFire className="h-4 w-4 text-pink-400 animate-pulse" />
+              <span className="text-white drop-shadow-[0_0_6px_#c084fc]">320+ Hot Jobs Today</span>
             </div>
 
           </div>
@@ -313,7 +352,7 @@ export const DarkHeroParallaxScene = () => {
       </div>
 
       {/* Bottom Gradient Fade */}
-      <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[#070B14] to-transparent pointer-events-none z-10" />
+      <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[#050711] to-transparent pointer-events-none z-10" />
     </section>
   );
 };

@@ -504,32 +504,127 @@
   animation-play-state: paused !important;
 }
 
-/* ===== Cyberpunk & Neon Glassmorphism Utilities ===== */
-.neon-glass-card {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45), 0 0 15px rgba(56, 189, 248, 0.12);
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+/* ===== Cyberpunk & Neon Glow Typography (Night Club Style) ===== */
+.neon-text-pink {
+  color: #ffffff !important;
+  text-shadow:
+    0 0 4px #ffffff,
+    0 0 10px #ff2d87,
+    0 0 20px #ff2d87,
+    0 0 35px #ff0055,
+    0 0 55px #ff0055,
+    0 0 80px #e60050 !important;
 }
 
-.neon-glass-card:hover {
-  border-color: rgba(250, 204, 21, 0.6);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.65), 0 0 25px rgba(250, 204, 21, 0.3), inset 0 0 15px rgba(250, 204, 21, 0.08);
-  transform: translateY(-4px);
+.neon-text-cyan {
+  color: #ffffff !important;
+  text-shadow:
+    0 0 4px #ffffff,
+    0 0 10px #00f0ff,
+    0 0 20px #00f0ff,
+    0 0 35px #00b4d8,
+    0 0 55px #0096c7,
+    0 0 80px #0077b6 !important;
 }
 
-.neon-glow-amber {
-  box-shadow: 0 0 25px rgba(250, 204, 21, 0.35), inset 0 0 12px rgba(250, 204, 21, 0.15);
+.neon-text-yellow {
+  color: #ffffff !important;
+  text-shadow:
+    0 0 4px #ffffff,
+    0 0 10px #ffd700,
+    0 0 20px #ffb700,
+    0 0 35px #ff9500,
+    0 0 55px #ff8000 !important;
 }
 
-.neon-glow-cyan {
-  box-shadow: 0 0 25px rgba(56, 189, 248, 0.35), inset 0 0 12px rgba(56, 189, 248, 0.15);
+.neon-text-emerald {
+  color: #ffffff !important;
+  text-shadow:
+    0 0 4px #ffffff,
+    0 0 10px #00ff88,
+    0 0 20px #00ff88,
+    0 0 35px #00cc66,
+    0 0 55px #009944 !important;
 }
 
-.neon-glow-emerald {
-  box-shadow: 0 0 25px rgba(16, 185, 129, 0.35), inset 0 0 12px rgba(16, 185, 129, 0.15);
+/* ===== Authentic Holographic Transparent Neon Glass Card (Matching Paloma Branches Ref) ===== */
+.neon-acrylic-pink {
+  background: rgba(10, 14, 30, 0.45) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1.5px solid rgba(255, 45, 135, 0.85) !important;
+  box-shadow:
+    0 0 22px rgba(255, 45, 135, 0.5),
+    0 0 45px rgba(255, 45, 135, 0.25),
+    inset 0 0 18px rgba(255, 45, 135, 0.25),
+    0 16px 45px rgba(0, 0, 0, 0.8) !important;
+}
+
+.neon-acrylic-cyan {
+  background: rgba(8, 16, 32, 0.45) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1.5px solid rgba(0, 240, 255, 0.85) !important;
+  box-shadow:
+    0 0 22px rgba(0, 240, 255, 0.5),
+    0 0 45px rgba(0, 240, 255, 0.25),
+    inset 0 0 18px rgba(0, 240, 255, 0.25),
+    0 16px 45px rgba(0, 0, 0, 0.8) !important;
+}
+
+.neon-acrylic-yellow {
+  background: rgba(18, 16, 10, 0.45) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1.5px solid rgba(250, 204, 21, 0.85) !important;
+  box-shadow:
+    0 0 22px rgba(250, 204, 21, 0.5),
+    0 0 45px rgba(250, 204, 21, 0.25),
+    inset 0 0 18px rgba(250, 204, 21, 0.25),
+    0 16px 45px rgba(0, 0, 0, 0.8) !important;
+}
+
+.neon-acrylic-purple {
+  background: rgba(18, 10, 32, 0.45) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 1.5px solid rgba(192, 132, 252, 0.85) !important;
+  box-shadow:
+    0 0 22px rgba(192, 132, 252, 0.5),
+    0 0 45px rgba(192, 132, 252, 0.25),
+    inset 0 0 18px rgba(192, 132, 252, 0.25),
+    0 16px 45px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Neon Avatar Halo Ring */
+.neon-avatar-ring-pink {
+  border: 2.5px solid #ff2d87;
+  box-shadow:
+    0 0 15px #ff2d87,
+    0 0 30px rgba(255, 45, 135, 0.6),
+    inset 0 0 10px #ff2d87;
+}
+
+.neon-avatar-ring-cyan {
+  border: 2.5px solid #00f0ff;
+  box-shadow:
+    0 0 15px #00f0ff,
+    0 0 30px rgba(0, 240, 255, 0.6),
+    inset 0 0 10px #00f0ff;
+}
+
+/* Global Dark Mode Card Glow */
+.dark .card {
+  background-color: rgba(11, 15, 29, 0.7) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 45, 135, 0.3) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 12px rgba(255, 45, 135, 0.15) !important;
+}
+
+.dark .card:hover {
+  border-color: rgba(0, 240, 255, 0.7) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7), 0 0 22px rgba(0, 240, 255, 0.4), inset 0 0 12px rgba(0, 240, 255, 0.15) !important;
 }
 
 @keyframes neonBorderRotate {
