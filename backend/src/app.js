@@ -113,12 +113,24 @@ app.use('/api/news',      require('./routes/careerNews.routes'));
 app.use('/api/cards', apiLimiter, require('./routes/cards.routes'));
 app.use('/api/ai',    apiLimiter, require('./routes/ai.routes'));
 
-// ── Dynamic SEO Endpoints ─────────────────────────────────────────
+// ── Dynamic SEO Endpoints (Strictly No-Localhost in Sitemaps) ───────
+const resolveProductionSiteUrl = (req) => {
+  const host = req.get('x-forwarded-host') || req.get('host') || '';
+  if (host && !host.includes('localhost') && !host.includes('127.0.0.1') && !host.includes('0.0.0.0')) {
+    const proto = req.get('x-forwarded-proto') || (req.secure ? 'https' : 'https');
+    return `${proto}://${host}`;
+  }
+  if (env.clientUrl && !env.clientUrl.includes('localhost') && !env.clientUrl.includes('127.0.0.1')) {
+    return env.clientUrl.replace(/\/$/, '');
+  }
+  return 'https://jobworkplace.com';
+};
+
 app.get('/sitemap.xml', async (req, res) => {
   try {
     const Job = require('./models/Job');
     const jobs = await Job.find({ status: 'active' }).select('_id updatedAt createdAt').sort({ updatedAt: -1 }).limit(1000).lean();
-    const siteUrl = env.clientUrl ? env.clientUrl.replace(/\/$/, '') : 'https://jobworkplace.com';
+    const siteUrl = resolveProductionSiteUrl(req);
     
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
     
@@ -159,7 +171,7 @@ app.get('/sitemap.xml', async (req, res) => {
 });
 
 app.get('/robots.txt', (req, res) => {
-  const siteUrl = env.clientUrl ? env.clientUrl.replace(/\/$/, '') : 'https://jobworkplace.com';
+  const siteUrl = resolveProductionSiteUrl(req);
   res.type('text/plain');
   res.send(`User-agent: *\nAllow: /\nAllow: /jobs\nAllow: /jobs/*\nAllow: /about\nAllow: /career-news\n\nDisallow: /candidate/\nDisallow: /recruiter/\nDisallow: /admin/\nDisallow: /auth/\nDisallow: /api/\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
 });

@@ -39,8 +39,25 @@ export const SEOHead = ({
     setMetaTag('name', 'author', 'Job Workplace by Appletree Infotech');
     setMetaTag('name', 'robots', noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
 
+    // Helper to get real production origin (never localhost)
+    const getCleanOrigin = () => {
+      if (typeof window === 'undefined') return 'https://jobworkplace.com';
+      const org = window.location.origin;
+      if (!org || org.includes('localhost') || org.includes('127.0.0.1') || org.includes('0.0.0.0')) {
+        return 'https://jobworkplace.com';
+      }
+      return org.replace(/\/$/, '');
+    };
+
+    const cleanOrigin = getCleanOrigin();
+
     // 3. Canonical URL
-    const currentUrl = canonicalUrl || window.location.href.split('#')[0];
+    let currentUrl = canonicalUrl;
+    if (!currentUrl) {
+      const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+      const search = typeof window !== 'undefined' ? window.location.search : '';
+      currentUrl = `${cleanOrigin}${pathname}${search}`;
+    }
     let canonicalLink = document.querySelector('link[rel="canonical"]');
     if (!canonicalLink) {
       canonicalLink = document.createElement('link');
@@ -50,7 +67,7 @@ export const SEOHead = ({
     canonicalLink.setAttribute('href', currentUrl);
 
     // 4. OpenGraph Tags
-    const fullOgImage = ogImage?.startsWith('http') ? ogImage : `${window.location.origin}${ogImage.startsWith('/') ? ogImage : `/${ogImage}`}`;
+    const fullOgImage = ogImage?.startsWith('http') ? ogImage : `${cleanOrigin}${ogImage.startsWith('/') ? ogImage : `/${ogImage}`}`;
     setMetaTag('property', 'og:title', formattedTitle);
     setMetaTag('property', 'og:description', description);
     setMetaTag('property', 'og:url', currentUrl);
@@ -83,24 +100,24 @@ export const SEOHead = ({
         '@graph': [
           {
             '@type': 'Organization',
-            '@id': `${window.location.origin}/#organization`,
+            '@id': `${cleanOrigin}/#organization`,
             'name': 'Job Workplace',
             'alternateName': 'JobHive',
-            'url': window.location.origin,
-            'logo': `${window.location.origin}/favicon.svg`,
+            'url': cleanOrigin,
+            'logo': `${cleanOrigin}/favicon.svg`,
             'description': 'AI-driven employment marketplace connecting candidates with verified tech & non-tech job opportunities.',
           },
           {
             '@type': 'WebSite',
-            '@id': `${window.location.origin}/#website`,
-            'url': window.location.origin,
+            '@id': `${cleanOrigin}/#website`,
+            'url': cleanOrigin,
             'name': 'Job Workplace',
-            'publisher': { '@id': `${window.location.origin}/#organization` },
+            'publisher': { '@id': `${cleanOrigin}/#organization` },
             'potentialAction': {
               '@type': 'SearchAction',
               'target': {
                 '@type': 'EntryPoint',
-                'urlTemplate': `${window.location.origin}/jobs?search={search_term_string}`,
+                'urlTemplate': `${cleanOrigin}/jobs?search={search_term_string}`,
               },
               'query-input': 'required name=search_term_string',
             },
