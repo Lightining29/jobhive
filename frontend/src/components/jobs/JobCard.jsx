@@ -79,21 +79,35 @@ export const CompanyLogo = ({ logo, name, size = 'md', className = '' }) => {
   const sizes = { sm: 'h-9 w-9 rounded-lg', md: 'h-12 w-12 rounded-xl', lg: 'h-16 w-16 rounded-2xl' };
   const textSizes = { sm: 'text-[11px]', md: 'text-sm', lg: 'text-2xl' };
   const [imgError, setImgError] = React.useState(false);
+  const [fallbackAttempted, setFallbackAttempted] = React.useState(false);
 
-  if (logo && !imgError) {
+  // Clean company name to attempt direct brand logo if custom logo not provided or broken
+  const cleanName = name ? name.trim().toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+  const brandFallbackUrl = cleanName && cleanName.length > 1 ? `https://logo.clearbit.com/${cleanName}.com` : null;
+
+  const currentSrc = !imgError && logo ? logo : (!fallbackAttempted && brandFallbackUrl ? brandFallbackUrl : null);
+
+  if (currentSrc) {
     return (
       <img
-        src={logo}
+        src={currentSrc}
         alt={name ? `${name} company logo - Hiring on Job Workplace` : 'Company Logo - Job Workplace'}
         loading="lazy"
-        onError={() => setImgError(true)}
-        className={`${sizes[size]} object-cover border border-line bg-white shadow-sm ${className}`}
+        referrerPolicy="no-referrer"
+        onError={() => {
+          if (!fallbackAttempted && brandFallbackUrl && currentSrc !== brandFallbackUrl) {
+            setFallbackAttempted(true);
+          } else {
+            setImgError(true);
+          }
+        }}
+        className={`${sizes[size]} object-contain p-1.5 bg-white dark:bg-[#070e24] border border-slate-200 dark:border-2 dark:border-[#00f0ff] dark:shadow-[0_0_12px_rgba(0,240,255,0.6)] shadow-sm ${className}`}
       />
     );
   }
 
   return (
-    <div className={`${sizes[size]} flex items-center justify-center bg-gradient-to-br from-accent/20 to-accent/10 border border-accent/30 dark:bg-[#070e24] dark:border-2 dark:border-[#00f0ff] dark:shadow-[0_0_16px_rgba(0,240,255,0.7)] ${className}`}>
+    <div className={`${sizes[size]} flex items-center justify-center bg-gradient-to-br from-accent/20 to-accent/10 border border-accent/30 dark:bg-[#070e24] dark:border-2 dark:border-[#00f0ff] dark:shadow-[0_0_14px_rgba(0,240,255,0.6)] ${className}`}>
       {name ? (
         <span className={`${textSizes[size]} font-black text-ink dark:text-[#00f0ff] dark:neon-text-cyan leading-none`}>{initials(name)}</span>
       ) : (

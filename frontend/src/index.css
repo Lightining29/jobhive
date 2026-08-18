@@ -706,26 +706,28 @@
     inset 0 0 8px #00f0ff;
 }
 
-/* Global Dark Mode Card Glow - SKY BLUE NEON DEFAULT WITHOUT HOVER */
+/* Global Dark Mode Card Glow - Moderate Sky Blue by default, Hyper-Bright on Hover */
 .dark .card {
   background-color: rgba(4, 8, 22, 0.96) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
-  border: 2px solid #00f0ff !important;
+  border: 1.5px solid rgba(0, 240, 255, 0.5) !important;
   box-shadow:
-    0 0 18px rgba(0, 240, 255, 0.85),
-    0 0 35px rgba(0, 240, 255, 0.4),
-    inset 0 0 14px rgba(0, 240, 255, 0.2),
-    0 8px 30px rgba(0, 0, 0, 0.85) !important;
+    0 0 10px rgba(0, 240, 255, 0.35),
+    inset 0 0 8px rgba(0, 240, 255, 0.15),
+    0 4px 18px rgba(0, 0, 0, 0.75) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .dark .card:hover {
-  border-color: #38bdf8 !important;
+  border-color: #00f0ff !important;
+  border-width: 2px !important;
   box-shadow:
-    0 0 25px rgba(0, 240, 255, 1),
-    0 0 50px rgba(0, 240, 255, 0.65),
-    inset 0 0 18px rgba(0, 240, 255, 0.35),
+    0 0 26px rgba(0, 240, 255, 0.95),
+    0 0 55px rgba(0, 240, 255, 0.55),
+    inset 0 0 16px rgba(0, 240, 255, 0.35),
     0 12px 40px rgba(0, 0, 0, 0.95) !important;
+  transform: translateY(-2px);
 }
 
 @keyframes neonBorderRotate {
