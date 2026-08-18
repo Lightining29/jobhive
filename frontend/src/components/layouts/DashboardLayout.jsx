@@ -18,40 +18,40 @@ const DashboardLayout = ({ title, subtitle, navItems, children }) => {
   return (
     <div className="min-h-screen w-full relative bg-[#F8FAFC] dark:bg-[#030712] text-slate-900 dark:text-white transition-colors duration-300 overflow-x-hidden">
       
-      {/* ── 1. Full-Screen Outer Neon Laser Border (Dark Mode Only) ── */}
-      <div className="hidden dark:block fixed inset-2 sm:inset-3 pointer-events-none rounded-[28px] sm:rounded-[36px] border-2 border-[#ff2d87]/60 shadow-[0_0_25px_rgba(255,45,135,0.4),inset_0_0_20px_rgba(0,240,255,0.2)] z-30 opacity-80" />
+      {/* ── 1. Full-Screen Outer Neon Sky Blue Laser Border (Dark Mode Only) ── */}
+      <div className="hidden dark:block fixed inset-2 sm:inset-3 pointer-events-none rounded-[28px] sm:rounded-[36px] border-2 border-[#00f0ff] shadow-[0_0_35px_rgba(0,240,255,0.75),inset_0_0_25px_rgba(0,240,255,0.35)] z-30 opacity-90" />
 
-      {/* ── 2. Ambient Neon Lighting Pools ─────────────────────────── */}
-      <div className="hidden dark:block absolute top-0 left-1/4 w-96 h-96 bg-purple-600/15 rounded-full blur-[140px] pointer-events-none" />
-      <div className="hidden dark:block absolute top-1/3 right-10 w-[450px] h-[450px] bg-pink-600/15 rounded-full blur-[150px] pointer-events-none" />
+      {/* ── 2. Ambient Sky Blue & Cyan Neon Lighting Pools ─────────── */}
+      <div className="hidden dark:block absolute top-0 left-1/4 w-[480px] h-[480px] bg-cyan-500/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="hidden dark:block absolute top-1/3 right-10 w-[450px] h-[450px] bg-sky-500/15 rounded-full blur-[150px] pointer-events-none" />
       <div className="hidden dark:block absolute bottom-10 left-10 w-[500px] h-[500px] bg-cyan-600/15 rounded-full blur-[160px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 relative z-10">
         
         {/* ── Dashboard Top Header with Neon Avatar & Badges ───────── */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8 p-5 sm:p-6 rounded-[28px] bg-white dark:bg-[#080C1B]/90 border border-slate-200 dark:border-pink-500/50 shadow-md dark:shadow-[0_0_25px_rgba(255,45,135,0.25)] backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8 p-5 sm:p-6 rounded-[28px] bg-white dark:bg-[#080C1B]/95 border border-slate-200 dark:border-cyan-500/50 shadow-md dark:shadow-[0_0_25px_rgba(0,240,255,0.3)] backdrop-blur-xl">
           <div className="flex items-center gap-4 min-w-0">
             {user?.avatar ? (
               <img
                 src={formatAvatarUrl(user.avatar)}
                 alt={user.name || ''}
                 referrerPolicy="no-referrer"
-                className="h-14 w-14 rounded-full object-cover border-2 border-primary-500 dark:neon-avatar-ring-pink shadow-md shrink-0"
+                className="h-14 w-14 rounded-full object-cover border-2 border-primary-500 dark:neon-avatar-ring-cyan shadow-md shrink-0"
                 onError={(e) => {
                   e.target.style.display = 'none';
                   if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
                 }}
               />
             ) : null}
-            <div className={`h-14 w-14 rounded-full bg-primary-600 dark:bg-gradient-to-tr dark:from-pink-500 dark:to-cyan-400 text-white items-center justify-center font-black text-xl shadow-md dark:neon-avatar-ring-pink shrink-0 ${user?.avatar ? 'hidden' : 'flex'}`}>
+            <div className={`h-14 w-14 rounded-full bg-primary-600 dark:bg-gradient-to-tr dark:from-cyan-500 dark:to-sky-400 text-white items-center justify-center font-black text-xl shadow-md dark:neon-avatar-ring-cyan shrink-0 ${user?.avatar ? 'hidden' : 'flex'}`}>
               {initials(user?.name)}
             </div>
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:neon-text-pink truncate">
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white dark:neon-text-cyan truncate">
                 {title}
               </h1>
               {subtitle && (
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-pink-300/80 font-semibold mt-0.5 truncate">
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-cyan-200/90 font-semibold mt-0.5 truncate">
                   {subtitle}
                 </p>
               )}

@@ -46,9 +46,13 @@ const MyApplicationsPage = () => {
           <button
             key={s}
             onClick={() => setStatus(s)}
-            className={`badge py-1.5 px-3 cursor-pointer border ${status === s ? 'bg-accent text-ink border-accent' : 'bg-white text-muted border-line hover:border-accent'}`}
+            className={`py-1.5 px-3.5 rounded-full text-xs font-bold cursor-pointer border transition-all ${
+              status === s
+                ? 'bg-primary-600 text-white border-primary-600 dark:neon-badge-yellow shadow-md'
+                : 'bg-white dark:bg-[#080C1B] text-slate-600 dark:text-slate-200 border-slate-200 dark:border-cyan-500/40 hover:border-cyan-400'
+            }`}
           >
-            {s === '' ? 'All' : capitalize(s)}
+            {s === '' ? 'All Applications' : capitalize(s)}
           </button>
         ))}
       </div>
@@ -56,7 +60,7 @@ const MyApplicationsPage = () => {
       {loading ? (
         <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="card p-5 skeleton h-24" />)}</div>
       ) : applications.length === 0 ? (
-        <div className="card">
+        <div className="card p-8 rounded-[24px] bg-white dark:neon-playing-card-cyan text-center">
           <EmptyState
             icon={FaBriefcase}
             title="No applications yet"
@@ -67,20 +71,22 @@ const MyApplicationsPage = () => {
       ) : (
         <div className="space-y-3">
           {applications.map((app) => (
-            <div key={app._id} className="card p-5">
+            <div key={app._id} className="card p-5 rounded-[22px] bg-white dark:neon-playing-card-cyan shadow-md">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <Link to={`/jobs/${app.job?._id}`} className="font-bold hover:text-primary truncate block">
+                  <Link to={`/jobs/${app.job?._id}`} className="font-black text-slate-900 dark:text-white dark:neon-text-cyan hover:text-primary truncate block text-base">
                     {app.job?.jobTitle || 'Job no longer available'}
                   </Link>
-                  <p className="text-sm text-muted">{app.job?.companyName} • {app.job?.location}</p>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-cyan-200/90 font-medium mt-0.5">{app.job?.companyName} • {app.job?.location}</p>
                 </div>
-                <span className={`badge border ${STATUS_COLORS[app.status] || STATUS_COLORS.pending}`}>{capitalize(app.status)}</span>
+                <span className="text-xs font-bold px-3 py-1 rounded-full dark:neon-badge-yellow">
+                  {capitalize(app.status)}
+                </span>
               </div>
-              <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-muted">
-                <span className="flex items-center gap-1.5"><FaClockRotateLeft className="h-3 w-3" /> Applied {formatDateTime(app.createdAt)}</span>
+              <div className="flex flex-wrap items-center gap-4 mt-3 pt-3 border-t border-slate-100 dark:border-cyan-500/20 text-xs text-slate-500 dark:text-slate-300 font-semibold">
+                <span className="flex items-center gap-1.5"><FaClockRotateLeft className="h-3 w-3 text-cyan-400" /> Applied {formatDateTime(app.createdAt)}</span>
                 {app.interview?.scheduled && app.interview.date && (
-                  <span className="badge bg-primary-50 text-yellow-800 border border-accent">
+                  <span className="badge bg-primary-50 dark:neon-badge-pink">
                     Interview: {formatDateTime(app.interview.date)} ({app.interview.mode})
                   </span>
                 )}

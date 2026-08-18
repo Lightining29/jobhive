@@ -93,11 +93,11 @@ export const CompanyLogo = ({ logo, name, size = 'md', className = '' }) => {
   }
 
   return (
-    <div className={`${sizes[size]} flex items-center justify-center bg-gradient-to-br from-accent/20 to-accent/10 border border-accent/30 ${className}`}>
+    <div className={`${sizes[size]} flex items-center justify-center bg-gradient-to-br from-accent/20 to-accent/10 border border-accent/30 dark:bg-[#070e24] dark:border-2 dark:border-[#00f0ff] dark:shadow-[0_0_16px_rgba(0,240,255,0.7)] ${className}`}>
       {name ? (
-        <span className={`${textSizes[size]} font-bold text-ink leading-none`}>{initials(name)}</span>
+        <span className={`${textSizes[size]} font-black text-ink dark:text-[#00f0ff] dark:neon-text-cyan leading-none`}>{initials(name)}</span>
       ) : (
-        <FaBuilding className={size === 'lg' ? 'h-6 w-6 text-ink' : 'h-4 w-4 text-ink'} />
+        <FaBuilding className={size === 'lg' ? 'h-6 w-6 text-ink dark:text-[#00f0ff]' : 'h-4 w-4 text-ink dark:text-[#00f0ff]'} />
       )}
     </div>
   );
@@ -171,34 +171,34 @@ const JobCard = ({ job, match }) => {
   const showMatch = typeof match === 'number';
 
   return (
-    <ParallaxCard maxRotation={4} scale={1.012} className="h-full">
-      <div className="card card-hover p-5 flex flex-col h-full bg-white dark:neon-playing-card-pink dark:hover:neon-playing-card-cyan transition-all duration-300 rounded-[24px] relative overflow-hidden">
+    <ParallaxCard maxRotation={3} scale={1.01} className="h-full">
+      <div className="card card-hover p-5 flex flex-col h-full bg-white dark:!bg-[#040816] dark:neon-playing-card-cyan dark:hover:border-pink-400 dark:hover:shadow-[0_0_35px_rgba(255,45,135,0.7)] transition-all duration-300 rounded-[24px] relative overflow-hidden">
         {/* Playing card corner accent mark */}
-        <div className="absolute top-2.5 right-3 text-[10px] font-black text-pink-400/40 select-none pointer-events-none">
+        <div className="absolute top-2.5 right-3 text-[10px] font-black text-cyan-400/50 select-none pointer-events-none">
           ❖
         </div>
 
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0">
-            <div className="p-0.5 rounded-full dark:neon-avatar-ring-pink shrink-0">
+            <div className="p-0.5 rounded-2xl dark:neon-avatar-ring-cyan shrink-0">
               <CompanyLogo logo={job.companyLogo} name={job.companyName} />
             </div>
             <div className="min-w-0">
               <Link
                 to={`/jobs/${job._id}`}
-                className="block font-black text-slate-900 dark:text-white leading-snug hover:text-primary-600 dark:hover:neon-text-pink transition-all"
+                className="block font-black text-slate-900 dark:text-white dark:neon-text-cyan leading-snug hover:text-primary-600 dark:hover:neon-text-pink transition-all"
                 style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
               >
                 {job.jobTitle}
               </Link>
-              <p className="text-[11px] font-medium text-amber-800 dark:text-amber-300 bg-amber-500/10 dark:neon-badge-yellow px-2 py-0.5 rounded-md mt-1 line-clamp-1 max-w-full">
+              <p className="text-[11px] font-bold text-amber-800 dark:text-amber-300 bg-amber-500/10 dark:neon-badge-yellow px-2 py-0.5 rounded-md mt-1 line-clamp-1 max-w-full">
                 {job.headline && job.headline.trim() ? job.headline : `${job.jobTitle}${job.companyName ? ` at ${job.companyName}` : ''}`}
               </p>
-              <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1 min-w-0">
-                <FaRegBuilding className="h-3 w-3 shrink-0" />
+              <p className="text-sm text-slate-500 dark:text-cyan-200/80 flex items-center gap-1 mt-1 min-w-0 font-medium">
+                <FaRegBuilding className="h-3 w-3 shrink-0 text-cyan-400" />
                 <span className="truncate">{job.companyName}</span>
                 {job.isVerified && (
-                  <FaCircleCheck className="h-3.5 w-3.5 shrink-0 text-emerald-500" title="Verified employer" />
+                  <FaCircleCheck className="h-3.5 w-3.5 shrink-0 text-emerald-400 drop-shadow-[0_0_8px_#10b981]" title="Verified employer" />
                 )}
               </p>
             </div>
@@ -206,7 +206,7 @@ const JobCard = ({ job, match }) => {
           {showSave && (
             <button
               onClick={() => toggleSaved(job._id)}
-              className={`shrink-0 p-2 rounded-lg transition-colors ${isSaved ? 'text-amber-500 bg-amber-500/10' : 'text-slate-300 dark:text-slate-500 hover:text-slate-900 dark:hover:text-pink-300 hover:bg-slate-100 dark:hover:bg-slate-800/80'}`}
+              className={`shrink-0 p-2 rounded-lg transition-colors ${isSaved ? 'text-amber-500 bg-amber-500/10' : 'text-slate-300 dark:text-slate-400 hover:text-slate-900 dark:hover:text-cyan-300 hover:bg-slate-100 dark:hover:bg-cyan-500/10'}`}
               title={isSaved ? 'Remove from saved' : 'Save job'}
             >
               {isSaved ? <FaBookmark className="h-4 w-4" /> : <FaRegBookmark className="h-4 w-4" />}
@@ -218,7 +218,7 @@ const JobCard = ({ job, match }) => {
           {workMode && (() => {
             const ModeIcon = WORK_MODE_BADGES[workMode].icon;
             return (
-              <span className={`badge ${WORK_MODE_BADGES[workMode].cls} dark:neon-badge-pink`}>
+              <span className={`badge ${WORK_MODE_BADGES[workMode].cls} dark:neon-badge-yellow`}>
                 <ModeIcon className="h-2.5 w-2.5" />
                 {WORK_MODE_BADGES[workMode].label}
               </span>
@@ -231,13 +231,13 @@ const JobCard = ({ job, match }) => {
             </span>
           )}
           {job.experienceLevel && (
-            <span className="badge border bg-slate-50 dark:neon-badge-yellow text-slate-600 dark:text-amber-300">
+            <span className="badge border bg-slate-50 dark:neon-badge-pink text-slate-600 dark:text-pink-300">
               {capitalize(job.experienceLevel)}
             </span>
           )}
           {sourceLabel && (
-            <span className="badge border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-              <span className={`h-1.5 w-1.5 rounded-full ${SOURCE_DOT_COLORS[job.source] || 'bg-slate-300'}`} />
+            <span className="badge border border-slate-200 dark:neon-badge-pink bg-white">
+              <span className={`h-1.5 w-1.5 rounded-full ${SOURCE_DOT_COLORS[job.source] || 'bg-cyan-400'}`} />
               {sourceLabel}
             </span>
           )}
@@ -249,16 +249,16 @@ const JobCard = ({ job, match }) => {
           const hasContent = desc.summary || desc.responsibilities || desc.requirements || desc.skills;
           if (!hasContent) return null;
           return (
-            <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
+            <div className="mt-3 pt-3 border-t border-slate-100 dark:border-cyan-500/20 space-y-2">
               {desc.summary && (
-                <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-300 line-clamp-2">
+                <p className="text-[13px] leading-relaxed text-slate-600 dark:text-slate-200 line-clamp-2">
                   {desc.summary}
                 </p>
               )}
               {desc.responsibilities && (
                 <div className="flex items-start gap-1.5">
-                  <FaSuitcase className="h-3 w-3 text-primary-600 dark:text-primary-400 mt-0.5 shrink-0" />
-                  <p className="text-[12px] leading-snug text-slate-500 dark:text-slate-400 line-clamp-1">
+                  <FaSuitcase className="h-3 w-3 text-primary-600 dark:text-cyan-400 mt-0.5 shrink-0" />
+                  <p className="text-[12px] leading-snug text-slate-500 dark:text-slate-300 line-clamp-1">
                     {desc.responsibilities}
                   </p>
                 </div>
@@ -266,13 +266,13 @@ const JobCard = ({ job, match }) => {
               {desc.requirements && (
                 <div className="flex items-start gap-1.5">
                   <FaStar className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />
-                  <p className="text-[12px] leading-snug text-slate-500 dark:text-slate-400 line-clamp-1">
+                  <p className="text-[12px] leading-snug text-slate-500 dark:text-slate-300 line-clamp-1">
                     {desc.requirements}
                   </p>
                 </div>
               )}
               {desc.skills && (
-                <p className="text-[11px] text-slate-800 dark:text-slate-200 font-medium">
+                <p className="text-[11px] text-slate-800 dark:text-cyan-200 font-medium">
                   {desc.skills}
                 </p>
               )}
@@ -282,25 +282,25 @@ const JobCard = ({ job, match }) => {
 
         <div className="mt-auto pt-4">
           <div className="flex items-center gap-1.5">
-            {hasSalary && <FaSackDollar className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />}
-            <span className={`text-base font-bold ${hasSalary ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'}`}>{salary}</span>
-            {hasSalary && <span className="text-xs font-medium text-slate-400 dark:text-slate-500">/ year</span>}
+            {hasSalary && <FaSackDollar className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0 drop-shadow-[0_0_8px_#10b981]" />}
+            <span className={`text-base font-black ${hasSalary ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-400'}`}>{salary}</span>
+            {hasSalary && <span className="text-xs font-semibold text-slate-400 dark:text-slate-400">/ year</span>}
           </div>
 
-          <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-2 min-w-0">
-            <FaLocationDot className="h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500" />
+          <p className="text-sm text-slate-500 dark:text-slate-300 flex items-center gap-1.5 mt-2 min-w-0 font-medium">
+            <FaLocationDot className="h-3.5 w-3.5 shrink-0 text-cyan-400" />
             <span className="truncate">{location}</span>
           </p>
 
           {skills.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-3">
               {shownSkills.map((skill, i) => (
-                <span key={i} className="bg-amber-500/10 dark:bg-amber-400/15 text-slate-800 dark:text-amber-300 rounded-full px-2 py-0.5 text-[11px] font-medium border border-amber-500/20 dark:border-amber-400/25">
+                <span key={i} className="bg-amber-500/10 dark:neon-badge-yellow text-slate-800 dark:text-amber-300 rounded-full px-2.5 py-0.5 text-[11px] font-bold">
                   {formatSkillName(skill)}
                 </span>
               ))}
               {extraSkills > 0 && (
-                <span className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 rounded-full px-2 py-0.5 text-[11px] font-medium">
+                <span className="bg-slate-100 dark:neon-badge-cyan text-slate-500 dark:text-cyan-300 rounded-full px-2 py-0.5 text-[11px] font-bold">
                   +{extraSkills}
                 </span>
               )}
@@ -322,14 +322,14 @@ const JobCard = ({ job, match }) => {
             </div>
           )}
 
-          <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3 mt-4">
-            <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
-              <FaClock className="h-3 w-3" />
+          <div className="flex items-center justify-between border-t border-slate-100 dark:border-cyan-500/30 pt-3 mt-4">
+            <span className="text-xs text-slate-500 dark:text-slate-300 flex items-center gap-1 font-medium">
+              <FaClock className="h-3 w-3 text-cyan-400" />
               {job.postedDate ? timeAgo(job.postedDate) : 'Recently'}
             </span>
             <Link
               to={`/jobs/${job._id}`}
-              className="text-sm font-semibold bg-slate-900 dark:bg-amber-400 text-white dark:text-slate-950 px-4 py-2 rounded-lg transition-all inline-flex items-center gap-1.5 hover:opacity-90 shadow-xs"
+              className="text-sm font-black bg-slate-900 dark:bg-amber-400 text-white dark:text-slate-950 px-4 py-2 rounded-xl transition-all inline-flex items-center gap-1.5 hover:scale-105 shadow-md dark:shadow-[0_0_15px_rgba(250,204,21,0.6)]"
             >
               View job
               <FaArrowRight className="h-3 w-3" />
