@@ -81,7 +81,13 @@ export const CompanyLogo = ({ logo, name, size = 'md', className = '' }) => {
 
   if (logo && !imgError) {
     return (
-      <img src={logo} alt={name} loading="lazy" onError={() => setImgError(true)} className={`${sizes[size]} object-cover border border-line bg-white shadow-sm ${className}`} />
+      <img
+        src={logo}
+        alt={name ? `${name} company logo - Hiring on Job Workplace` : 'Company Logo - Job Workplace'}
+        loading="lazy"
+        onError={() => setImgError(true)}
+        className={`${sizes[size]} object-cover border border-line bg-white shadow-sm ${className}`}
+      />
     );
   }
 

@@ -12,6 +12,7 @@ import { CompanyLogo } from '../components/jobs/JobCard';
 import { formatSalary, timeAgo, capitalize, WORK_MODE_LABELS, EMPLOYMENT_LABELS, matchColor } from '../utils/format';
 import { PageLoader } from '../components/ui/States';
 import JobCard from '../components/jobs/JobCard';
+import SEOHead from '../components/seo/SEOHead';
 
 const SECTION_ICONS = {
   Briefcase: FaBriefcase,
@@ -251,8 +252,63 @@ const JobDetailPage = () => {
     </>
   );
 
+  const cleanDesc = (job.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 250);
+  const pageMetaTitle = `${job.jobTitle} at ${job.companyName}`;
+  const pageMetaDesc = `${job.jobTitle} position at ${job.companyName}. Location: ${job.location || 'Remote/India'}. Salary: ${formatSalary(job)}. Apply directly on Job Workplace.`;
+
+  const jobPostingSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    'title': job.jobTitle,
+    'description': cleanDesc || `${job.jobTitle} vacancy at ${job.companyName}`,
+    'datePosted': job.postedDate || job.createdAt || new Date().toISOString(),
+    'validThrough': job.expiresAt || new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
+    'employmentType': job.employmentType === 'full_time' ? 'FULL_TIME' : job.employmentType === 'part_time' ? 'PART_TIME' : job.employmentType === 'contract' ? 'CONTRACTOR' : job.employmentType === 'internship' ? 'INTERN' : 'FULL_TIME',
+    'hiringOrganization': {
+      '@type': 'Organization',
+      'name': job.companyName || 'Job Workplace Partner',
+      'sameAs': job.companyWebsite || undefined,
+      'logo': job.companyLogo || undefined,
+    },
+    'jobLocation': {
+      '@type': 'Place',
+      'address': {
+        '@type': 'PostalAddress',
+        'addressLocality': job.city || (job.location?.split(',')?.[0]?.trim()) || 'Bengaluru',
+        'addressCountry': job.country || 'IN',
+      },
+    },
+    ...(job.workMode === 'remote' || job.remote ? {
+      'jobLocationType': 'TELECOMMUTE',
+      'applicantLocationRequirements': {
+        '@type': 'Country',
+        'name': 'Worldwide',
+      },
+    } : {}),
+    ...(job.salaryMin ? {
+      'baseSalary': {
+        '@type': 'MonetaryAmount',
+        'currency': job.salaryCurrency || 'INR',
+        'value': {
+          '@type': 'QuantitativeValue',
+          'minValue': job.salaryMin,
+          'maxValue': job.salaryMax || job.salaryMin,
+          'unitText': 'YEAR',
+        },
+      },
+    } : {}),
+    'directApply': true,
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 pb-24 md:pb-8">
+      <SEOHead
+        title={pageMetaTitle}
+        description={pageMetaDesc}
+        keywords={[job.jobTitle, job.companyName, ...(job.requiredSkills || []), 'jobs', 'careers', job.category, job.workMode].filter(Boolean)}
+        schema={jobPostingSchema}
+        ogType="article"
+      />
       <button onClick={() => navigate(-1)} className="btn-ghost !pl-2 mb-4 md:mb-6">
         <FaArrowLeft className="h-4 w-4" /> Back
       </button>

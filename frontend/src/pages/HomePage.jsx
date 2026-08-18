@@ -18,6 +18,7 @@ import { useAuth } from '../context/AuthContext';
 import JobCard, { CompanyLogo } from '../components/jobs/JobCard';
 import { FadeIn } from '../components/ui/Motion';
 import { LoadingJobs } from '../components/ui/States';
+import SEOHead from '../components/seo/SEOHead';
 
 const JobRow = ({ jobs, loading, empty, cols = 4 }) => {
   if (loading) return <LoadingJobs count={cols} />;
@@ -263,6 +264,11 @@ const HomePage = () => {
 
   return (
     <div>
+      <SEOHead
+        title="Job Workplace - Find Dream Jobs, Java & Tech Careers, Remote Work"
+        description="Search 10,000+ verified job openings in Java, Python, React, Remote & Non-Technical fields. AI-powered matching from top companies and high-growth startups."
+        keywords={['jobs', 'java jobs', 'java developer', 'software engineer jobs', 'remote jobs', 'tech jobs', 'hiring', 'fresher jobs', 'internships']}
+      />
       <SearchHero />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-16 md:space-y-20">

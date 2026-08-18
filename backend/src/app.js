@@ -113,6 +113,57 @@ app.use('/api/news',      require('./routes/careerNews.routes'));
 app.use('/api/cards', apiLimiter, require('./routes/cards.routes'));
 app.use('/api/ai',    apiLimiter, require('./routes/ai.routes'));
 
+// ── Dynamic SEO Endpoints ─────────────────────────────────────────
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const Job = require('./models/Job');
+    const jobs = await Job.find({ status: 'active' }).select('_id updatedAt createdAt').sort({ updatedAt: -1 }).limit(1000).lean();
+    const siteUrl = env.clientUrl ? env.clientUrl.replace(/\/$/, '') : 'https://jobworkplace.com';
+    
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+    
+    const staticPages = [
+      { loc: '', changefreq: 'daily', priority: '1.0' },
+      { loc: '/jobs', changefreq: 'hourly', priority: '0.95' },
+      { loc: '/jobs?search=Java', changefreq: 'hourly', priority: '0.90' },
+      { loc: '/jobs?search=Java+Developer', changefreq: 'hourly', priority: '0.90' },
+      { loc: '/jobs?search=Spring+Boot', changefreq: 'daily', priority: '0.85' },
+      { loc: '/jobs?search=Python', changefreq: 'hourly', priority: '0.90' },
+      { loc: '/jobs?search=React', changefreq: 'hourly', priority: '0.90' },
+      { loc: '/jobs?search=Full+Stack', changefreq: 'hourly', priority: '0.90' },
+      { loc: '/jobs?search=Remote', changefreq: 'hourly', priority: '0.90' },
+      { loc: '/jobs/technical', changefreq: 'hourly', priority: '0.85' },
+      { loc: '/jobs/non-technical', changefreq: 'daily', priority: '0.85' },
+      { loc: '/jobs/remote', changefreq: 'hourly', priority: '0.90' },
+      { loc: '/jobs/hybrid', changefreq: 'daily', priority: '0.80' },
+      { loc: '/jobs/onsite', changefreq: 'daily', priority: '0.80' },
+      { loc: '/about', changefreq: 'monthly', priority: '0.70' },
+      { loc: '/career-news', changefreq: 'daily', priority: '0.75' },
+    ];
+    
+    for (const page of staticPages) {
+      xml += `  <url>\n    <loc>${siteUrl}${page.loc}</loc>\n    <changefreq>${page.changefreq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>\n`;
+    }
+    
+    for (const job of (jobs || [])) {
+      const lastMod = (job.updatedAt || job.createdAt || new Date()).toISOString().split('T')[0];
+      xml += `  <url>\n    <loc>${siteUrl}/jobs/${job._id}</loc>\n    <lastmod>${lastMod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.80</priority>\n  </url>\n`;
+    }
+    
+    xml += `</urlset>`;
+    res.header('Content-Type', 'application/xml');
+    return res.send(xml);
+  } catch {
+    res.status(500).send('Error generating sitemap');
+  }
+});
+
+app.get('/robots.txt', (req, res) => {
+  const siteUrl = env.clientUrl ? env.clientUrl.replace(/\/$/, '') : 'https://jobworkplace.com';
+  res.type('text/plain');
+  res.send(`User-agent: *\nAllow: /\nAllow: /jobs\nAllow: /jobs/*\nAllow: /about\nAllow: /career-news\n\nDisallow: /candidate/\nDisallow: /recruiter/\nDisallow: /admin/\nDisallow: /auth/\nDisallow: /api/\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
+});
+
 const fs = require('fs');
 
 // ── Serve Frontend static files if dist directory exists, or root health endpoint ──

@@ -7,6 +7,7 @@ import {
 } from 'react-icons/fa6';
 import { useTitle } from '../hooks';
 import api from '../services/api';
+import SEOHead from '../components/seo/SEOHead';
 
 const CATEGORY_COLORS = {
   'Hiring':     'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -65,6 +66,11 @@ export default function CareerNewsPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <SEOHead
+        title="AI Career News & Tech Hiring Trends"
+        description="Stay ahead with real-time AI-summarized tech hiring trends, engineering salaries, remote work shifts, and company expansion news."
+        keywords={['career news', 'tech hiring trends', 'engineering salary trends', 'IT jobs news']}
+      />
       {/* Header */}
       <div className="flex items-start justify-between mb-8 gap-4 flex-wrap">
         <div>

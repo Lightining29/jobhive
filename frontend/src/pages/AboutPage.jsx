@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom';
 import { FaHexagonNodes, FaShieldHalved, FaBolt, FaGlobe, FaBriefcase, FaBuilding, FaHandshake, FaAward } from 'react-icons/fa6';
 import { FadeIn } from '../components/ui/Motion';
+import SEOHead from '../components/seo/SEOHead';
 
 export const AboutPage = () => {
   return (
     <div className="min-h-screen pb-20 bg-slate-50/50">
+      <SEOHead
+        title="About Us - Leading Job Portal & Career Tech Platform"
+        description="Learn how Job Workplace connects thousands of developers and professionals with top companies across India and worldwide through AI-driven hiring."
+        keywords={['about job workplace', 'job portal India', 'AI hiring platform', 'tech careers']}
+      />
       {/* Hero Header */}
       <section className="relative overflow-hidden py-20 md:py-28 text-center bg-gradient-to-b from-primary-50/60 via-white to-transparent">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">

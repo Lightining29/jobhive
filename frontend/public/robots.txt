@@ -1,0 +1,17 @@
+# Robots.txt for Job Workplace (JobHive)
+User-agent: *
+Allow: /
+Allow: /jobs
+Allow: /jobs/*
+Allow: /about
+Allow: /career-news
+
+# Prevent crawling of private authenticated dashboards and backend API endpoints
+Disallow: /candidate/
+Disallow: /recruiter/
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /api/
+
+# Specify Sitemap location
+Sitemap: https://jobworkplace.com/sitemap.xml

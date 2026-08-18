@@ -10,6 +10,7 @@ import Pagination from '../components/ui/Pagination';
 import { useDebounce } from '../hooks';
 import { LoadingJobs, EmptyState } from '../components/ui/States';
 import { capitalize } from '../utils/format';
+import SEOHead from '../components/seo/SEOHead';
 
 const SORTS = [
   { value: 'newest',   label: 'Newest first'    },
@@ -216,11 +217,61 @@ const JobsPage = () => {
     }
   };
 
+  // Dynamic SEO attributes based on active filter or search query
+  const seoQuery = filters.search || presetCategory || presetWorkMode || 'Browse Jobs';
+  const seoTitle = filters.search
+    ? `${filters.search} Jobs - Openings & Vacancies`
+    : presetCategory
+    ? `${capitalize(presetCategory)} Jobs - Tech & Career Roles`
+    : presetWorkMode
+    ? `${capitalize(presetWorkMode)} Jobs - Work Opportunities`
+    : 'Browse All Jobs - Tech, Remote & Verified Careers';
+  
+  const seoDescription = `Search ${total || '10,000+'} verified ${filters.search || presetCategory || presetWorkMode || ''} job openings on Job Workplace. Find high-paying tech, software engineering, and remote positions.`;
+  const seoKeywords = [
+    filters.search,
+    `${filters.search} jobs`,
+    `${filters.search} developer`,
+    presetCategory ? `${presetCategory} jobs` : null,
+    presetWorkMode ? `${presetWorkMode} jobs` : null,
+    'java jobs', 'remote jobs', 'software jobs', 'hiring now', 'careers'
+  ].filter(Boolean);
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'Home',
+        'item': 'https://jobworkplace.com/',
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Jobs',
+        'item': 'https://jobworkplace.com/jobs',
+      },
+      ...(filters.search ? [{
+        '@type': 'ListItem',
+        'position': 3,
+        'name': `${filters.search} Jobs`,
+        'item': `https://jobworkplace.com/jobs?search=${encodeURIComponent(filters.search)}`,
+      }] : []),
+    ],
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-      {/* ── Page heading ──────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <SEOHead
+        title={seoTitle}
+        description={seoDescription}
+        keywords={seoKeywords}
+        schema={breadcrumbSchema}
+      />
+      {/* ── Header ────────────────────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-extrabold">{heading}</h1>
           {!semanticActive && (
