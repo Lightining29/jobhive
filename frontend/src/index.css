@@ -7,9 +7,17 @@
     @apply antialiased;
     scroll-behavior: smooth;
   }
+  html.dark {
+    color-scheme: dark;
+    background-color: #030712;
+  }
   body {
     @apply text-ink font-sans;
     background-color: #F8FAFC;
+  }
+  html.dark body, body.dark {
+    background-color: #030712 !important;
+    color: #F8FAFC !important;
   }
   ::selection {
     background-color: #C7D2FE;

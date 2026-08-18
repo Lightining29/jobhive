@@ -27,7 +27,7 @@ const MarqueeJobItem = ({ job, neonColor = 'pink' }) => {
   const activeCardClass = neonCardClasses[neonColor] || neonCardClasses.pink;
 
   return (
-    <div className={`w-[320px] sm:w-[360px] shrink-0 p-5 rounded-[26px] bg-white/90 ${activeCardClass} border border-slate-200 shadow-xl transition-all duration-300 group hover:-translate-y-1`}>
+    <div className={`w-[320px] sm:w-[360px] shrink-0 p-5 rounded-[26px] bg-white/90 dark:bg-[#080C1B]/85 ${activeCardClass} border border-slate-200 dark:border-pink-500/40 shadow-xl transition-all duration-300 group hover:-translate-y-1`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className="p-0.5 rounded-full dark:neon-avatar-ring-pink">
@@ -109,7 +109,7 @@ export const AlternateJobsMarquee = ({
   if (track1.length === 0 && track2.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden py-14 bg-gradient-to-b from-transparent via-slate-100/50 to-transparent dark:via-[#080D1A]/80 transition-colors duration-300">
+    <section className="relative overflow-hidden py-14 bg-gradient-to-b from-transparent via-slate-100/50 to-transparent dark:from-[#030712] dark:via-[#030712] dark:to-[#030712] transition-colors duration-300">
       {/* Background ambient neon glow spheres in dark mode */}
       <div className="absolute top-1/2 left-10 -translate-y-1/2 w-96 h-96 bg-cyan-500/10 dark:bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 right-10 -translate-y-1/2 w-96 h-96 bg-amber-500/10 dark:bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />

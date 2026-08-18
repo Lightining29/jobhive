@@ -172,7 +172,7 @@ const JobCard = ({ job, match }) => {
 
   return (
     <ParallaxCard maxRotation={5} scale={1.015} className="h-full">
-      <div className="card card-hover p-5 flex flex-col h-full bg-white dark:neon-acrylic-pink dark:border-pink-500/60 dark:hover:border-cyan-400 dark:hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] transition-all duration-300 rounded-[24px]">
+      <div className="card card-hover p-5 flex flex-col h-full bg-white dark:bg-[#080C1B]/90 dark:neon-acrylic-pink dark:border-pink-500/60 dark:hover:border-cyan-400 dark:hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] transition-all duration-300 rounded-[24px]">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0">
             <div className="p-0.5 rounded-full dark:neon-avatar-ring-pink shrink-0">
