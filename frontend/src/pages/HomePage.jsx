@@ -40,18 +40,9 @@ const JobRow = ({ jobs, loading, empty, cols = 4 }) => {
 
 const SearchHero = () => {
   const [query, setQuery] = useState('');
-  const [scrollY, setScrollY] = useState(0);
   const navigate = useNavigate();
 
   const popular = ['Java', 'React', 'Marketing', 'Sales', 'Remote', 'Data Science'];
-
-  useState(() => {
-    const onScroll = () => {
-      setScrollY(window.scrollY || 0);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  });
 
   return (
     <section className="relative overflow-hidden bg-[#EEF2FF] dark:bg-[#070B14] transition-colors duration-300">
@@ -68,23 +59,20 @@ const SearchHero = () => {
         }}
       />
       <div
-        className="aurora-blob animate-aurora -top-40 -left-32 h-[480px] w-[480px] will-change-transform"
+        className="aurora-blob animate-aurora -top-40 -left-32 h-[480px] w-[480px]"
         style={{
-          transform: `translateY(${scrollY * 0.12}px)`,
           background: 'radial-gradient(circle at 30% 30%, rgba(250,204,21,0.35) 0%, rgba(250,204,21,0) 65%)',
         }}
       />
       <div
-        className="aurora-blob animate-aurora-2 top-1/4 -right-48 h-[560px] w-[560px] will-change-transform"
+        className="aurora-blob animate-aurora-2 top-1/4 -right-48 h-[560px] w-[560px]"
         style={{
-          transform: `translateY(${scrollY * -0.15}px)`,
           background: 'radial-gradient(circle at 60% 40%, rgba(99,102,241,0.2) 0%, rgba(224,231,255,0) 65%)',
         }}
       />
       <div
-        className="aurora-blob animate-aurora-3 bottom-[-12rem] left-1/3 h-[420px] w-[420px] will-change-transform"
+        className="aurora-blob animate-aurora-3 bottom-[-12rem] left-1/3 h-[420px] w-[420px]"
         style={{
-          transform: `translateY(${scrollY * 0.08}px)`,
           background: 'radial-gradient(circle at 50% 50%, rgba(16,185,129,0.18) 0%, rgba(16,185,129,0) 60%)',
         }}
       />

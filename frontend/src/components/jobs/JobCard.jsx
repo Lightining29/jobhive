@@ -172,7 +172,7 @@ const JobCard = ({ job, match }) => {
 
   return (
     <ParallaxCard maxRotation={3} scale={1.01} className="h-full">
-      <div className="card card-hover p-5 flex flex-col h-full bg-white dark:!bg-[#040816] dark:neon-playing-card-cyan dark:hover:border-pink-400 dark:hover:shadow-[0_0_35px_rgba(255,45,135,0.7)] transition-all duration-300 rounded-[24px] relative overflow-hidden">
+      <div className="card card-hover p-5 flex flex-col h-full bg-white dark:!bg-[#040816] dark:neon-playing-card-cyan dark:hover:border-sky-300 dark:hover:shadow-[0_0_35px_rgba(0,240,255,0.85)] transition-all duration-300 rounded-[24px] relative overflow-hidden">
         {/* Playing card corner accent mark */}
         <div className="absolute top-2.5 right-3 text-[10px] font-black text-cyan-400/50 select-none pointer-events-none">
           ❖
@@ -186,7 +186,7 @@ const JobCard = ({ job, match }) => {
             <div className="min-w-0">
               <Link
                 to={`/jobs/${job._id}`}
-                className="block font-black text-slate-900 dark:text-white dark:neon-text-cyan leading-snug hover:text-primary-600 dark:hover:neon-text-pink transition-all"
+                className="block font-black text-slate-900 dark:text-white dark:neon-text-cyan leading-snug hover:text-primary-600 dark:hover:text-cyan-200 transition-all"
                 style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
               >
                 {job.jobTitle}
@@ -231,12 +231,12 @@ const JobCard = ({ job, match }) => {
             </span>
           )}
           {job.experienceLevel && (
-            <span className="badge border bg-slate-50 dark:neon-badge-pink text-slate-600 dark:text-pink-300">
+            <span className="badge border bg-slate-50 dark:neon-badge-yellow text-slate-600 dark:text-amber-300">
               {capitalize(job.experienceLevel)}
             </span>
           )}
           {sourceLabel && (
-            <span className="badge border border-slate-200 dark:neon-badge-pink bg-white">
+            <span className="badge border border-slate-200 dark:neon-badge-cyan bg-white">
               <span className={`h-1.5 w-1.5 rounded-full ${SOURCE_DOT_COLORS[job.source] || 'bg-cyan-400'}`} />
               {sourceLabel}
             </span>
