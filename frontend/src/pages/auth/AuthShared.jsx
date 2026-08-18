@@ -8,6 +8,8 @@ import {
   FaBolt,
   FaHexagonNodes,
   FaFire,
+  FaShieldHalved,
+  FaUserCheck,
 } from 'react-icons/fa6';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -15,86 +17,103 @@ export const AuthLayout = ({ title = 'Welcome back', subtitle, children, isRegis
   const { isDark } = useTheme();
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center px-4 py-8 sm:py-14 relative overflow-hidden bg-gradient-to-br from-slate-100 via-sky-50/50 to-indigo-50/40 dark:from-[#050814] dark:via-[#090e24] dark:to-[#050814] transition-colors duration-300">
+    <div className="min-h-screen w-full flex flex-col md:flex-row bg-[#07070a] dark:bg-[#000000] text-white relative overflow-x-hidden selection:bg-rose-500 selection:text-white">
       
-      {/* Ambient Grainy Mesh Gradients in Background (Matching Reference) */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-600/20 dark:bg-blue-600/25 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/20 dark:bg-emerald-500/25 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-amber-500/20 dark:bg-amber-500/25 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/20 dark:bg-purple-600/25 rounded-full blur-[120px] pointer-events-none" />
+      {/* ── 1. LEFT SIDE (Desktop 50% Full-Screen Cinematic Artwork) ── */}
+      <div className="hidden md:flex md:w-1/2 lg:w-5/12 min-h-screen relative overflow-hidden flex-col justify-between p-8 lg:p-14 select-none">
+        {/* Full-bleed background artwork */}
+        <img
+          src="/assets/auth-voxel-art.jpg"
+          alt="Job Workplace AI Fantasy Landscape"
+          className="absolute inset-0 w-full h-full object-cover object-center scale-105 hover:scale-110 transition-transform duration-1000 ease-out"
+        />
+        
+        {/* High-end Cinematic Dark Vignette & Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#07070a] via-[#07070a]/40 to-black/60 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#07070a] pointer-events-none" />
 
-      {/* Main Floating Auth Card (Matches Desktop & Mobile Reference Images) */}
-      <div className="relative w-full max-w-4xl mx-auto z-10 rounded-[32px] sm:rounded-[38px] bg-white dark:bg-[#09090d] border border-slate-200 dark:border-white/10 shadow-2xl dark:shadow-[0_25px_80px_rgba(0,0,0,0.95)] overflow-hidden transition-all duration-300">
-        <div className="grid grid-cols-1 md:grid-cols-12 min-h-[560px]">
-          
-          {/* ── LEFT COLUMN (Desktop): 3D Voxel Landscape Artwork Card ── */}
-          <div className="hidden md:flex md:col-span-5 p-4 sm:p-5">
-            <div className="relative w-full h-full rounded-[26px] overflow-hidden group shadow-lg">
-              <img
-                src="/assets/auth-voxel-art.jpg"
-                alt="Job Workplace AI Fantasy Landscape"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-              />
-              {/* Bottom Gradient Fade over artwork */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none" />
-
-              {/* Artwork Brand Overlay (Matches Wava AI in Reference) */}
-              <div className="absolute bottom-6 left-6 right-6 text-white z-10">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <span className="h-7 w-7 rounded-lg bg-pink-500/30 border border-pink-400 flex items-center justify-center text-pink-400 shadow-[0_0_10px_rgba(255,45,135,0.5)]">
-                    <FaFire className="h-4 w-4" />
-                  </span>
-                  <span className="text-lg font-black tracking-tight text-white flex items-center gap-1">
-                    Job Workplace <span className="text-xs px-1.5 py-0.5 rounded bg-white/20 font-bold border border-white/20">AI</span>
-                  </span>
-                </div>
-                <p className="text-xs text-slate-300 font-medium">
-                  Your all-in-one career automation.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* ── MOBILE HEADER (Mobile Only): Top Artwork Banner with Fade ─ */}
-          <div className="md:hidden relative h-48 sm:h-56 w-full overflow-hidden">
-            <img
-              src="/assets/auth-voxel-art.jpg"
-              alt="Job Workplace AI"
-              className="w-full h-full object-cover object-center"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-[#09090d] via-transparent to-black/40" />
-            
-            <div className="absolute top-4 left-4 flex items-center gap-2">
-              <span className="h-7 w-7 rounded-lg bg-pink-500/30 border border-pink-400 flex items-center justify-center text-pink-400">
-                <FaFire className="h-4 w-4" />
+        {/* Top Brand Logo */}
+        <div className="relative z-10">
+          <Link to="/" className="inline-flex items-center gap-3 group">
+            <span className="h-10 w-10 rounded-2xl bg-pink-500/30 backdrop-blur-md border border-pink-400/60 flex items-center justify-center text-pink-400 shadow-[0_0_20px_rgba(255,45,135,0.6)] group-hover:scale-105 transition-transform">
+              <FaFire className="h-5 w-5" />
+            </span>
+            <div className="flex flex-col">
+              <span className="text-xl font-black tracking-tight text-white flex items-center gap-1.5 drop-shadow-md">
+                Job Workplace <span className="text-xs px-2 py-0.5 rounded-full bg-white/20 font-extrabold backdrop-blur-sm border border-white/20">AI</span>
               </span>
-              <span className="text-sm font-black text-white drop-shadow-md">
-                Job Workplace <span className="text-[10px] px-1 py-0.5 rounded bg-white/20">AI</span>
-              </span>
+              <span className="text-[11px] font-bold text-pink-300 tracking-wider uppercase">Next-Gen Careers</span>
             </div>
+          </Link>
+        </div>
+
+        {/* Bottom Tagline & Ambient Highlights */}
+        <div className="relative z-10 space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs text-white font-medium">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+            <span>10,480+ Live Opportunities Active</span>
           </div>
 
-          {/* ── RIGHT COLUMN: Clean Sleek Dark Form Area ─────────────── */}
-          <div className="md:col-span-7 flex flex-col justify-center px-6 sm:px-10 lg:px-12 py-8 sm:py-10">
-            <div className="w-full max-w-sm mx-auto">
-              
-              <div className="mb-6 text-center md:text-left">
-                <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-                  {title}
-                </h1>
-                {subtitle && (
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
-                    {subtitle}
-                  </p>
-                )}
-              </div>
+          <h2 className="text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight drop-shadow-lg">
+            Find Your Dream Job <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-rose-300 to-amber-300">
+              Powered by AI.
+            </span>
+          </h2>
 
-              {children}
-            </div>
-          </div>
-
+          <p className="text-sm text-slate-300 max-w-sm leading-relaxed font-medium">
+            Automate your applications, match with verified tech employers, and unlock compensation parity.
+          </p>
         </div>
       </div>
+
+      {/* ── 2. MOBILE TOP BANNER (Edge-to-Edge Fluid Header) ───────── */}
+      <div className="md:hidden relative h-56 sm:h-64 w-full overflow-hidden select-none shrink-0">
+        <img
+          src="/assets/auth-voxel-art.jpg"
+          alt="Job Workplace AI"
+          className="w-full h-full object-cover object-center scale-105"
+        />
+        {/* Seamless bottom fade into black */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#07070a] via-[#07070a]/60 to-black/30 pointer-events-none" />
+        
+        {/* Mobile Top Brand Bar */}
+        <div className="absolute top-5 left-5 right-5 flex items-center justify-between z-10">
+          <Link to="/" className="flex items-center gap-2">
+            <span className="h-8 w-8 rounded-xl bg-pink-500/30 backdrop-blur-md border border-pink-400/60 flex items-center justify-center text-pink-400 shadow-[0_0_12px_rgba(255,45,135,0.6)]">
+              <FaFire className="h-4 w-4" />
+            </span>
+            <span className="text-base font-black text-white drop-shadow-md">
+              Job Workplace <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/20 font-bold">AI</span>
+            </span>
+          </Link>
+        </div>
+      </div>
+
+      {/* ── 3. RIGHT SIDE (Full-Screen Form Panel) ─────────────────── */}
+      <div className="w-full md:w-1/2 lg:w-7/12 min-h-screen flex flex-col justify-center items-center px-6 sm:px-12 lg:px-20 py-8 sm:py-12 bg-[#07070a] dark:bg-[#000000] relative">
+        
+        {/* Subtle Ambient Glow in background */}
+        <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-pink-500/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="w-full max-w-sm sm:max-w-md mx-auto relative z-10">
+          
+          <div className="mb-7 text-center md:text-left">
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
+              {title}
+            </h1>
+            {subtitle && (
+              <p className="text-xs sm:text-sm text-slate-400 mt-1.5 font-medium">
+                {subtitle}
+              </p>
+            )}
+          </div>
+
+          {children}
+        </div>
+      </div>
+
     </div>
   );
 };
@@ -102,7 +121,7 @@ export const AuthLayout = ({ title = 'Welcome back', subtitle, children, isRegis
 export const Field = ({ error, children }) => (
   <div className="w-full">
     {children}
-    {error && <p className="text-xs text-rose-500 dark:text-rose-400 mt-1 font-medium pl-1">{error}</p>}
+    {error && <p className="text-xs text-rose-400 mt-1.5 font-medium pl-1">{error}</p>}
   </div>
 );
 
@@ -110,7 +129,7 @@ export const InputWrap = ({ icon: Icon, show, toggle, children }) => {
   return (
     <div className="relative w-full">
       {Icon && (
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
           <Icon className="h-4 w-4" />
         </span>
       )}
@@ -119,7 +138,7 @@ export const InputWrap = ({ icon: Icon, show, toggle, children }) => {
         <button
           type="button"
           onClick={toggle}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors cursor-pointer"
           tabIndex={-1}
         >
           {show ? <FaEyeSlash className="h-4 w-4" /> : <FaEye className="h-4 w-4" />}
@@ -133,10 +152,10 @@ export const GoogleAuthButton = ({ onClick, text = 'Continue with Google' }) => 
   <button
     type="button"
     onClick={onClick}
-    className="w-full py-3 px-6 rounded-full bg-slate-50 hover:bg-slate-100 dark:bg-[#16161c] dark:hover:bg-[#202028] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white font-bold text-sm flex items-center justify-center gap-2.5 transition-all duration-200 shadow-xs cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+    className="w-full py-3.5 px-6 rounded-full bg-[#141418] hover:bg-[#1c1c22] border border-white/10 text-white font-bold text-sm flex items-center justify-center gap-3 transition-all duration-200 shadow-md cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
   >
     {/* Clean Multi-Color Google G Icon */}
-    <svg className="h-4 w-4" viewBox="0 0 24 24">
+    <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
       <path
         fill="#4285F4"
         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
