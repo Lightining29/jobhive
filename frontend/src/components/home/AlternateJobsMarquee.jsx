@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FaBolt,
@@ -12,6 +12,7 @@ import {
 } from 'react-icons/fa6';
 import { CompanyLogo } from '../jobs/JobCard';
 import { formatSalary, timeAgo } from '../../utils/format';
+import { jobService } from '../../services';
 
 const MarqueeJobItem = ({ job, neonColor = 'pink' }) => {
   const salary = formatSalary(job.minSalary, job.maxSalary, job.currency);
@@ -113,9 +114,39 @@ export const AlternateJobsMarquee = ({
   title = 'Live Career Stream',
   subtitle = 'High-velocity job feeds scrolling across active tech sectors',
 }) => {
+  const [stream1, setStream1] = useState(row1Jobs);
+  const [stream2, setStream2] = useState(row2Jobs);
+
+  useEffect(() => {
+    if (row1Jobs && row1Jobs.length > 0) setStream1(row1Jobs);
+    if (row2Jobs && row2Jobs.length > 0) setStream2(row2Jobs);
+  }, [row1Jobs, row2Jobs]);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!stream1.length || !stream2.length) {
+      Promise.all([
+        jobService.getSection('latest', { limit: 8 }),
+        jobService.getSection('trending', { limit: 8 }),
+      ])
+        .then(([res1, res2]) => {
+          if (!isMounted) return;
+          if (res1?.data?.jobs?.length) setStream1(res1.data.jobs);
+          if (res2?.data?.jobs?.length) setStream2(res2.data.jobs);
+        })
+        .catch(() => {});
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   // Ensure enough items to create seamless looping by duplicating
-  const track1 = row1Jobs.length > 0 ? [...row1Jobs, ...row1Jobs, ...row1Jobs, ...row1Jobs] : [];
-  const track2 = row2Jobs.length > 0 ? [...row2Jobs, ...row2Jobs, ...row2Jobs, ...row2Jobs] : [];
+  const active1 = stream1.length > 0 ? stream1 : row1Jobs;
+  const active2 = stream2.length > 0 ? stream2 : row2Jobs;
+
+  const track1 = active1.length > 0 ? [...active1, ...active1, ...active1, ...active1] : [];
+  const track2 = active2.length > 0 ? [...active2, ...active2, ...active2, ...active2] : (track1.length > 0 ? track1 : []);
 
   if (track1.length === 0 && track2.length === 0) return null;
 
