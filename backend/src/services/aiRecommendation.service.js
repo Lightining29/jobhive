@@ -110,16 +110,31 @@ const WEIGHTS = {
   employmentType: 0.05,
 };
 
+const matchScoreCache = new Map();
+const MATCH_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
 const computeMatchScore = (user, job) => {
+  if (!user || !job) return { score: 0, matchingSkills: [], missingSkills: [], reason: '' };
+  const userKey = user.id || user._id || user.email || 'user';
+  const jobKey = job._id || job.id || job.jobTitle;
+  const cacheKey = `${userKey}:${jobKey}`;
+  const now = Date.now();
+  const cached = matchScoreCache.get(cacheKey);
+  if (cached && now < cached.expiresAt) {
+    return cached.result;
+  }
+
   const profile = getUserProfileVector(user);
 
   if (profile.preferredCategory && job.category !== profile.preferredCategory) {
-    return {
+    const res = {
       score: 0,
       matchingSkills: [],
       missingSkills: [],
       reason: `Job category does not match your preferred category (${profile.preferredCategory}).`,
     };
+    matchScoreCache.set(cacheKey, { result: res, expiresAt: now + MATCH_CACHE_TTL });
+    return res;
   }
 
   const scores = {
@@ -157,12 +172,15 @@ const computeMatchScore = (user, job) => {
     reason += ` Experience requirement met (${profile.totalExperience} yrs).`;
   }
 
-  return {
+  const result = {
     score,
     matchingSkills: matchingSkills.slice(0, 10),
     missingSkills: missingSkills.slice(0, 10),
     reason,
   };
+
+  matchScoreCache.set(cacheKey, { result, expiresAt: now + MATCH_CACHE_TTL });
+  return result;
 };
 
 module.exports = { computeMatchScore, getUserProfileVector, getUserSkills };

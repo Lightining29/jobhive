@@ -10,10 +10,10 @@ const runJobFetch = async (source = 'cron') => {
     return;
   }
   isFetching = true;
-  logger.info(`[cron] 5-minute automated job fetch started (${source})`);
+  logger.info(`[cron] 20-minute automated job fetch started (${source})`);
   try {
     const results = await fetchAllJobs();
-    logger.info(`[cron] 5-minute automated job fetch finished (${source})`, results);
+    logger.info(`[cron] 20-minute automated job fetch finished (${source})`, results);
   } catch (err) {
     logger.error(`[cron] automated job fetch error (${source})`, { message: err.message });
   } finally {
@@ -22,11 +22,11 @@ const runJobFetch = async (source = 'cron') => {
 };
 
 const startCronJobs = () => {
-  // Automatically fetch new jobs every 5 minutes
-  cron.schedule('*/5 * * * *', async () => {
-    await runJobFetch('5-minute-interval');
+  // Automatically fetch new jobs every 20 minutes
+  cron.schedule('*/20 * * * *', async () => {
+    await runJobFetch('20-minute-interval');
   });
-  logger.info('[cron] automated job ingestion registered: every 5 minutes (*/5 * * * *)');
+  logger.info('[cron] automated job ingestion registered: every 20 minutes (*/20 * * * *)');
 
   // Daily cleanup at 2:30 AM
   cron.schedule('30 2 * * *', async () => {

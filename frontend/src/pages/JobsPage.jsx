@@ -110,13 +110,20 @@ const JobsPage = () => {
   filtersRef.current = filters;
   sortRef.current    = sort;
 
+  const [loadingMore, setLoadingMore] = useState(false);
+  const bottomSentinelRef = useRef(null);
+
   // Core fetch — reads from refs so it's stable and never goes stale
-  const fetchJobs = useCallback(async (pageNum) => {
+  const fetchJobs = useCallback(async (pageNum, isAppend = false) => {
     const f   = filtersRef.current;
     const srt = sortRef.current;
 
-    setLoading(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isAppend) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     const q = { page: pageNum, limit: PAGE_SIZE, sort: srt };
     if (debouncedSearch)              q.search          = debouncedSearch;
@@ -132,34 +139,78 @@ const JobsPage = () => {
       const { data } = await jobService.list(q);
       const jobsList = Array.isArray(data?.jobs) ? data.jobs : [];
       const pageInfo = data?.pagination || {};
-      setJobs(jobsList);
+
+      if (isAppend) {
+        setJobs((prev) => {
+          const existingIds = new Set(prev.map((j) => j._id));
+          const filtered = jobsList.filter((j) => !existingIds.has(j._id));
+          return [...prev, ...filtered];
+        });
+      } else {
+        setJobs(jobsList);
+      }
+
       setTotal(pageInfo.total || 0);
       setPages(pageInfo.pages || 1);
-      setPage(pageInfo.page || 1);
+      setPage(pageNum);
       if (data?.counts) {
         setCounts(data.counts);
       }
+
+      // Prefetch next batch immediately (e.g. if seeing 1–12, silently prefetch 13–24)
+      if (pageNum < (pageInfo.pages || 1)) {
+        jobService.prefetch({ ...q, page: pageNum + 1 });
+      }
     } catch (err) {
-      setJobs([]);
-      setTotal(0);
-      setPages(1);
+      if (!isAppend) {
+        setJobs([]);
+        setTotal(0);
+        setPages(1);
+      }
       toast.error(err.message || 'Failed to fetch jobs');
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch]); // only debouncedSearch here — filters/sort read from refs
+  }, [debouncedSearch]);
 
   // Reset to page 1 whenever filters, sort, or search change
   useEffect(() => {
     setPage(1);
-    fetchJobs(1);
-  }, [fetchJobs, sort]); // fetchJobs changes on debouncedSearch change; sort is explicit
+    fetchJobs(1, false);
+  }, [fetchJobs, sort]);
 
-  // Page change — called by Pagination component, does NOT reset to page 1
-  const handlePageChange = useCallback((newPage) => {
-    fetchJobs(newPage);
-  }, [fetchJobs]);
+  // Infinite Scroll Observer: Automatically fetch next batch as user scrolls near bottom
+  useEffect(() => {
+    if (loading || loadingMore || page >= pages) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && !loading && !loadingMore && page < pages) {
+          fetchJobs(page + 1, true);
+        }
+      },
+      {
+        rootMargin: '400px 0px', // Trigger 400px before reaching the end of the list
+        threshold: 0.01,
+      }
+    );
+
+    const sentinel = bottomSentinelRef.current;
+    if (sentinel) observer.observe(sentinel);
+
+    return () => {
+      if (sentinel) observer.unobserve(sentinel);
+      observer.disconnect();
+    };
+  }, [loading, loadingMore, page, pages, fetchJobs]);
+
+  const handleLoadMore = () => {
+    if (loading || loadingMore || page >= pages) return;
+    fetchJobs(page + 1, true);
+  };
 
   const handleFilterChange = (next) => {
     setFilters(next);
@@ -393,16 +444,40 @@ const JobsPage = () => {
                 </div>
               )}
 
-              {/* ── Pagination ─────────────────────────────────────────── */}
+              {/* ── Progressive Infinite Scroll Controls & Sentinel ───── */}
               {!loading && Array.isArray(jobs) && jobs?.length > 0 && (
-                <Pagination
-                  page={page}
-                  pages={pages}
-                  total={total}
-                  limit={PAGE_SIZE}
-                  onPageChange={handlePageChange}
-                  loading={loading}
-                />
+                <div className="mt-8 space-y-4">
+                  {/* Status Banner */}
+                  <div className="flex items-center justify-between text-xs text-muted px-2">
+                    <span>Showing <strong>{jobs.length}</strong> of <strong>{total.toLocaleString()}</strong> verified jobs</span>
+                    {page < pages && <span>Scroll down for more</span>}
+                  </div>
+
+                  {/* Infinite Scroll Sentinel */}
+                  {page < pages && (
+                    <div ref={bottomSentinelRef} className="py-6 flex flex-col items-center justify-center gap-3">
+                      {loadingMore ? (
+                        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 shadow-xs">
+                          <FaRotate className="h-3.5 w-3.5 animate-spin" />
+                          <span>Loading next batch of jobs...</span>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={handleLoadMore}
+                          className="btn-outline !py-2.5 !px-6 text-xs font-bold rounded-full hover:border-amber-400"
+                        >
+                          Load More Jobs ({total - jobs.length} remaining)
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {page >= pages && jobs.length > 0 && (
+                    <div className="text-center py-6 text-xs font-medium text-slate-400 border-t border-slate-100 dark:border-slate-800">
+                      You've viewed all {total.toLocaleString()} available jobs matching this criteria.
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>

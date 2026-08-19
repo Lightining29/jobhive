@@ -13,19 +13,34 @@ const authService = {
     api.post('/auth/reset-password', typeof tokenOrData === 'object' ? tokenOrData : { token: tokenOrData, password }),
 };
 
-// High-Speed Client-Side Memory Cache
+// High-Speed Client-Side Memory Cache with Stale-While-Revalidate
 export const clientJobMemoryCache = new Map(); // id -> job
-const clientApiCache = new Map(); // key -> { data, expiresAt }
+const clientApiCache = new Map(); // key -> { data, timestamp, ttl }
 
 const cachedGet = async (url, config = {}, ttlMs = 30000) => {
   const key = `${url}:${JSON.stringify(config.params || {})}`;
   const now = Date.now();
   const hit = clientApiCache.get(key);
-  if (hit && now < hit.expiresAt) {
+
+  if (hit) {
+    const isStale = now - hit.timestamp > hit.ttl;
+    if (isStale) {
+      // Background revalidation (stale-while-revalidate)
+      api.get(url, config).then((freshRes) => {
+        clientApiCache.set(key, { data: freshRes, timestamp: Date.now(), ttl: ttlMs });
+        if (freshRes?.data?.jobs && Array.isArray(freshRes.data.jobs)) {
+          freshRes.data.jobs.forEach((j) => {
+            if (j._id) clientJobMemoryCache.set(j._id, j);
+          });
+        }
+      }).catch(() => {});
+    }
+    // Return cached (stale or fresh) data immediately in 0ms!
     return hit.data;
   }
+
   const res = await api.get(url, config);
-  clientApiCache.set(key, { data: res, expiresAt: now + ttlMs });
+  clientApiCache.set(key, { data: res, timestamp: now, ttl: ttlMs });
   return res;
 };
 
@@ -38,6 +53,9 @@ const jobService = {
       });
     }
     return res;
+  },
+  prefetch: (params) => {
+    return cachedGet('/jobs', { params }, 30000);
   },
   get: async (id) => {
     const res = await cachedGet(`/jobs/${id}`, {}, 60000);
