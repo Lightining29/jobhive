@@ -17,6 +17,7 @@ const {
 router.get('/', optionalProtect, jobs.listJobs);
 router.get('/stats', jobs.getStats);
 router.get('/home', optionalProtect, jobs.homeFeed);
+router.get('/section/:name', optionalProtect, jobs.getJobSection);
 router.get('/recommendations', protect, jobs.getRecommendations);
 router.post('/semantic-search', optionalProtect, jobs.semanticSearch);
 router.post('/refresh', jobs.refreshJobs);

@@ -572,6 +572,139 @@ const homeFeed = asyncHandler(async (req, res) => {
   res.json({ success: true, sections });
 });
 
+const sectionCache = new Map();
+const SECTION_CACHE_TTL = 3 * 60 * 1000; // 3 minutes
+
+const getJobSection = asyncHandler(async (req, res, next) => {
+  const sectionName = String(req.params.name || '').toLowerCase().trim();
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 8, 1), 50);
+  const skip = (page - 1) * limit;
+
+  const cacheKey = `${sectionName}:${page}:${limit}:${req.user ? req.user.id : 'anon'}`;
+  const now = Date.now();
+  const cached = sectionCache.get(cacheKey);
+  if (cached && now < cached.expiresAt) {
+    return res.json(cached.data);
+  }
+
+  const base = baseJobFilter();
+  const scoped = { ...base, $and: [indiaScopeFilter()] };
+
+  let jobs = [];
+  let total = 0;
+
+  if (sectionName === 'latest') {
+    [jobs, total] = await Promise.all([
+      Job.find(scoped).sort({ postedDate: -1, _id: -1 }).skip(skip).limit(limit).lean(),
+      Job.countDocuments(scoped),
+    ]);
+  } else if (sectionName === 'trending') {
+    const trendCond = { ...scoped, trendingScore: { $gt: 0 } };
+    [jobs, total] = await Promise.all([
+      Job.find(trendCond).sort({ trendingScore: -1, postedDate: -1 }).skip(skip).limit(limit).lean(),
+      Job.countDocuments(trendCond),
+    ]);
+    if (!jobs.length) {
+      jobs = await Job.find(scoped).sort({ postedDate: -1 }).skip(skip).limit(limit).lean();
+      total = await Job.countDocuments(scoped);
+    }
+  } else if (sectionName === 'technical') {
+    const techCond = { ...scoped, category: 'technical' };
+    [jobs, total] = await Promise.all([
+      Job.find(techCond).sort({ trendingScore: -1, postedDate: -1 }).skip(skip).limit(limit).lean(),
+      Job.countDocuments(techCond),
+    ]);
+  } else if (sectionName === 'non-technical' || sectionName === 'nontechnical') {
+    const nonTechCond = { ...scoped, category: 'non-technical' };
+    [jobs, total] = await Promise.all([
+      Job.find(nonTechCond).sort({ postedDate: -1 }).skip(skip).limit(limit).lean(),
+      Job.countDocuments(nonTechCond),
+    ]);
+  } else if (sectionName === 'remote') {
+    const remCond = { ...scoped, workMode: 'remote' };
+    [jobs, total] = await Promise.all([
+      Job.find(remCond).sort({ trendingScore: -1, postedDate: -1 }).skip(skip).limit(limit).lean(),
+      Job.countDocuments(remCond),
+    ]);
+  } else if (sectionName === 'internship' || sectionName === 'internships') {
+    const intCond = { ...scoped, employmentType: 'internship' };
+    [jobs, total] = await Promise.all([
+      Job.find(intCond).sort({ postedDate: -1 }).skip(skip).limit(limit).lean(),
+      Job.countDocuments(intCond),
+    ]);
+  } else if (sectionName === 'fresher' || sectionName === 'freshers') {
+    const freshCond = { ...scoped, experienceLevel: { $in: ['fresher', 'internship'] } };
+    [jobs, total] = await Promise.all([
+      Job.find(freshCond).sort({ postedDate: -1 }).skip(skip).limit(limit).lean(),
+      Job.countDocuments(freshCond),
+    ]);
+  } else if (sectionName === 'highest-paying' || sectionName === 'highestpaying') {
+    const salCond = { ...scoped, salaryMax: { $gt: 0 } };
+    [jobs, total] = await Promise.all([
+      Job.find(salCond).sort({ salaryMax: -1, postedDate: -1 }).skip(skip).limit(limit).lean(),
+      Job.countDocuments(salCond),
+    ]);
+  } else if (sectionName === 'recommended') {
+    if (req.user) {
+      const userSkills = (req.user.skills || []).map((s) => s.toLowerCase());
+      const userPrefs = req.user?.preferences || {};
+      const preferredCategory = userPrefs.preferredCategory || '';
+      const conditions = [];
+      if (userSkills.length) conditions.push({ requiredSkills: { $in: userSkills } });
+      if (preferredCategory) conditions.push({ category: preferredCategory });
+      const recCond = conditions.length ? { ...baseJobFilter(), ...(conditions.length === 1 ? conditions[0] : { $or: conditions }) } : scoped;
+      [jobs, total] = await Promise.all([
+        Job.find(recCond).sort({ trendingScore: -1, postedDate: -1 }).skip(skip).limit(limit).lean(),
+        Job.countDocuments(recCond),
+      ]);
+    } else {
+      jobs = await Job.find(scoped).sort({ trendingScore: -1, postedDate: -1 }).skip(skip).limit(limit).lean();
+      total = jobs.length;
+    }
+  } else if (sectionName === 'companies') {
+    const comps = await Company.find({ verified: true }).skip(skip).limit(limit).lean();
+    const result = { success: true, section: sectionName, items: comps, pagination: { page, limit, hasMore: comps.length === limit } };
+    sectionCache.set(cacheKey, { data: result, expiresAt: now + SECTION_CACHE_TTL });
+    return res.json(result);
+  } else if (sectionName === 'locations' || sectionName === 'near-me') {
+    const hotLocations = await Job.aggregate([
+      { $match: scoped },
+      { $match: { city: { $ne: '', $exists: true }, country: { $ne: '', $exists: true } } },
+      { $group: { _id: '$city', country: { $first: '$country' }, count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+    const items = hotLocations.map((l) => ({ city: l._id, country: l.country, count: l.count }));
+    const result = { success: true, section: sectionName, items, pagination: { page, limit, hasMore: items.length === limit } };
+    sectionCache.set(cacheKey, { data: result, expiresAt: now + SECTION_CACHE_TTL });
+    return res.json(result);
+  } else {
+    // Generic fallback
+    [jobs, total] = await Promise.all([
+      Job.find(scoped).sort({ postedDate: -1 }).skip(skip).limit(limit).lean(),
+      Job.countDocuments(scoped),
+    ]);
+  }
+
+  const responseData = {
+    success: true,
+    section: sectionName,
+    jobs,
+    pagination: {
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit) || 1,
+      hasMore: skip + jobs.length < total,
+    },
+  };
+
+  sectionCache.set(cacheKey, { data: responseData, expiresAt: now + SECTION_CACHE_TTL });
+  res.json(responseData);
+});
+
 const getRecommendations = asyncHandler(async (req, res, next) => {
   if (!req.user) return next(new ApiError(401, 'Login required for recommendations.'));
   const { page, limit, skip } = paginate(req.query);
@@ -802,6 +935,7 @@ module.exports = {
   getJob,
   getStats,
   homeFeed,
+  getJobSection,
   getRecommendations,
   applyToJob,
   myApplications,

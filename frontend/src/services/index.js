@@ -48,6 +48,15 @@ const jobService = {
   },
   getCachedJob: (id) => clientJobMemoryCache.get(id) || null,
   setCachedJob: (id, job) => clientJobMemoryCache.set(id, job),
+  getSection: async (sectionName, params = {}) => {
+    const res = await cachedGet(`/jobs/section/${encodeURIComponent(sectionName)}`, { params }, 30000);
+    if (res?.data?.jobs && Array.isArray(res.data.jobs)) {
+      res.data.jobs.forEach((j) => {
+        if (j._id) clientJobMemoryCache.set(j._id, j);
+      });
+    }
+    return res;
+  },
   home: () => cachedGet('/jobs/home', {}, 60000),
   stats: () => cachedGet('/jobs/stats', {}, 120000),
   recommendations: (params) => cachedGet('/jobs/recommendations', { params }, 30000),

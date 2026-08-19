@@ -16,27 +16,11 @@ import {
 import { useJobs } from '../context/JobContext';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import JobCard, { CompanyLogo } from '../components/jobs/JobCard';
 import { FadeIn } from '../components/ui/Motion';
-import { LoadingJobs } from '../components/ui/States';
 import SEOHead from '../components/seo/SEOHead';
 import DarkHeroParallaxScene from '../components/home/DarkHeroParallaxScene';
 import AlternateJobsMarquee from '../components/home/AlternateJobsMarquee';
-
-const JobRow = ({ jobs, loading, empty, cols = 4 }) => {
-  if (loading) return <LoadingJobs count={cols} />;
-  if (!jobs || jobs.length === 0) return <p className="text-slate-500 text-sm py-8 text-center">{empty || 'No jobs available right now.'}</p>;
-  const gridCols = cols === 2
-    ? 'grid-cols-1 md:grid-cols-2'
-    : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
-  return (
-    <div className={`grid ${gridCols} gap-4`}>
-      {jobs.map((job) => (
-        <JobCard key={job._id} job={job} match={job.match?.score} />
-      ))}
-    </div>
-  );
-};
+import { LazyJobSection, LazyCompaniesSection, LazyLocationsSection } from '../components/home/LazyJobSection';
 
 const SearchHero = () => {
   const [query, setQuery] = useState('');
@@ -305,9 +289,6 @@ const HomePage = () => {
   const { user } = useAuth();
   const { isDark } = useTheme();
 
-  const companies = homeData?.topCompanies || [];
-  const nearMe = homeData?.jobsNearMe || [];
-
   return (
     <div>
       <SEOHead
@@ -328,90 +309,101 @@ const HomePage = () => {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-16 md:space-y-20">
-        {homeData?.recommended?.length > 0 && (
-          <section>
-            <SectionHeader title="AI Recommended for You" subtitle="Hand-picked by our AI engine based on your skills and preferences" to="/jobs/recommended" />
-            <JobRow jobs={homeData.recommended} loading={false} empty="Complete your profile to get AI recommendations." />
-          </section>
+        {/* Recommended for logged-in candidates */}
+        {user && (
+          <LazyJobSection
+            sectionName="recommended"
+            title="AI Recommended for You"
+            subtitle="Hand-picked by our AI engine based on your skills and preferences"
+            to="/jobs/recommended"
+            initialJobs={homeData?.recommended}
+            initialVisible={true}
+            emptyText="Complete your profile skills to get tailored AI recommendations."
+          />
         )}
 
-        <section>
-          <SectionHeader title="Latest Jobs" subtitle="Fresh opportunities posted in the last few days" to="/jobs" />
-          <JobRow jobs={homeData?.latest} loading={homeLoading} />
-        </section>
+        {/* 1. Latest Jobs (Always loaded first / at the top) */}
+        <LazyJobSection
+          sectionName="latest"
+          title="Latest Jobs"
+          subtitle="Fresh opportunities posted in the last few days"
+          to="/jobs"
+          initialJobs={homeData?.latest}
+          initialVisible={true}
+        />
 
-        <section>
-          <SectionHeader title="Trending Jobs" subtitle="What people are applying to right now" to="/jobs?sort=trending" />
-          <JobRow jobs={homeData?.trending} loading={homeLoading} />
-        </section>
+        {/* 2. Trending Jobs (Fetched on scroll) */}
+        <LazyJobSection
+          sectionName="trending"
+          title="Trending Jobs"
+          subtitle="High-applicant roles and in-demand positions"
+          to="/jobs?sort=trending"
+          initialJobs={homeData?.trending}
+        />
 
+        {/* 3. Tech & Non-Tech Split Sections (Fetched on scroll) */}
         <div className="grid md:grid-cols-2 gap-10 md:gap-12">
-          <section>
-            <SectionHeader title="Technical Jobs" to="/jobs/technical" />
-            <JobRow jobs={homeData?.technical} loading={homeLoading} cols={2} />
-          </section>
-          <section>
-            <SectionHeader title="Non-Technical Jobs" to="/jobs/non-technical" />
-            <JobRow jobs={homeData?.nonTechnical} loading={homeLoading} cols={2} />
-          </section>
+          <LazyJobSection
+            sectionName="technical"
+            title="Technical Jobs"
+            to="/jobs/technical"
+            cols={2}
+            limit={6}
+            initialJobs={homeData?.technical}
+          />
+          <LazyJobSection
+            sectionName="non-technical"
+            title="Non-Technical Jobs"
+            to="/jobs/non-technical"
+            cols={2}
+            limit={6}
+            initialJobs={homeData?.nonTechnical}
+          />
         </div>
 
-        <section>
-          <SectionHeader title="Remote Jobs" subtitle="Work from anywhere — top remote roles" to="/jobs/remote" />
-          <JobRow jobs={homeData?.remote} loading={homeLoading} />
-        </section>
+        {/* 4. Remote Jobs (Fetched on scroll) */}
+        <LazyJobSection
+          sectionName="remote"
+          title="Remote Jobs"
+          subtitle="Work from anywhere — top remote and distributed roles"
+          to="/jobs/remote"
+          initialJobs={homeData?.remote}
+        />
 
+        {/* 5. Internships & Freshers (Fetched on scroll) */}
         <div className="grid md:grid-cols-2 gap-10 md:gap-12">
-          <section>
-            <SectionHeader title="Internships" to="/jobs?experience=internship" />
-            <JobRow jobs={homeData?.internship} loading={homeLoading} cols={2} />
-          </section>
-          <section>
-            <SectionHeader title="Fresher Jobs" to="/jobs?experience=fresher" />
-            <JobRow jobs={homeData?.fresher} loading={homeLoading} cols={2} />
-          </section>
+          <LazyJobSection
+            sectionName="internship"
+            title="Internships"
+            to="/jobs?experience=internship"
+            cols={2}
+            limit={6}
+            initialJobs={homeData?.internship}
+          />
+          <LazyJobSection
+            sectionName="fresher"
+            title="Fresher Jobs"
+            to="/jobs?experience=fresher"
+            cols={2}
+            limit={6}
+            initialJobs={homeData?.fresher}
+          />
         </div>
 
-        <section>
-          <SectionHeader title="Highest Paying Jobs" to="/jobs?sort=salary" />
-          <JobRow jobs={homeData?.highestPaying} loading={homeLoading} />
-        </section>
+        {/* 6. Highest Paying Jobs (Fetched on scroll) */}
+        <LazyJobSection
+          sectionName="highest-paying"
+          title="Highest Paying Jobs"
+          subtitle="Competitive executive & senior compensation packages"
+          to="/jobs?sort=salary"
+          initialJobs={homeData?.highestPaying}
+        />
 
-        {companies.length > 0 && (
-          <section>
-            <SectionHeader title="Featured Companies" subtitle="Companies hiring on JobHive" />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {companies.map((c) => (
-                <div key={c._id} className="card card-hover p-5 flex flex-col items-center text-center group hover:border-primary-300 dark:hover:border-primary-500/40">
-                  <CompanyLogo logo={c.logo?.url} name={c.name} />
-                  <p className="font-semibold text-sm mt-3 truncate w-full text-slate-900 dark:text-white transition-colors">{c.name}</p>
-                  {c.industry && <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{c.industry}</p>}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+        {/* 7. Featured Companies (Fetched on scroll) */}
+        <LazyCompaniesSection initialItems={homeData?.topCompanies} />
 
-        {nearMe.length > 0 && (
-          <section>
-            <SectionHeader title="Jobs Near Me" subtitle="Popular job locations" />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              {nearMe.map((l) => (
-                <Link
-                  key={l.city}
-                  to={`/jobs?city=${encodeURIComponent(l.city)}`}
-                  className="card card-hover p-4 text-center group hover:border-primary-300 dark:hover:border-primary-500/40"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-slate-800 border border-primary-100 dark:border-slate-700 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                    <FaLocationDot className="h-5 w-5 text-primary-600 dark:text-amber-400" />
-                  </div>
-                  <p className="font-semibold text-sm text-slate-900 dark:text-white transition-colors">{l.city}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{l.count} jobs</p>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+        {/* 8. Jobs Near Me (Fetched on scroll) */}
+        <LazyLocationsSection initialItems={homeData?.jobsNearMe} />
       </div>
 
       <CandidateCTABand />
