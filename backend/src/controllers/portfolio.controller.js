@@ -140,12 +140,23 @@ const generateUniqueSlug = async (name = 'developer') => {
 // ── 1. One-Click AI Generate Portfolio ──────────────────────────────
 const generatePortfolio = asyncHandler(async (req, res, next) => {
   let user = null;
-  try {
-    user = await UserMongo.findById(req.user.id);
-  } catch (e) {}
-  if (!user) {
+  const userMongoId = req.user._id || req.user.mongoId;
+  const userSqlId = req.user.id;
+
+  if (userMongoId && mongoose.isValidObjectId(userMongoId)) {
     try {
-      user = await UserSQL.findByPk(req.user.id);
+      user = await UserMongo.findById(userMongoId).lean();
+    } catch (e) {}
+  }
+  if (!user && req.user.email) {
+    try {
+      user = await UserMongo.findOne({ email: req.user.email }).lean();
+    } catch (e) {}
+  }
+  if (!user && userSqlId) {
+    try {
+      user = await UserSQL.findByPk(userSqlId);
+      if (user && user.toJSON) user = user.toJSON();
     } catch (e) {}
   }
   if (!user) return next(new ApiError(404, 'User profile not found.'));
@@ -237,12 +248,20 @@ const generatePortfolio = asyncHandler(async (req, res, next) => {
 
   // Check if existing portfolio already exists for user
   let existing = null;
-  try {
-    existing = await PortfolioMongo.findOne({ user: req.user.id });
-  } catch (e) {}
-  if (!existing) {
+  if (userMongoId && mongoose.isValidObjectId(userMongoId)) {
     try {
-      existing = await PortfolioSQL.findOne({ where: { userId: req.user.id } });
+      existing = await PortfolioMongo.findOne({ user: userMongoId }).lean();
+    } catch (e) {}
+  }
+  if (!existing && req.user.email) {
+    try {
+      existing = await PortfolioMongo.findOne({ 'hero.email': req.user.email }).lean();
+    } catch (e) {}
+  }
+  if (!existing && userSqlId) {
+    try {
+      existing = await PortfolioSQL.findOne({ where: { userId: userSqlId } });
+      if (existing && existing.toJSON) existing = existing.toJSON();
     } catch (e) {}
   }
 
@@ -250,8 +269,8 @@ const generatePortfolio = asyncHandler(async (req, res, next) => {
   const theme = existing?.theme || 'modern_tech';
 
   const portfolioPayload = {
-    user: req.user.id,
-    userId: req.user.id,
+    user: userMongoId || req.user._id,
+    userId: userSqlId || req.user.id,
     slug,
     theme,
     isPublished: true,
@@ -305,23 +324,36 @@ const generatePortfolio = asyncHandler(async (req, res, next) => {
 
   let saved = null;
   // Save to MongoDB if available
-  try {
-    saved = await PortfolioMongo.findOneAndUpdate(
-      { user: req.user.id },
-      { $set: portfolioPayload },
-      { new: true, upsert: true }
-    );
-  } catch (e) {}
+  if (userMongoId && mongoose.isValidObjectId(userMongoId)) {
+    try {
+      saved = await PortfolioMongo.findOneAndUpdate(
+        { user: userMongoId },
+        { $set: portfolioPayload },
+        { new: true, upsert: true }
+      ).lean();
+    } catch (e) {}
+  }
+  if (!saved && req.user.email) {
+    try {
+      saved = await PortfolioMongo.findOneAndUpdate(
+        { 'hero.email': req.user.email },
+        { $set: portfolioPayload },
+        { new: true, upsert: true }
+      ).lean();
+    } catch (e) {}
+  }
 
   // Save to SQL if available
-  try {
-    const [sqlItem] = await PortfolioSQL.upsert({
-      ...portfolioPayload,
-      userId: req.user.id,
-      slug,
-    });
-    if (!saved) saved = sqlItem;
-  } catch (e) {}
+  if (userSqlId) {
+    try {
+      const [sqlItem] = await PortfolioSQL.upsert({
+        ...portfolioPayload,
+        userId: userSqlId,
+        slug,
+      });
+      if (!saved) saved = sqlItem;
+    } catch (e) {}
+  }
 
   res.status(200).json({
     success: true,

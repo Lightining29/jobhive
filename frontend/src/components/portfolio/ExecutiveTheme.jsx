@@ -31,6 +31,7 @@ const SERVICE_ICONS = {
 };
 
 export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [contactSent, setContactSent] = useState(false);
   const [contactMsg, setContactMsg] = useState({ name: '', email: '', message: '' });
@@ -103,6 +104,15 @@ export const ExecutiveTheme = ({ portfolio, isPreview = false }) => {
           </div>
         </div>
 
+        {mobileMenuOpen && (
+          <div className="lg:hidden px-6 py-4 bg-white/95 backdrop-blur-2xl border-b border-slate-200 space-y-3 text-xs uppercase tracking-wider font-bold">
+            {about.summary && <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Overview</a>}
+            {experience.length > 0 && <a href="#experience" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Experience</a>}
+            {projects.length > 0 && <a href="#projects" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Projects</a>}
+            {skills.length > 0 && <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Competencies</a>}
+            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block text-slate-700 hover:text-slate-950">Inquire</a>
+          </div>
+        )}
       </header>
 
       {/* Main Content Container */}

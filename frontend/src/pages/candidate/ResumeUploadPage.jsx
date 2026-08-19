@@ -29,16 +29,35 @@ const TABS = [
   { id: 'ats',     label: 'ATS Optimizer', icon: FaBullseye },
 ];
 
+const calculateLocalScore = (u) => {
+  if (!u) return 0;
+  let s = 0;
+  if (u.resume?.url) s += 30;
+  if (u.skills?.length >= 5) s += 20;
+  else if (u.skills?.length) s += 10;
+  if (u.headline) s += 10;
+  if (u.bio && u.bio.length >= 100) s += 10;
+  if (u.experience?.length) s += 15;
+  if (u.education?.length) s += 5;
+  if (u.certifications?.length) s += 5;
+  if (u.avatar) s += 5;
+  return Math.min(s, 100);
+};
+
 export default function ResumeUploadPage() {
   const { user, refreshUser } = useAuth();
   const [tab, setTab]           = useState('upload');
-  const [score, setScore]       = useState(0);
+  const [score, setScore]       = useState(() => calculateLocalScore(user));
   const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    if (user) setScore(calculateLocalScore(user));
+  }, [user]);
 
   const load = useCallback(async () => {
     try {
       const { data } = await candidateService.resumeScore();
-      setScore(data.score);
+      if (typeof data?.score === 'number') setScore(data.score);
     } catch { /* ignore */ }
   }, []);
 
