@@ -30,10 +30,6 @@ export const JobProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    loadHome();
-  }, [loadHome]);
-
   const value = useMemo(
     () => ({ homeData, homeLoading, loadHome }),
     [homeData, homeLoading, loadHome]

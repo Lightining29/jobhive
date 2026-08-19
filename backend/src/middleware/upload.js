@@ -22,7 +22,7 @@ const fileFilter = (allowed) => (req, file, cb) => {
 
 const uploadResume = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB
   fileFilter: fileFilter([
     'application/pdf',
     'application/msword',
@@ -32,7 +32,7 @@ const uploadResume = multer({
 
 const uploadImage = multer({
   storage,
-  limits: { fileSize: 3 * 1024 * 1024 },
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
   fileFilter: fileFilter(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']),
 });
 
