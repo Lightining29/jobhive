@@ -142,56 +142,40 @@ export const AlternateJobsMarquee = ({
   }, []);
 
   // Ensure enough items to create seamless looping by duplicating
-  const active1 = stream1.length > 0 ? stream1 : row1Jobs;
-  const active2 = stream2.length > 0 ? stream2 : row2Jobs;
+  const activeStream = stream1.length > 0 ? stream1 : row1Jobs;
+  const track = activeStream.length > 0 ? [...activeStream, ...activeStream, ...activeStream, ...activeStream] : [];
 
-  const track1 = active1.length > 0 ? [...active1, ...active1, ...active1, ...active1] : [];
-  const track2 = active2.length > 0 ? [...active2, ...active2, ...active2, ...active2] : (track1.length > 0 ? track1 : []);
-
-  if (track1.length === 0 && track2.length === 0) return null;
+  if (track.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden py-14 bg-gradient-to-b from-transparent via-slate-100/50 to-transparent dark:from-[#030712] dark:via-[#030712] dark:to-[#030712] transition-colors duration-300">
+    <section className="relative overflow-hidden py-10 bg-gradient-to-b from-transparent via-slate-100/50 to-transparent dark:from-[#030712] dark:via-[#030712] dark:to-[#030712] transition-colors duration-300">
       {/* Background ambient neon glow spheres in dark mode */}
       <div className="absolute top-1/2 left-10 -translate-y-1/2 w-96 h-96 bg-cyan-500/10 dark:bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 right-10 -translate-y-1/2 w-96 h-96 bg-amber-500/10 dark:bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center relative z-10">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-amber-400/15 text-amber-800 dark:text-amber-300 border border-amber-400/30 mb-3 shadow-xs">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 text-center relative z-10">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-amber-400/15 text-amber-800 dark:text-amber-300 border border-amber-400/30 mb-2 shadow-xs">
           <FaBolt className="h-3 w-3 text-amber-500 animate-bounce" />
-          <span>Real-Time Job Telemetry</span>
+          <span>Real-Time Opportunities</span>
         </div>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
           {title}
         </h2>
         {subtitle && (
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-2xl mx-auto">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl mx-auto">
             {subtitle}
           </p>
         )}
       </div>
 
-      {/* Row 1: Infinite Left Scroll */}
-      <div className="relative w-full overflow-hidden mask-gradient-x mb-6">
-        <div className="animate-marquee-left pause-on-hover flex gap-5 py-2">
-          {track1.map((job, idx) => (
-            <MarqueeJobItem
-              key={`track1-${job._id || idx}-${idx}`}
-              job={job}
-              neonColor={idx % 4 === 0 ? 'pink' : idx % 4 === 1 ? 'cyan' : idx % 4 === 2 ? 'yellow' : 'purple'}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Row 2: Infinite Right Scroll (Alternate Direction) */}
+      {/* Single Infinite Stream */}
       <div className="relative w-full overflow-hidden mask-gradient-x">
-        <div className="animate-marquee-right pause-on-hover flex gap-5 py-2">
-          {track2.map((job, idx) => (
+        <div className="animate-marquee-left pause-on-hover flex gap-5 py-2">
+          {track.map((job, idx) => (
             <MarqueeJobItem
-              key={`track2-${job._id || idx}-${idx}`}
+              key={`marquee-${job._id || idx}-${idx}`}
               job={job}
-              neonColor={idx % 4 === 0 ? 'cyan' : idx % 4 === 1 ? 'pink' : idx % 4 === 2 ? 'purple' : 'yellow'}
+              neonColor={idx % 4 === 0 ? 'cyan' : idx % 4 === 1 ? 'pink' : idx % 4 === 2 ? 'yellow' : 'purple'}
             />
           ))}
         </div>

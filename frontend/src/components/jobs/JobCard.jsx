@@ -222,34 +222,20 @@ const JobCard = ({ job, match }) => {
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5 mt-3">
-          {workMode && (() => {
-            const ModeIcon = WORK_MODE_BADGES[workMode].icon;
-            return (
-              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border ${WORK_MODE_BADGES[workMode].cls}`}>
-                <ModeIcon className="h-3 w-3" />
-                {WORK_MODE_BADGES[workMode].label}
-              </span>
-            );
-          })()}
-          {employment && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border bg-slate-100 text-slate-900 border-slate-300 dark:bg-cyan-950/70 dark:text-cyan-300 dark:border-cyan-500/40">
-              <FaBriefcase className="h-3 w-3" />
-              {employment}
-            </span>
-          )}
-          {job.experienceLevel && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border bg-indigo-50 text-indigo-950 border-indigo-300 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-500/40">
-              {capitalize(job.experienceLevel)}
-            </span>
-          )}
-          {sourceLabel && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border bg-slate-50 text-slate-900 border-slate-300 dark:bg-slate-900 dark:text-slate-200 dark:border-slate-700">
-              <span className={`h-1.5 w-1.5 rounded-full ${SOURCE_DOT_COLORS[job.source] || 'bg-cyan-400'}`} />
-              {sourceLabel}
-            </span>
-          )}
-        </div>
+        {/* Required Badge: Work Mode only */}
+        {workMode && (
+          <div className="mt-3">
+            {(() => {
+              const ModeIcon = WORK_MODE_BADGES[workMode]?.icon || FaGlobe;
+              return (
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border ${WORK_MODE_BADGES[workMode]?.cls || 'bg-slate-100 text-slate-800'}`}>
+                  <ModeIcon className="h-3 w-3" />
+                  {WORK_MODE_BADGES[workMode]?.label || capitalize(workMode)}
+                </span>
+              );
+            })()}
+          </div>
+        )}
 
         {job.description && (() => {
           const desc = parseJobDescription(job.description);
@@ -312,21 +298,6 @@ const JobCard = ({ job, match }) => {
                   +{extraSkills}
                 </span>
               )}
-            </div>
-          )}
-
-          {showMatch && (
-            <div className="mt-3">
-              <div className="flex items-center gap-2">
-                <span className={`badge ${matchColor(match)}`}>{match}% Match</span>
-                {match >= 70 && <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">Great fit</span>}
-              </div>
-              <div className="h-0.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full mt-1.5">
-                <div
-                  className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all"
-                  style={{ width: `${Math.min(100, Math.max(0, match))}%` }}
-                />
-              </div>
             </div>
           )}
 
