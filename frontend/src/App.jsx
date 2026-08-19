@@ -12,52 +12,69 @@ import HomePage from './pages/HomePage';
 import NotificationsPage from './pages/NotificationsPage';
 import NotFoundPage from './pages/NotFoundPage';
 
-const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
-const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
-const ForgotPasswordPage = lazy(() => import('./pages/auth/ForgotPasswordPage'));
-const ResetPasswordPage = lazy(() => import('./pages/auth/ResetPasswordPage'));
-const VerifyEmailPage = lazy(() => import('./pages/auth/VerifyEmailPage'));
-const JobsPage = lazy(() => import('./pages/JobsPage'));
-const JobDetailPage = lazy(() => import('./pages/JobDetailPage'));
-const RecommendedJobsPage = lazy(() => import('./pages/RecommendedJobsPage'));
-const AboutPage = lazy(() => import('./pages/AboutPage'));
+const lazyWithRetry = (componentImport) =>
+  lazy(async () => {
+    const isRetried = window.sessionStorage.getItem('chunk_retry') === 'true';
+    try {
+      const component = await componentImport();
+      window.sessionStorage.setItem('chunk_retry', 'false');
+      return component;
+    } catch (error) {
+      if (!isRetried) {
+        window.sessionStorage.setItem('chunk_retry', 'true');
+        window.location.reload();
+        return { default: () => null };
+      }
+      throw error;
+    }
+  });
 
-const ResumeAnalyzerPage = lazy(() => import('./pages/candidate/ResumeAnalyzerPage'));
-const CareerNewsPage = lazy(() => import('./pages/CareerNewsPage'));
+const LoginPage = lazyWithRetry(() => import('./pages/auth/LoginPage'));
+const RegisterPage = lazyWithRetry(() => import('./pages/auth/RegisterPage'));
+const ForgotPasswordPage = lazyWithRetry(() => import('./pages/auth/ForgotPasswordPage'));
+const ResetPasswordPage = lazyWithRetry(() => import('./pages/auth/ResetPasswordPage'));
+const VerifyEmailPage = lazyWithRetry(() => import('./pages/auth/VerifyEmailPage'));
+const JobsPage = lazyWithRetry(() => import('./pages/JobsPage'));
+const JobDetailPage = lazyWithRetry(() => import('./pages/JobDetailPage'));
+const RecommendedJobsPage = lazyWithRetry(() => import('./pages/RecommendedJobsPage'));
+const AboutPage = lazyWithRetry(() => import('./pages/AboutPage'));
 
-const CandidateDashboardPage = lazy(() => import('./pages/candidate/CandidateDashboardPage'));
-const CandidateProfilePage = lazy(() => import('./pages/candidate/CandidateProfilePage'));
-const SavedJobsPage = lazy(() => import('./pages/candidate/SavedJobsPage'));
-const MyApplicationsPage = lazy(() => import('./pages/candidate/MyApplicationsPage'));
-const ResumeUploadPage = lazy(() => import('./pages/candidate/ResumeUploadPage'));
+const ResumeAnalyzerPage = lazyWithRetry(() => import('./pages/candidate/ResumeAnalyzerPage'));
+const CareerNewsPage = lazyWithRetry(() => import('./pages/CareerNewsPage'));
 
-const RecruiterDashboardPage = lazy(() => import('./pages/recruiter/RecruiterDashboardPage'));
-const CompanyProfilePage = lazy(() => import('./pages/recruiter/CompanyProfilePage'));
-const PostJobPage = lazy(() => import('./pages/recruiter/PostJobPage'));
-const EditJobPage = lazy(() => import('./pages/recruiter/EditJobPage'));
-const MyJobsPage = lazy(() => import('./pages/recruiter/MyJobsPage'));
-const ApplicantsPage = lazy(() => import('./pages/recruiter/ApplicantsPage'));
+const CandidateDashboardPage = lazyWithRetry(() => import('./pages/candidate/CandidateDashboardPage'));
+const CandidateProfilePage = lazyWithRetry(() => import('./pages/candidate/CandidateProfilePage'));
+const SavedJobsPage = lazyWithRetry(() => import('./pages/candidate/SavedJobsPage'));
+const MyApplicationsPage = lazyWithRetry(() => import('./pages/candidate/MyApplicationsPage'));
+const ResumeUploadPage = lazyWithRetry(() => import('./pages/candidate/ResumeUploadPage'));
 
-const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'));
-const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage'));
-const AdminServicesPage = lazy(() => import('./pages/admin/AdminServicesPage'));
-const AdminPlansPage = lazy(() => import('./pages/admin/AdminPlansPage'));
-const AdminCouponsPage = lazy(() => import('./pages/admin/AdminCouponsPage'));
-const AdminBundlesPage = lazy(() => import('./pages/admin/AdminBundlesPage'));
-const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage'));
-const AdminCompaniesPage = lazy(() => import('./pages/admin/AdminCompaniesPage'));
-const AdminJobsPage = lazy(() => import('./pages/admin/AdminJobsPage'));
-const AdminPaymentsPage = lazy(() => import('./pages/admin/AdminPaymentsPage'));
-const AdminAnalyticsPage = lazy(() => import('./pages/admin/AdminAnalyticsPage'));
-const AdminRolesPage = lazy(() => import('./pages/admin/AdminRolesPage'));
-const AdminNotificationsPage = lazy(() => import('./pages/admin/AdminNotificationsPage'));
-const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage'));
-const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'));
-const AdminICardStudioPage = lazy(() => import('./pages/admin/AdminICardStudioPage'));
-const VerifyCardPage = lazy(() => import('./pages/public/VerifyCardPage'));
+const RecruiterDashboardPage = lazyWithRetry(() => import('./pages/recruiter/RecruiterDashboardPage'));
+const CompanyProfilePage = lazyWithRetry(() => import('./pages/recruiter/CompanyProfilePage'));
+const PostJobPage = lazyWithRetry(() => import('./pages/recruiter/PostJobPage'));
+const EditJobPage = lazyWithRetry(() => import('./pages/recruiter/EditJobPage'));
+const MyJobsPage = lazyWithRetry(() => import('./pages/recruiter/MyJobsPage'));
+const ApplicantsPage = lazyWithRetry(() => import('./pages/recruiter/ApplicantsPage'));
 
-const CandidatePortfolioPage = lazy(() => import('./pages/candidate/CandidatePortfolioPage'));
-const PublicPortfolioPage = lazy(() => import('./pages/PublicPortfolioPage'));
+const AdminDashboardPage = lazyWithRetry(() => import('./pages/admin/AdminDashboardPage'));
+const AdminLoginPage = lazyWithRetry(() => import('./pages/admin/AdminLoginPage'));
+const AdminServicesPage = lazyWithRetry(() => import('./pages/admin/AdminServicesPage'));
+const AdminPlansPage = lazyWithRetry(() => import('./pages/admin/AdminPlansPage'));
+const AdminCouponsPage = lazyWithRetry(() => import('./pages/admin/AdminCouponsPage'));
+const AdminBundlesPage = lazyWithRetry(() => import('./pages/admin/AdminBundlesPage'));
+const AdminUsersPage = lazyWithRetry(() => import('./pages/admin/AdminUsersPage'));
+const AdminCompaniesPage = lazyWithRetry(() => import('./pages/admin/AdminCompaniesPage'));
+const AdminJobsPage = lazyWithRetry(() => import('./pages/admin/AdminJobsPage'));
+const AdminPaymentsPage = lazyWithRetry(() => import('./pages/admin/AdminPaymentsPage'));
+const AdminAnalyticsPage = lazyWithRetry(() => import('./pages/admin/AdminAnalyticsPage'));
+const AdminRolesPage = lazyWithRetry(() => import('./pages/admin/AdminRolesPage'));
+const AdminNotificationsPage = lazyWithRetry(() => import('./pages/admin/AdminNotificationsPage'));
+const AdminSettingsPage = lazyWithRetry(() => import('./pages/admin/AdminSettingsPage'));
+const AdminReportsPage = lazyWithRetry(() => import('./pages/admin/AdminReportsPage'));
+const AdminICardStudioPage = lazyWithRetry(() => import('./pages/admin/AdminICardStudioPage'));
+const VerifyCardPage = lazyWithRetry(() => import('./pages/public/VerifyCardPage'));
+
+const CandidatePortfolioPage = lazyWithRetry(() => import('./pages/candidate/CandidatePortfolioPage'));
+const PublicPortfolioPage = lazyWithRetry(() => import('./pages/PublicPortfolioPage'));
 
 const withSuspense = (el) => <ErrorBoundary><Suspense fallback={<PageLoader />}>{el}</Suspense></ErrorBoundary>;
 
