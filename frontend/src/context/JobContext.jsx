@@ -4,14 +4,25 @@ import { jobService } from '../services';
 const JobContext = createContext(null);
 
 export const JobProvider = ({ children }) => {
-  const [homeData, setHomeData] = useState(null);
-  const [homeLoading, setHomeLoading] = useState(true);
+  const [homeData, setHomeData] = useState(() => {
+    try {
+      const cached = window.sessionStorage.getItem('jobhive_home_data');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [homeLoading, setHomeLoading] = useState(false);
 
   const loadHome = useCallback(async () => {
-    setHomeLoading(true);
     try {
       const { data } = await jobService.home();
-      setHomeData(data.sections);
+      if (data?.sections) {
+        setHomeData(data.sections);
+        try {
+          window.sessionStorage.setItem('jobhive_home_data', JSON.stringify(data.sections));
+        } catch {}
+      }
     } catch {
       // home feed is non-critical; keep previous data
     } finally {

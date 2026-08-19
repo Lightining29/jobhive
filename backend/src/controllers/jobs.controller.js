@@ -458,9 +458,12 @@ const getStats = asyncHandler(async (req, res) => {
   res.json({ success: true, stats: statsCache });
 });
 
+const CARD_FIELDS =
+  'jobTitle company headline location city state country workMode employmentType category salaryMin salaryMax salaryCurrency experience experienceLevel tags requiredSkills applyLink source postedDate trendingScore';
+
 let homeFeedCache = null;
 let homeFeedExpiresAt = 0;
-const HOME_FEED_TTL = 3 * 60 * 1000; // 3 minutes
+const HOME_FEED_TTL = 5 * 60 * 1000; // 5 minutes
 
 const homeFeed = asyncHandler(async (req, res) => {
   const now = Date.now();
@@ -472,47 +475,23 @@ const homeFeed = asyncHandler(async (req, res) => {
     const base = baseJobFilter();
     const scoped = { ...base, $and: [indiaScopeFilter()] };
 
-    const priorityCond = {
-      $or: [
-        { jobTitle: { $regex: /\b(java|mern|react|node|nodejs|python|django|fastapi|mongodb|express|spring boot)\b/i } },
-        { headline: { $regex: /\b(java|mern|react|node|nodejs|python|django|fastapi|mongodb|express|spring boot)\b/i } },
-        { requiredSkills: { $in: ['java', 'react', 'react.js', 'reactjs', 'node', 'node.js', 'nodejs', 'mern', 'python', 'django', 'fastapi', 'mongodb', 'express', 'spring boot'] } },
-      ],
-    };
-
-    const fetchSection = async (extraFilter, limit = 8) => {
-      const matched = await Job.find({ ...scoped, ...extraFilter, ...priorityCond })
-        .sort({ trendingScore: -1, postedDate: -1 })
+    const fetchSection = (extraFilter, limit = 8, sort = { trendingScore: -1, postedDate: -1 }) =>
+      Job.find({ ...scoped, ...extraFilter })
+        .select(CARD_FIELDS)
+        .sort(sort)
         .limit(limit)
         .lean();
 
-      if (matched.length >= limit) return matched;
-      const remaining = limit - matched.length;
-      const excludeIds = matched.map((j) => j._id);
-      const general = await Job.find({
-        ...scoped,
-        ...extraFilter,
-        _id: { $nin: excludeIds },
-      })
-        .sort({ postedDate: -1 })
-        .limit(remaining)
-        .lean();
-      return [...matched, ...general];
-    };
-
     const [latest, technical, nonTechnical, remote, internship, fresher, topCompanies, highestPaying, trending, hotLocations] = await Promise.all([
-      fetchSection({}),
-      fetchSection({ category: 'technical' }),
-      fetchSection({ category: 'non-technical' }),
-      fetchSection({ workMode: 'remote' }),
-      fetchSection({ employmentType: 'internship' }),
-      fetchSection({ experienceLevel: { $in: ['fresher', 'internship'] } }),
-      Company.find({ verified: true }).limit(6).lean(),
-      fetchSection({ salaryMax: { $gt: 0 } }).then((jobs) => {
-        const sorted = [...jobs].sort((a, b) => (b.salaryMax || 0) - (a.salaryMax || 0));
-        return sorted.slice(0, 8);
-      }),
-      Job.find({ ...scoped, trendingScore: { $gt: 0 } }).sort({ trendingScore: -1, postedDate: -1 }).limit(8).lean(),
+      fetchSection({}, 8, { postedDate: -1, _id: -1 }),
+      fetchSection({ category: 'technical' }, 8),
+      fetchSection({ category: 'non-technical' }, 8, { postedDate: -1 }),
+      fetchSection({ workMode: 'remote' }, 8),
+      fetchSection({ employmentType: 'internship' }, 8, { postedDate: -1 }),
+      fetchSection({ experienceLevel: { $in: ['fresher', 'internship'] } }, 8, { postedDate: -1 }),
+      Company.find({ verified: true }).select('companyName logo website industry location verified').limit(6).lean(),
+      Job.find({ ...scoped, salaryMax: { $gt: 0 } }).select(CARD_FIELDS).sort({ salaryMax: -1, postedDate: -1 }).limit(8).lean(),
+      Job.find({ ...scoped, trendingScore: { $gt: 0 } }).select(CARD_FIELDS).sort({ trendingScore: -1, postedDate: -1 }).limit(8).lean(),
       Job.aggregate([
         { $match: scoped },
         { $match: { city: { $ne: '', $exists: true }, country: { $ne: '', $exists: true } } },
@@ -558,6 +537,7 @@ const homeFeed = asyncHandler(async (req, res) => {
       if (conditions.length) {
         const preferred = conditions.length === 1 ? conditions[0] : { $or: conditions };
         const matched = await Job.find({ ...baseJobFilter(), ...preferred })
+          .select(CARD_FIELDS)
           .sort({ postedDate: -1 })
           .limit(8)
           .lean();
@@ -573,7 +553,7 @@ const homeFeed = asyncHandler(async (req, res) => {
 });
 
 const sectionCache = new Map();
-const SECTION_CACHE_TTL = 3 * 60 * 1000; // 3 minutes
+const SECTION_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 const getJobSection = asyncHandler(async (req, res, next) => {
   const sectionName = String(req.params.name || '').toLowerCase().trim();
@@ -591,60 +571,30 @@ const getJobSection = asyncHandler(async (req, res, next) => {
   const base = baseJobFilter();
   const scoped = { ...base, $and: [indiaScopeFilter()] };
 
-  let jobs = [];
-  let total = 0;
+  let query = null;
+  let sort = { trendingScore: -1, postedDate: -1 };
 
   if (sectionName === 'latest') {
-    [jobs, total] = await Promise.all([
-      Job.find(scoped).sort({ postedDate: -1, _id: -1 }).skip(skip).limit(limit).lean(),
-      Job.countDocuments(scoped),
-    ]);
+    query = Job.find(scoped);
+    sort = { postedDate: -1, _id: -1 };
   } else if (sectionName === 'trending') {
-    const trendCond = { ...scoped, trendingScore: { $gt: 0 } };
-    [jobs, total] = await Promise.all([
-      Job.find(trendCond).sort({ trendingScore: -1, postedDate: -1 }).skip(skip).limit(limit).lean(),
-      Job.countDocuments(trendCond),
-    ]);
-    if (!jobs.length) {
-      jobs = await Job.find(scoped).sort({ postedDate: -1 }).skip(skip).limit(limit).lean();
-      total = await Job.countDocuments(scoped);
-    }
+    query = Job.find({ ...scoped, trendingScore: { $gt: 0 } });
   } else if (sectionName === 'technical') {
-    const techCond = { ...scoped, category: 'technical' };
-    [jobs, total] = await Promise.all([
-      Job.find(techCond).sort({ trendingScore: -1, postedDate: -1 }).skip(skip).limit(limit).lean(),
-      Job.countDocuments(techCond),
-    ]);
+    query = Job.find({ ...scoped, category: 'technical' });
   } else if (sectionName === 'non-technical' || sectionName === 'nontechnical') {
-    const nonTechCond = { ...scoped, category: 'non-technical' };
-    [jobs, total] = await Promise.all([
-      Job.find(nonTechCond).sort({ postedDate: -1 }).skip(skip).limit(limit).lean(),
-      Job.countDocuments(nonTechCond),
-    ]);
+    query = Job.find({ ...scoped, category: 'non-technical' });
+    sort = { postedDate: -1 };
   } else if (sectionName === 'remote') {
-    const remCond = { ...scoped, workMode: 'remote' };
-    [jobs, total] = await Promise.all([
-      Job.find(remCond).sort({ trendingScore: -1, postedDate: -1 }).skip(skip).limit(limit).lean(),
-      Job.countDocuments(remCond),
-    ]);
+    query = Job.find({ ...scoped, workMode: 'remote' });
   } else if (sectionName === 'internship' || sectionName === 'internships') {
-    const intCond = { ...scoped, employmentType: 'internship' };
-    [jobs, total] = await Promise.all([
-      Job.find(intCond).sort({ postedDate: -1 }).skip(skip).limit(limit).lean(),
-      Job.countDocuments(intCond),
-    ]);
+    query = Job.find({ ...scoped, employmentType: 'internship' });
+    sort = { postedDate: -1 };
   } else if (sectionName === 'fresher' || sectionName === 'freshers') {
-    const freshCond = { ...scoped, experienceLevel: { $in: ['fresher', 'internship'] } };
-    [jobs, total] = await Promise.all([
-      Job.find(freshCond).sort({ postedDate: -1 }).skip(skip).limit(limit).lean(),
-      Job.countDocuments(freshCond),
-    ]);
+    query = Job.find({ ...scoped, experienceLevel: { $in: ['fresher', 'internship'] } });
+    sort = { postedDate: -1 };
   } else if (sectionName === 'highest-paying' || sectionName === 'highestpaying') {
-    const salCond = { ...scoped, salaryMax: { $gt: 0 } };
-    [jobs, total] = await Promise.all([
-      Job.find(salCond).sort({ salaryMax: -1, postedDate: -1 }).skip(skip).limit(limit).lean(),
-      Job.countDocuments(salCond),
-    ]);
+    query = Job.find({ ...scoped, salaryMax: { $gt: 0 } });
+    sort = { salaryMax: -1, postedDate: -1 };
   } else if (sectionName === 'recommended') {
     if (req.user) {
       const userSkills = (req.user.skills || []).map((s) => s.toLowerCase());
@@ -654,16 +604,12 @@ const getJobSection = asyncHandler(async (req, res, next) => {
       if (userSkills.length) conditions.push({ requiredSkills: { $in: userSkills } });
       if (preferredCategory) conditions.push({ category: preferredCategory });
       const recCond = conditions.length ? { ...baseJobFilter(), ...(conditions.length === 1 ? conditions[0] : { $or: conditions }) } : scoped;
-      [jobs, total] = await Promise.all([
-        Job.find(recCond).sort({ trendingScore: -1, postedDate: -1 }).skip(skip).limit(limit).lean(),
-        Job.countDocuments(recCond),
-      ]);
+      query = Job.find(recCond);
     } else {
-      jobs = await Job.find(scoped).sort({ trendingScore: -1, postedDate: -1 }).skip(skip).limit(limit).lean();
-      total = jobs.length;
+      query = Job.find(scoped);
     }
   } else if (sectionName === 'companies') {
-    const comps = await Company.find({ verified: true }).skip(skip).limit(limit).lean();
+    const comps = await Company.find({ verified: true }).select('companyName logo website industry location verified').skip(skip).limit(limit).lean();
     const result = { success: true, section: sectionName, items: comps, pagination: { page, limit, hasMore: comps.length === limit } };
     sectionCache.set(cacheKey, { data: result, expiresAt: now + SECTION_CACHE_TTL });
     return res.json(result);
@@ -678,6 +624,39 @@ const getJobSection = asyncHandler(async (req, res, next) => {
     ]);
     const items = hotLocations.map((l) => ({ city: l._id, country: l.country, count: l.count }));
     const result = { success: true, section: sectionName, items, pagination: { page, limit, hasMore: items.length === limit } };
+    sectionCache.set(cacheKey, { data: result, expiresAt: now + SECTION_CACHE_TTL });
+    return res.json(result);
+  } else {
+    query = Job.find(scoped);
+  }
+
+  // Fetch limit + 1 to check hasMore in a single query
+  let rawJobs = await query.select(CARD_FIELDS).sort(sort).skip(skip).limit(limit + 1).lean();
+  if (sectionName === 'trending' && !rawJobs.length) {
+    rawJobs = await Job.find(scoped).select(CARD_FIELDS).sort({ postedDate: -1 }).skip(skip).limit(limit + 1).lean();
+  }
+
+  const hasMore = rawJobs.length > limit;
+  if (hasMore) rawJobs.pop();
+
+  const jobs = req.user && sectionName === 'recommended'
+    ? rawJobs.map((j) => ({ ...j, match: computeMatchScore(req.user, j) }))
+    : rawJobs;
+
+  const result = {
+    success: true,
+    section: sectionName,
+    jobs,
+    pagination: {
+      page,
+      limit,
+      hasMore,
+    },
+  };
+
+  sectionCache.set(cacheKey, { data: result, expiresAt: now + SECTION_CACHE_TTL });
+  res.json(result);
+});
     sectionCache.set(cacheKey, { data: result, expiresAt: now + SECTION_CACHE_TTL });
     return res.json(result);
   } else {
