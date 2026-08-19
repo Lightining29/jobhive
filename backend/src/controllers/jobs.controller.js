@@ -657,32 +657,6 @@ const getJobSection = asyncHandler(async (req, res, next) => {
   sectionCache.set(cacheKey, { data: result, expiresAt: now + SECTION_CACHE_TTL });
   res.json(result);
 });
-    sectionCache.set(cacheKey, { data: result, expiresAt: now + SECTION_CACHE_TTL });
-    return res.json(result);
-  } else {
-    // Generic fallback
-    [jobs, total] = await Promise.all([
-      Job.find(scoped).sort({ postedDate: -1 }).skip(skip).limit(limit).lean(),
-      Job.countDocuments(scoped),
-    ]);
-  }
-
-  const responseData = {
-    success: true,
-    section: sectionName,
-    jobs,
-    pagination: {
-      total,
-      page,
-      limit,
-      pages: Math.ceil(total / limit) || 1,
-      hasMore: skip + jobs.length < total,
-    },
-  };
-
-  sectionCache.set(cacheKey, { data: responseData, expiresAt: now + SECTION_CACHE_TTL });
-  res.json(responseData);
-});
 
 const getRecommendations = asyncHandler(async (req, res, next) => {
   if (!req.user) return next(new ApiError(401, 'Login required for recommendations.'));
