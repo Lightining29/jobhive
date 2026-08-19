@@ -159,7 +159,7 @@ const fetchFromProvider = async (provider) => {
     logger.debug(`[jobs] provider ${provider.name} disabled`);
     return 0;
   }
-  const MAX_ATTEMPTS = 3;
+  const MAX_ATTEMPTS = 1;
   let attempt = 0;
   for (;;) {
     attempt += 1;
@@ -182,52 +182,90 @@ const fetchFromProvider = async (provider) => {
           logger.warn(`[jobs] Mongo bulkWrite notice: ${mErr.message}`);
         }
 
-        // 2. Upsert into MySQL (Hostinger)
+        // 2. High-Speed Bulk Upsert into MySQL (Hostinger)
         try {
-          for (const doc of docs) {
-            await JobSQL.upsert({
-              jobId: doc.jobId,
-              source: doc.source || 'recruiter',
-              companyName: doc.companyName || 'Company',
-              companyLogo: doc.companyLogo || '',
-              companyWebsite: doc.companyWebsite || '',
-              jobTitle: doc.jobTitle || 'Job Position',
-              headline: doc.headline || '',
-              description: doc.description || '',
-              requiredSkills: doc.requiredSkills || [],
-              category: doc.category || 'technical',
-              subCategory: doc.subCategory || '',
-              experienceMin: doc.experience?.min || 0,
-              experienceMax: doc.experience?.max || 0,
-              experienceLevel: doc.experienceLevel || '',
-              salary: doc.salary || 0,
-              salaryMin: doc.salaryMin || 0,
-              salaryMax: doc.salaryMax || 0,
-              currency: doc.currency || 'USD',
-              salaryPeriod: doc.salaryPeriod || 'yearly',
-              employmentType: doc.employmentType || 'full-time',
-              location: doc.location || '',
-              city: doc.city || '',
-              state: doc.state || '',
-              country: doc.country || '',
-              workMode: doc.workMode || 'onsite',
-              remote: Boolean(doc.remote),
-              hybrid: Boolean(doc.hybrid),
-              onsite: doc.onsite !== undefined ? Boolean(doc.onsite) : true,
-              industry: doc.industry || '',
-              postedDate: doc.postedDate || new Date(),
-              expiresAt: doc.expiresAt || null,
-              applicationUrl: doc.applicationUrl || '',
-              applicationEmail: doc.applicationEmail || '',
-              isActive: true,
-              isVerified: true,
-              isExpired: false,
-              trendingScore: doc.trendingScore || 0,
-            });
-          }
-          logger.info(`[jobs] ${provider.name}: synced ${docs.length} jobs to MySQL`);
+          const sqlRecords = docs.map((doc) => ({
+            jobId: doc.jobId,
+            source: doc.source || 'recruiter',
+            companyName: doc.companyName || 'Company',
+            companyLogo: doc.companyLogo || '',
+            companyWebsite: doc.companyWebsite || '',
+            jobTitle: doc.jobTitle || 'Job Position',
+            headline: doc.headline || '',
+            description: doc.description || '',
+            requiredSkills: doc.requiredSkills || [],
+            category: doc.category || 'technical',
+            subCategory: doc.subCategory || '',
+            experienceMin: doc.experience?.min || 0,
+            experienceMax: doc.experience?.max || 0,
+            experienceLevel: doc.experienceLevel || '',
+            salary: doc.salary || 0,
+            salaryMin: doc.salaryMin || 0,
+            salaryMax: doc.salaryMax || 0,
+            currency: doc.currency || 'USD',
+            salaryPeriod: doc.salaryPeriod || 'yearly',
+            employmentType: doc.employmentType || 'full-time',
+            location: doc.location || '',
+            city: doc.city || '',
+            state: doc.state || '',
+            country: doc.country || '',
+            workMode: doc.workMode || 'onsite',
+            remote: Boolean(doc.remote),
+            hybrid: Boolean(doc.hybrid),
+            onsite: doc.onsite !== undefined ? Boolean(doc.onsite) : true,
+            industry: doc.industry || '',
+            postedDate: doc.postedDate || new Date(),
+            expiresAt: doc.expiresAt || null,
+            applicationUrl: doc.applicationUrl || '',
+            applicationEmail: doc.applicationEmail || '',
+            isActive: true,
+            isVerified: true,
+            isExpired: false,
+            trendingScore: doc.trendingScore || 0,
+          }));
+
+          await JobSQL.bulkCreate(sqlRecords, {
+            updateOnDuplicate: [
+              'companyName',
+              'companyLogo',
+              'companyWebsite',
+              'jobTitle',
+              'headline',
+              'description',
+              'requiredSkills',
+              'category',
+              'subCategory',
+              'experienceMin',
+              'experienceMax',
+              'experienceLevel',
+              'salary',
+              'salaryMin',
+              'salaryMax',
+              'currency',
+              'salaryPeriod',
+              'employmentType',
+              'location',
+              'city',
+              'state',
+              'country',
+              'workMode',
+              'remote',
+              'hybrid',
+              'onsite',
+              'industry',
+              'postedDate',
+              'expiresAt',
+              'applicationUrl',
+              'applicationEmail',
+              'isActive',
+              'isVerified',
+              'isExpired',
+              'trendingScore',
+            ],
+          });
+          logger.info(`[jobs] ${provider.name}: synced ${docs.length} jobs to MySQL in bulk`);
         } catch (sqlErr) {
-          logger.warn(`[jobs] MySQL upsert notice: ${sqlErr.message}`);
+          logger.warn(`[jobs] MySQL bulkCreate notice: ${sqlErr.message}`);
         }
 
         return docs.length;
@@ -264,7 +302,7 @@ const fetchAllJobs = async () => {
   const settled = await Promise.allSettled(
     providers.map(async (provider) => {
       try {
-        const saved = await timeoutPromise(8000, fetchFromProvider(provider), provider.name);
+        const saved = await timeoutPromise(4500, fetchFromProvider(provider), provider.name);
         return { provider: provider.name, status: 'ok', saved: saved || 0 };
       } catch (err) {
         logger.warn(`[jobs] ${provider.name} timed out or failed: ${err.message}`);

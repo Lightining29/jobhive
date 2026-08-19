@@ -866,20 +866,10 @@ const semanticSearch = asyncHandler(async (req, res) => {
 });
 
 const refreshJobs = asyncHandler(async (req, res) => {
-  if (req.query.async === 'true' || req.body?.async) {
-    fetchAllJobs().catch((err) => logger.error(`[jobs] Background refresh failed: ${err.message}`));
-    return res.json({
-      success: true,
-      message: 'Job sync initiated in background. Fresh jobs are syncing across all portals.',
-    });
-  }
-
-  const results = await fetchAllJobs();
-  const totalSaved = results.reduce((acc, r) => acc + (r.saved || 0), 0);
+  fetchAllJobs().catch((err) => logger.error(`[jobs] Background refresh failed: ${err.message}`));
   res.json({
     success: true,
-    message: `Job refresh complete. Saved/updated ${totalSaved} jobs across providers.`,
-    results,
+    message: 'Job sync initiated across 15+ company portals & APIs. Fresh opportunities are streaming in live.',
   });
 });
 
