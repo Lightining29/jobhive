@@ -160,7 +160,7 @@ const JobDetailPage = () => {
   const location = useLocation();
   const { user, savedJobs, toggleSaved, refreshUser } = useAuth();
   
-  const initialJob = location.state?.initialJob || null;
+  const initialJob = location.state?.initialJob || jobService.getCachedJob(id) || null;
   const [job, setJob] = useState(initialJob);
   const [related, setRelated] = useState([]);
   const [match, setMatch] = useState(null);
@@ -172,27 +172,34 @@ const JobDetailPage = () => {
   const isSaved = savedJobs.some((j) => j._id === id);
 
   const load = useCallback(async () => {
-    if (!job) setLoading(true);
     try {
       const { data } = await jobService.get(id);
-      setJob(data.job);
+      if (data?.job) {
+        setJob(data.job);
+        jobService.setCachedJob(id, data.job);
+      }
       setRelated(data.related || []);
       setMatch(data.match);
       setApplied(Boolean(data.applied));
       if (data.applied) refreshUser();
     } catch (err) {
-      if (!job) {
+      if (!job && !initialJob) {
         toast.error(err.message);
         navigate('/jobs');
       }
     } finally {
       setLoading(false);
     }
-  }, [id, navigate, refreshUser, job]);
+  }, [id, navigate, refreshUser, job, initialJob]);
 
   useEffect(() => {
+    const cached = jobService.getCachedJob(id);
+    if (cached && !job) {
+      setJob(cached);
+      setLoading(false);
+    }
     load();
-  }, [load]);
+  }, [id, load]);
 
   const apply = async () => {
     if (!user) {
@@ -232,8 +239,19 @@ const JobDetailPage = () => {
     }
   };
 
-  if (loading) return <PageLoader />;
-  if (!job) return null;
+  if (!job) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-[#030712] py-8">
+        <div className="max-w-5xl mx-auto px-4 space-y-6">
+          <div className="h-44 bg-white dark:bg-[#0a101f] rounded-3xl border border-slate-200 dark:border-cyan-500/20 animate-pulse p-8 flex flex-col justify-between" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 h-96 bg-white dark:bg-[#0a101f] rounded-3xl border border-slate-200 dark:border-cyan-500/20 animate-pulse" />
+            <div className="h-96 bg-white dark:bg-[#0a101f] rounded-3xl border border-slate-200 dark:border-cyan-500/20 animate-pulse" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const canApply = !applied;
   const actionButtons = (

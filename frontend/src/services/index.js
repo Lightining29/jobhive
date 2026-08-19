@@ -13,17 +13,52 @@ const authService = {
     api.post('/auth/reset-password', typeof tokenOrData === 'object' ? tokenOrData : { token: tokenOrData, password }),
 };
 
+// High-Speed Client-Side Memory Cache
+export const clientJobMemoryCache = new Map(); // id -> job
+const clientApiCache = new Map(); // key -> { data, expiresAt }
+
+const cachedGet = async (url, config = {}, ttlMs = 30000) => {
+  const key = `${url}:${JSON.stringify(config.params || {})}`;
+  const now = Date.now();
+  const hit = clientApiCache.get(key);
+  if (hit && now < hit.expiresAt) {
+    return hit.data;
+  }
+  const res = await api.get(url, config);
+  clientApiCache.set(key, { data: res, expiresAt: now + ttlMs });
+  return res;
+};
+
 const jobService = {
-  list: (params) => api.get('/jobs', { params }),
-  get: (id) => api.get(`/jobs/${id}`),
-  home: () => api.get('/jobs/home'),
-  stats: () => api.get('/jobs/stats'),
-  recommendations: (params) => api.get('/jobs/recommendations', { params }),
+  list: async (params) => {
+    const res = await cachedGet('/jobs', { params }, 20000);
+    if (res?.data?.jobs && Array.isArray(res.data.jobs)) {
+      res.data.jobs.forEach((j) => {
+        if (j._id) clientJobMemoryCache.set(j._id, j);
+      });
+    }
+    return res;
+  },
+  get: async (id) => {
+    const res = await cachedGet(`/jobs/${id}`, {}, 60000);
+    if (res?.data?.job?._id) {
+      clientJobMemoryCache.set(res.data.job._id, res.data.job);
+    }
+    return res;
+  },
+  getCachedJob: (id) => clientJobMemoryCache.get(id) || null,
+  setCachedJob: (id, job) => clientJobMemoryCache.set(id, job),
+  home: () => cachedGet('/jobs/home', {}, 60000),
+  stats: () => cachedGet('/jobs/stats', {}, 120000),
+  recommendations: (params) => cachedGet('/jobs/recommendations', { params }, 30000),
   apply: (id, data) => api.post(`/jobs/${id}/apply`, data),
   myApplications: (params) => api.get('/jobs/my-applications', { params }),
   report: (id, data) => api.post(`/jobs/${id}/report`, data),
   semanticSearch: (query, page = 1) => api.post('/jobs/semantic-search', { query, page }),
-  refresh: () => api.post('/jobs/refresh?async=true', {}, { timeout: 10000 }),
+  refresh: () => {
+    clientApiCache.clear();
+    return api.post('/jobs/refresh?async=true', {}, { timeout: 10000 });
+  },
 };
 
 const candidateService = {
