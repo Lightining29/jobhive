@@ -163,25 +163,35 @@ const CandidateProfilePage = () => {
     try {
       const cleaned = {
         ...values,
-        avatar: profile?.avatar || undefined,
-        skills: values.skills.filter(Boolean).map((s) => s.toLowerCase()),
-        education: values.education.filter((e) => e.institution || e.degree),
-        experience: values.experience.filter((e) => e.role || e.company),
-        certifications: values.certifications.filter((c) => c.name),
+        skills: Array.isArray(values.skills) ? values.skills.filter(Boolean).map((s) => s.toLowerCase()) : [],
+        education: Array.isArray(values.education) ? values.education.filter((e) => e.institution || e.degree) : [],
+        experience: Array.isArray(values.experience) ? values.experience.filter((e) => e.role || e.company) : [],
+        certifications: Array.isArray(values.certifications) ? values.certifications.filter((c) => c.name) : [],
         preferences: {
           ...values.preferences,
-          preferredSalary: values.preferences.preferredSalary ? Number(values.preferences.preferredSalary) : null,
+          preferredSalary: values.preferences?.preferredSalary ? Number(values.preferences.preferredSalary) : null,
         },
       };
-      const res = await candidateService.updateProfile(cleaned);
-      if (res?.data?.user && setUser) {
-        setUser((prev) => ({ ...prev, ...res.data.user }));
+
+      // Only pass avatar if it's a URL (photo uploads are handled separately)
+      if (profile?.avatar && !profile.avatar.startsWith('data:image')) {
+        cleaned.avatar = profile.avatar;
       }
-      toast.success('Profile updated');
-      await load();
-      if (refreshUser) await refreshUser();
+
+      const res = await candidateService.updateProfile(cleaned);
+      const updatedData = res?.data?.user || res?.data?.profile;
+      if (updatedData) {
+        setProfile((prev) => ({ ...prev, ...updatedData }));
+        if (setUser) {
+          setUser((prev) => ({ ...prev, ...updatedData }));
+        }
+      }
+      toast.success('Profile updated successfully');
+      if (refreshUser) {
+        refreshUser().catch(() => {});
+      }
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || 'Failed to save profile');
     } finally {
       setSaving(false);
     }

@@ -7,29 +7,46 @@ const fs = require('fs');
 const { uploadDir } = require('../middleware/upload');
 const env = require('../config/env');
 
-const getProfile = asyncHandler(async (req, res) => {
-  let user = null;
-  try {
-    user = await UserSQL.findByPk(req.user.id);
-  } catch (e) {}
-  if (!user && req.user?.email) {
-    try {
-      user = await UserSQL.findOne({ where: { email: req.user.email } });
-    } catch (e) {}
-  }
-  if (!user) {
-    try {
-      const UserMongo = require('../models/User');
-      user = await UserMongo.findById(req.user.id);
-    } catch (e) {}
-  }
-  if (!user && req.user?.email) {
-    try {
-      const UserMongo = require('../models/User');
-      user = await UserMongo.findOne({ email: req.user.email });
-    } catch (e) {}
-  }
+const { Op } = require('sequelize');
 
+const findUserFast = async (reqUser) => {
+  if (!reqUser) return null;
+  const id = reqUser.id || reqUser._id;
+  const email = reqUser.email;
+
+  // 1. Try SQL
+  try {
+    const isNum = !isNaN(id) && Number.isInteger(Number(id));
+    const whereCond = [];
+    if (isNum) whereCond.push({ id: Number(id) });
+    if (email) whereCond.push({ email });
+
+    if (whereCond.length > 0) {
+      const userSQL = await UserSQL.findOne({ where: { [Op.or]: whereCond } });
+      if (userSQL) return userSQL;
+    }
+  } catch (e) {}
+
+  // 2. Try Mongo
+  try {
+    const UserMongo = require('../models/User');
+    if (UserMongo) {
+      let mUser = null;
+      if (id && String(id).length === 24) {
+        mUser = await UserMongo.findById(id);
+      }
+      if (!mUser && email) {
+        mUser = await UserMongo.findOne({ email });
+      }
+      if (mUser) return mUser;
+    }
+  } catch (e) {}
+
+  return null;
+};
+
+const getProfile = asyncHandler(async (req, res) => {
+  const user = await findUserFast(req.user);
   if (!user) {
     return res.status(404).json({ success: false, message: 'User not found' });
   }
@@ -64,28 +81,7 @@ const getProfile = asyncHandler(async (req, res) => {
 });
 
 const updateProfile = asyncHandler(async (req, res) => {
-  let user = null;
-  try {
-    user = await UserSQL.findByPk(req.user.id);
-  } catch (e) {}
-  if (!user && req.user?.email) {
-    try {
-      user = await UserSQL.findOne({ where: { email: req.user.email } });
-    } catch (e) {}
-  }
-  if (!user) {
-    try {
-      const UserMongo = require('../models/User');
-      user = await UserMongo.findById(req.user.id);
-    } catch (e) {}
-  }
-  if (!user && req.user?.email) {
-    try {
-      const UserMongo = require('../models/User');
-      user = await UserMongo.findOne({ email: req.user.email });
-    } catch (e) {}
-  }
-
+  const user = await findUserFast(req.user);
   if (!user) {
     return res.status(404).json({ success: false, message: 'User not found' });
   }
@@ -93,26 +89,28 @@ const updateProfile = asyncHandler(async (req, res) => {
   const allowed = ['name', 'phone', 'headline', 'bio', 'skills', 'education', 'experience', 'certifications', 'socialLinks', 'preferences', 'avatar'];
   allowed.forEach((field) => {
     if (req.body[field] !== undefined && req.body[field] !== null) {
-      if (field === 'avatar' && (req.body[field] === '' || req.body[field].startsWith('blob:'))) return;
+      if (field === 'avatar' && (req.body[field] === '' || req.body[field].startsWith('blob:') || (req.body[field].startsWith('data:image') && user.avatar))) return;
       user[field] = req.body[field];
     }
   });
   await user.save();
 
-  // Sync Mongo if active
-  try {
-    const UserMongo = require('../models/User');
-    if (UserMongo && req.user.email) {
-      const updateData = { ...req.body };
-      if (!updateData.avatar || updateData.avatar.startsWith('blob:')) delete updateData.avatar;
-      await UserMongo.findOneAndUpdate({ email: req.user.email }, { $set: updateData });
-    }
-  } catch {
-    // ignore
+  // Async non-blocking Mongo sync
+  if (req.user?.email) {
+    try {
+      const UserMongo = require('../models/User');
+      if (UserMongo) {
+        const updateData = { ...req.body };
+        if (updateData.avatar && (updateData.avatar.startsWith('blob:') || updateData.avatar.startsWith('data:image'))) {
+          delete updateData.avatar;
+        }
+        UserMongo.findOneAndUpdate({ email: req.user.email }, { $set: updateData }).catch(() => {});
+      }
+    } catch {}
   }
 
   const safeUser = user.toSafeJSON ? user.toSafeJSON() : (user.toJSON ? user.toJSON() : user);
-  res.json({ success: true, message: 'Profile updated.', user: safeUser });
+  res.json({ success: true, message: 'Profile updated.', user: safeUser, profile: safeUser });
 });
 
 const uploadAvatar = asyncHandler(async (req, res, next) => {
