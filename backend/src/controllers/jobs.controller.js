@@ -225,91 +225,21 @@ const sortOptions = (sort) => {
   }
 };
 
-const listJobs = asyncHandler(async (req, res) => {
-  const { page, limit, skip } = paginate(req.query);
-  const filter = buildFilters(req.query);
-  const sort = sortOptions(req.query.sort);
+// High-Speed In-Memory Cache layers for high-concurrency scaling (10,000+ users)
+let cachedCounts = null;
+let countsExpiresAt = 0;
+const COUNTS_TTL = 5 * 60 * 1000; // 5 minutes
 
-  const baseQuery = Job.find(filter);
-  if (filter.$text) baseQuery.select({ score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
-  else baseQuery.sort(sort);
-
-  const nonTechExclusion = /\b(marketing|marketer|translator|translation|interpreter|localization|linguist|language specialist|business executive|business development|account executive|sales executive|sales representative|sales rep|sales manager|client executive|executive assistant|operations executive|relationship manager|recruiter|recruitment|talent acquisition|human resource|hr executive|hr manager|people operations|copywriter|content writer|content creator|journalist|editor|accountant|accounting|financial analyst|auditor|tax specialist|bookkeeper|legal counsel|paralegal|lawyer|customer support|customer service|customer success|telecaller|call center|receptionist|store manager|nurse|chef)\b/i;
-
+const getCachedFilterCounts = async () => {
+  const now = Date.now();
+  if (cachedCounts && now < countsExpiresAt) {
+    return cachedCounts;
+  }
   const baseFilter = baseJobFilter();
   const indiaFilter = indiaScopeFilter();
-
-  const isDefaultSort = !req.query.sort || req.query.sort === 'relevance' || req.query.sort === 'default';
-  const isSearchQuery = Boolean(req.query.search || req.query.q);
-
-  const priorityCond = {
-    $or: [
-      { jobTitle: { $regex: /\b(java|mern|react|node|nodejs|python|django|fastapi|mongodb|express|spring boot)\b/i } },
-      { headline: { $regex: /\b(java|mern|react|node|nodejs|python|django|fastapi|mongodb|express|spring boot)\b/i } },
-      { requiredSkills: { $in: ['java', 'react', 'react.js', 'reactjs', 'node', 'node.js', 'nodejs', 'mern', 'python', 'django', 'fastapi', 'mongodb', 'express', 'spring boot'] } },
-    ],
-  };
-
-  let jobs = [];
-  if (isDefaultSort && !isSearchQuery && req.query.category !== 'non-technical') {
-    const priorityFilter = { ...filter, $and: [...(filter.$and || []), priorityCond] };
-    const priorityJobsCount = await Job.countDocuments(priorityFilter);
-
-    if (skip < priorityJobsCount) {
-      const priorityJobs = await Job.find(priorityFilter)
-        .sort({ trendingScore: -1, postedDate: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean();
-
-      if (priorityJobs.length < limit) {
-        const remainingLimit = limit - priorityJobs.length;
-        const generalFilter = { ...filter, $and: [...(filter.$and || []), { $nor: [priorityCond] }] };
-        const generalJobs = await Job.find(generalFilter)
-          .sort({ trendingScore: -1, postedDate: -1 })
-          .skip(0)
-          .limit(remainingLimit)
-          .lean();
-        jobs = [...priorityJobs, ...generalJobs];
-      } else {
-        jobs = priorityJobs;
-      }
-    } else {
-      const generalSkip = skip - priorityJobsCount;
-      const generalFilter = { ...filter, $and: [...(filter.$and || []), { $nor: [priorityCond] }] };
-      jobs = await Job.find(generalFilter)
-        .sort({ trendingScore: -1, postedDate: -1 })
-        .skip(generalSkip)
-        .limit(limit)
-        .lean();
-    }
-  } else if (isSearchQuery) {
-    const rawJobs = await baseQuery.skip(skip).limit(limit * 3).lean();
-    const searchTerms = getSearchTerms(req.query.search || req.query.q || '');
-
-    const scoredJobs = rawJobs.map((j) => {
-      let score = 0;
-      const titleLower = (j.jobTitle || '').toLowerCase();
-      const headlineLower = (j.headline || '').toLowerCase();
-      const skillsLower = (j.requiredSkills || []).map((s) => s.toLowerCase());
-
-      for (const term of searchTerms) {
-        const t = term.toLowerCase();
-        if (titleLower.includes(t)) score += 100;
-        if (headlineLower.includes(t)) score += 80;
-        if (skillsLower.includes(t)) score += 50;
-      }
-      return { ...j, _searchScore: score };
-    });
-
-    scoredJobs.sort((a, b) => b._searchScore - a._searchScore || new Date(b.postedDate) - new Date(a.postedDate));
-    jobs = scoredJobs.slice(0, limit);
-  } else {
-    jobs = await baseQuery.skip(skip).limit(limit).lean();
-  }
+  const nonTechExclusion = /\b(marketing|marketer|translator|translation|interpreter|localization|linguist|language specialist|business executive|business development|account executive|sales executive|sales representative|sales rep|sales manager|client executive|executive assistant|operations executive|relationship manager|recruiter|recruitment|talent acquisition|human resource|hr executive|hr manager|people operations|copywriter|content writer|content creator|journalist|editor|accountant|accounting|financial analyst|auditor|tax specialist|bookkeeper|legal counsel|paralegal|lawyer|customer support|customer service|customer success|telecaller|call center|receptionist|store manager|nurse|chef)\b/i;
 
   const [
-    total,
     technicalCount,
     nonTechnicalCount,
     remoteCount,
@@ -320,7 +250,6 @@ const listJobs = asyncHandler(async (req, res) => {
     contractCount,
     internshipCount,
   ] = await Promise.all([
-    Job.countDocuments(filter),
     Job.countDocuments({
       ...baseFilter,
       $and: [indiaFilter, { category: 'technical', jobTitle: { $not: nonTechExclusion } }],
@@ -338,100 +267,211 @@ const listJobs = asyncHandler(async (req, res) => {
     Job.countDocuments({ ...baseFilter, $and: [indiaFilter], employmentType: 'internship' }),
   ]);
 
+  cachedCounts = {
+    technical: technicalCount,
+    'non-technical': nonTechnicalCount,
+    remote: remoteCount,
+    hybrid: hybridCount,
+    onsite: onsiteCount,
+    'full-time': fullTimeCount,
+    'part-time': partTimeCount,
+    contract: contractCount,
+    internship: internshipCount,
+  };
+  countsExpiresAt = now + COUNTS_TTL;
+  return cachedCounts;
+};
+
+const jobDetailCache = new Map();
+const JOB_DETAIL_TTL = 5 * 60 * 1000; // 5 minutes
+
+const listJobs = asyncHandler(async (req, res) => {
+  const { page, limit, skip } = paginate(req.query);
+  const filter = buildFilters(req.query);
+  const sort = sortOptions(req.query.sort);
+
+  const baseQuery = Job.find(filter);
+  if (filter.$text) baseQuery.select({ score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
+  else baseQuery.sort(sort);
+
+  const isDefaultSort = !req.query.sort || req.query.sort === 'relevance' || req.query.sort === 'default';
+  const isSearchQuery = Boolean(req.query.search || req.query.q);
+
+  const priorityCond = {
+    $or: [
+      { jobTitle: { $regex: /\b(java|mern|react|node|nodejs|python|django|fastapi|mongodb|express|spring boot)\b/i } },
+      { headline: { $regex: /\b(java|mern|react|node|nodejs|python|django|fastapi|mongodb|express|spring boot)\b/i } },
+      { requiredSkills: { $in: ['java', 'react', 'react.js', 'reactjs', 'node', 'node.js', 'nodejs', 'mern', 'python', 'django', 'fastapi', 'mongodb', 'express', 'spring boot'] } },
+    ],
+  };
+
+  const fetchJobsPromise = (async () => {
+    if (isDefaultSort && !isSearchQuery && req.query.category !== 'non-technical') {
+      const priorityFilter = { ...filter, $and: [...(filter.$and || []), priorityCond] };
+      const priorityJobsCount = await Job.countDocuments(priorityFilter);
+
+      if (skip < priorityJobsCount) {
+        const priorityJobs = await Job.find(priorityFilter)
+          .sort({ trendingScore: -1, postedDate: -1 })
+          .skip(skip)
+          .limit(limit)
+          .lean();
+
+        if (priorityJobs.length < limit) {
+          const remainingLimit = limit - priorityJobs.length;
+          const generalFilter = { ...filter, $and: [...(filter.$and || []), { $nor: [priorityCond] }] };
+          const generalJobs = await Job.find(generalFilter)
+            .sort({ trendingScore: -1, postedDate: -1 })
+            .skip(0)
+            .limit(remainingLimit)
+            .lean();
+          return [...priorityJobs, ...generalJobs];
+        }
+        return priorityJobs;
+      } else {
+        const generalSkip = skip - priorityJobsCount;
+        const generalFilter = { ...filter, $and: [...(filter.$and || []), { $nor: [priorityCond] }] };
+        return await Job.find(generalFilter)
+          .sort({ trendingScore: -1, postedDate: -1 })
+          .skip(generalSkip)
+          .limit(limit)
+          .lean();
+      }
+    } else if (isSearchQuery) {
+      const rawJobs = await baseQuery.skip(skip).limit(limit * 3).lean();
+      const searchTerms = getSearchTerms(req.query.search || req.query.q || '');
+
+      const scoredJobs = rawJobs.map((j) => {
+        let score = 0;
+        const titleLower = (j.jobTitle || '').toLowerCase();
+        const headlineLower = (j.headline || '').toLowerCase();
+        const skillsLower = (j.requiredSkills || []).map((s) => s.toLowerCase());
+
+        for (const term of searchTerms) {
+          const t = term.toLowerCase();
+          if (titleLower.includes(t)) score += 100;
+          if (headlineLower.includes(t)) score += 80;
+          if (skillsLower.includes(t)) score += 50;
+        }
+        return { ...j, _searchScore: score };
+      });
+
+      scoredJobs.sort((a, b) => b._searchScore - a._searchScore || new Date(b.postedDate) - new Date(a.postedDate));
+      return scoredJobs.slice(0, limit);
+    } else {
+      return await baseQuery.skip(skip).limit(limit).lean();
+    }
+  })();
+
+  const [jobs, total, counts] = await Promise.all([
+    fetchJobsPromise,
+    Job.countDocuments(filter),
+    getCachedFilterCounts(),
+  ]);
+
   res.json({
     success: true,
     jobs,
     pagination: buildPagination(page, limit, total),
-    counts: {
-      technical: technicalCount,
-      'non-technical': nonTechnicalCount,
-      remote: remoteCount,
-      hybrid: hybridCount,
-      onsite: onsiteCount,
-      'full-time': fullTimeCount,
-      'part-time': partTimeCount,
-      contract: contractCount,
-      internship: internshipCount,
-    },
+    counts,
   });
 });
 
 const getJob = asyncHandler(async (req, res, next) => {
-  const job = await Job.findOne({ _id: req.params.id, isActive: true, isExpired: false }).lean();
+  const jobId = req.params.id;
+  const now = Date.now();
+  let job = null;
+
+  const cached = jobDetailCache.get(jobId);
+  if (cached && now < cached.expiresAt) {
+    job = cached.job;
+  } else {
+    job = await Job.findOne({ _id: jobId, isActive: true, isExpired: false }).lean();
+    if (job) {
+      if (jobDetailCache.size > 2000) {
+        const firstKey = jobDetailCache.keys().next().value;
+        jobDetailCache.delete(firstKey);
+      }
+      jobDetailCache.set(jobId, { job, expiresAt: now + JOB_DETAIL_TTL });
+    }
+  }
+
   if (!job) return next(new ApiError(404, 'Job not found.'));
 
-  let match = null;
-  let applied = false;
-  if (req.user) {
-    let candidateId = req.user._id || req.user.mongoId;
-    if (!candidateId && req.user.email) {
-      const u = await User.findOne({ email: req.user.email });
-      if (u) candidateId = u._id;
-    }
-    if (candidateId) {
-      applied = await Application.exists({ job: job._id, candidate: candidateId });
-    }
-    match = computeMatchScore(req.user, job);
-  }
-  const related = await Job.find({
-    _id: { $ne: job._id },
-    isActive: true,
-    isExpired: false,
-    postedDate: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-    $or: [{ category: job.category }, { requiredSkills: { $in: job.requiredSkills.slice(0, 5) } }],
-  })
-    .limit(4)
-    .lean();
+  // Run match computation & candidate applied check in parallel with fast related jobs lookup
+  const [matchData, related] = await Promise.all([
+    (async () => {
+      if (!req.user) return { match: null, applied: false };
+      let candidateId = req.user._id || req.user.mongoId;
+      if (!candidateId && req.user.email) {
+        const u = await User.findOne({ email: req.user.email }).select('_id').lean();
+        if (u) candidateId = u._id;
+      }
+      const applied = candidateId ? Boolean(await Application.exists({ job: job._id, candidate: candidateId })) : false;
+      const match = computeMatchScore(req.user, job);
+      return { match, applied };
+    })(),
+    Job.find({
+      _id: { $ne: job._id },
+      isActive: true,
+      isExpired: false,
+      category: job.category || 'technical',
+    })
+      .select('jobTitle companyName companyLogo location city country salary salaryMax currency workMode employmentType category requiredSkills postedDate')
+      .sort({ postedDate: -1 })
+      .limit(4)
+      .lean(),
+  ]);
 
-  res.json({ success: true, job: { ...job, formattedSalary: formatCurrency(job.salaryMax || job.salary, job.currency) }, match, applied, related });
+  res.json({
+    success: true,
+    job: { ...job, formattedSalary: formatCurrency(job.salaryMax || job.salary, job.currency) },
+    match: matchData.match,
+    applied: matchData.applied,
+    related,
+  });
 });
+
+let statsCache = null;
+let statsExpiresAt = 0;
+const STATS_TTL = 5 * 60 * 1000;
 
 const getStats = asyncHandler(async (req, res) => {
-  const scope = indiaScopeFilter();
-  const total = await Job.countDocuments({ ...baseJobFilter(), ...scope });
-  const remote = await Job.countDocuments({ ...baseJobFilter(), ...scope, workMode: 'remote' });
-  const fullTime = await Job.countDocuments({ ...baseJobFilter(), ...scope, employmentType: 'full-time' });
-  const internship = await Job.countDocuments({ ...baseJobFilter(), ...scope, employmentType: 'internship' });
-  const fresher = await Job.countDocuments({ ...baseJobFilter(), ...scope, experienceLevel: { $in: ['fresher', 'internship'] } });
-  const companies = await Company.countDocuments({ verified: true });
+  const now = Date.now();
+  if (statsCache && now < statsExpiresAt) {
+    return res.json({ success: true, stats: statsCache });
+  }
 
-  res.json({ success: true, stats: { total, remote, fullTime, internship, fresher, companies } });
+  const scope = indiaScopeFilter();
+  const [total, remote, fullTime, internship, fresher, companies] = await Promise.all([
+    Job.countDocuments({ ...baseJobFilter(), ...scope }),
+    Job.countDocuments({ ...baseJobFilter(), ...scope, workMode: 'remote' }),
+    Job.countDocuments({ ...baseJobFilter(), ...scope, employmentType: 'full-time' }),
+    Job.countDocuments({ ...baseJobFilter(), ...scope, employmentType: 'internship' }),
+    Job.countDocuments({ ...baseJobFilter(), ...scope, experienceLevel: { $in: ['fresher', 'internship'] } }),
+    Company.countDocuments({ verified: true }),
+  ]);
+
+  statsCache = { total, remote, fullTime, internship, fresher, companies };
+  statsExpiresAt = now + STATS_TTL;
+
+  res.json({ success: true, stats: statsCache });
 });
 
+let homeFeedCache = null;
+let homeFeedExpiresAt = 0;
+const HOME_FEED_TTL = 3 * 60 * 1000; // 3 minutes
+
 const homeFeed = asyncHandler(async (req, res) => {
-  const base = baseJobFilter();
-  const scoped = { ...base, $and: [indiaScopeFilter()] };
+  const now = Date.now();
+  let baseSections = null;
 
-  const sections = {};
-  const userSkills = req.user ? (req.user.skills || []).map((s) => s.toLowerCase()) : [];
-  const userPrefs = req.user?.preferences || {};
-  const preferredCategory = userPrefs.preferredCategory || '';
-  const jobTitlePref = userPrefs.preferredJobTitle || '';
+  if (homeFeedCache && now < homeFeedExpiresAt) {
+    baseSections = homeFeedCache;
+  } else {
+    const base = baseJobFilter();
+    const scoped = { ...base, $and: [indiaScopeFilter()] };
 
-  // Build preference filter: matches user's skills OR job title keywords OR category
-  const buildPreferredFilter = () => {
-    const conditions = [];
-    if (userSkills.length) {
-      conditions.push({ requiredSkills: { $in: userSkills } });
-    }
-    if (jobTitlePref) {
-      const keywords = jobTitlePref.split(/[,\s]+/).filter(Boolean);
-      if (keywords.length) {
-        const escaped = keywords.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-        conditions.push({ jobTitle: { $regex: escaped.join('|'), $options: 'i' } });
-      }
-    }
-    if (preferredCategory) {
-      conditions.push({ category: preferredCategory });
-    }
-    if (!conditions.length) return null;
-    return conditions.length === 1 ? conditions[0] : { $or: conditions };
-  };
-
-  const preferred = buildPreferredFilter();
-
-  // Fetch section jobs: prefer matching user profile or Java/MERN/Python, fill remaining with general
-  const fetchSection = async (extraFilter, limit = 8) => {
     const priorityCond = {
       $or: [
         { jobTitle: { $regex: /\b(java|mern|react|node|nodejs|python|django|fastapi|mongodb|express|spring boot)\b/i } },
@@ -440,75 +480,94 @@ const homeFeed = asyncHandler(async (req, res) => {
       ],
     };
 
-    const targetFilter = preferred || priorityCond;
-    const matched = await Job.find({ ...scoped, ...extraFilter, ...targetFilter })
-      .sort({ trendingScore: -1, postedDate: -1 })
-      .limit(limit)
-      .lean();
+    const fetchSection = async (extraFilter, limit = 8) => {
+      const matched = await Job.find({ ...scoped, ...extraFilter, ...priorityCond })
+        .sort({ trendingScore: -1, postedDate: -1 })
+        .limit(limit)
+        .lean();
 
-    if (matched.length >= limit) return matched;
-    const remaining = limit - matched.length;
-    const excludeIds = matched.map((j) => j._id);
-    const general = await Job.find({
-      ...scoped,
-      ...extraFilter,
-      _id: { $nin: excludeIds },
-    })
-      .sort({ postedDate: -1 })
-      .limit(remaining)
-      .lean();
-    return [...matched, ...general];
-  };
+      if (matched.length >= limit) return matched;
+      const remaining = limit - matched.length;
+      const excludeIds = matched.map((j) => j._id);
+      const general = await Job.find({
+        ...scoped,
+        ...extraFilter,
+        _id: { $nin: excludeIds },
+      })
+        .sort({ postedDate: -1 })
+        .limit(remaining)
+        .lean();
+      return [...matched, ...general];
+    };
 
-  // Build recommended section for logged-in users with skills
-  if (req.user && (userSkills.length || preferredCategory || jobTitlePref)) {
-    const matched = await Job.find({ ...scoped, ...preferred })
-      .sort({ postedDate: -1 })
-      .limit(10)
-      .lean();
-    sections.recommended = matched.map((job) => ({
-      ...job,
-      match: computeMatchScore(req.user, job),
-    }));
+    const [latest, technical, nonTechnical, remote, internship, fresher, topCompanies, highestPaying, trending, hotLocations] = await Promise.all([
+      fetchSection({}),
+      fetchSection({ category: 'technical' }),
+      fetchSection({ category: 'non-technical' }),
+      fetchSection({ workMode: 'remote' }),
+      fetchSection({ employmentType: 'internship' }),
+      fetchSection({ experienceLevel: { $in: ['fresher', 'internship'] } }),
+      Company.find({ verified: true }).limit(6).lean(),
+      fetchSection({ salaryMax: { $gt: 0 } }).then((jobs) => {
+        const sorted = [...jobs].sort((a, b) => (b.salaryMax || 0) - (a.salaryMax || 0));
+        return sorted.slice(0, 8);
+      }),
+      Job.find({ ...scoped, trendingScore: { $gt: 0 } }).sort({ trendingScore: -1, postedDate: -1 }).limit(8).lean(),
+      Job.aggregate([
+        { $match: scoped },
+        { $match: { city: { $ne: '', $exists: true }, country: { $ne: '', $exists: true } } },
+        { $group: { _id: '$city', country: { $first: '$country' }, count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 6 },
+      ]),
+    ]);
+
+    homeFeedCache = {
+      latest,
+      technical,
+      nonTechnical,
+      remote,
+      internship,
+      fresher,
+      topCompanies,
+      highestPaying,
+      trending,
+      jobsNearMe: hotLocations.map((l) => ({
+        city: l._id,
+        country: l.country,
+        count: l.count,
+      })),
+    };
+    homeFeedExpiresAt = now + HOME_FEED_TTL;
+    baseSections = homeFeedCache;
   }
 
-  const [latest, technical, nonTechnical, remote, internship, fresher, topCompanies, highestPaying, trending] = await Promise.all([
-    fetchSection({}),
-    fetchSection({ category: 'technical' }),
-    fetchSection({ category: 'non-technical' }),
-    fetchSection({ workMode: 'remote' }),
-    fetchSection({ employmentType: 'internship' }),
-    fetchSection({ experienceLevel: { $in: ['fresher', 'internship'] } }),
-    Company.find({ verified: true }).limit(6).lean(),
-    fetchSection({ salaryMax: { $gt: 0 } }).then((jobs) => {
-      const sorted = [...jobs].sort((a, b) => (b.salaryMax || 0) - (a.salaryMax || 0));
-      return sorted.slice(0, 8);
-    }),
-    Job.find({ ...scoped, trendingScore: { $gt: 0 } }).sort({ trendingScore: -1, postedDate: -1 }).limit(8).lean(),
-  ]);
+  const sections = { ...baseSections };
 
-  const hotLocations = await Job.aggregate([
-    { $match: scoped },
-    { $match: { city: { $ne: '', $exists: true }, country: { $ne: '', $exists: true } } },
-    { $group: { _id: '$city', country: { $first: '$country' }, count: { $sum: 1 } } },
-    { $sort: { count: -1 } },
-    { $limit: 6 },
-  ]);
+  // Calculate recommended personalized section for logged-in users with skills
+  if (req.user) {
+    const userSkills = (req.user.skills || []).map((s) => s.toLowerCase());
+    const userPrefs = req.user?.preferences || {};
+    const preferredCategory = userPrefs.preferredCategory || '';
+    const jobTitlePref = userPrefs.preferredJobTitle || '';
 
-  sections.latest = latest;
-  sections.technical = technical;
-  sections.nonTechnical = nonTechnical;
-  sections.remote = remote;
-  sections.internship = internship;
-  sections.fresher = fresher;
-  sections.topCompanies = topCompanies;
-  sections.highestPaying = highestPaying;
-  sections.trending = trending;
-  sections.jobsNearMe = hotLocations.map((l) => ({
-    city: l._id,
-    country: l.country,
-    count: l.count,
-  }));
+    if (userSkills.length || preferredCategory || jobTitlePref) {
+      const conditions = [];
+      if (userSkills.length) conditions.push({ requiredSkills: { $in: userSkills } });
+      if (preferredCategory) conditions.push({ category: preferredCategory });
+      if (conditions.length) {
+        const preferred = conditions.length === 1 ? conditions[0] : { $or: conditions };
+        const matched = await Job.find({ ...baseJobFilter(), ...preferred })
+          .sort({ postedDate: -1 })
+          .limit(8)
+          .lean();
+        sections.recommended = matched.map((job) => ({
+          ...job,
+          match: computeMatchScore(req.user, job),
+        }));
+      }
+    }
+  }
 
   res.json({ success: true, sections });
 });

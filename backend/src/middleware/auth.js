@@ -33,7 +33,23 @@ const clearAuthCookie = (res) => {
 
 const UserSQL = require('../models/sql/User.sql');
 
+const authUserCache = new Map();
+const AUTH_USER_CACHE_TTL = 30 * 1000; // 30 seconds in-memory cache
+
+const invalidateUserCache = (id) => {
+  if (id) {
+    authUserCache.delete(String(id));
+  }
+};
+
 const findUserById = async (id) => {
+  const cacheKey = String(id);
+  const now = Date.now();
+  const cached = authUserCache.get(cacheKey);
+  if (cached && now < cached.expiresAt) {
+    return cached.user;
+  }
+
   let user = null;
   let mongoUser = null;
 
@@ -86,6 +102,12 @@ const findUserById = async (id) => {
     } else if (!user._id) {
       user._id = user.id;
     }
+
+    if (authUserCache.size > 5000) {
+      const firstKey = authUserCache.keys().next().value;
+      authUserCache.delete(firstKey);
+    }
+    authUserCache.set(cacheKey, { user, expiresAt: now + AUTH_USER_CACHE_TTL });
   }
 
   return user;
@@ -133,4 +155,4 @@ const authorize =
     next();
   };
 
-module.exports = { protect, optionalProtect, authorize, signToken, setAuthCookie, clearAuthCookie };
+module.exports = { protect, optionalProtect, authorize, signToken, setAuthCookie, clearAuthCookie, invalidateUserCache };

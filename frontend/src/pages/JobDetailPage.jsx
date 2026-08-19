@@ -1,5 +1,5 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
 import {
   FaLocationDot, FaClock, FaBriefcase, FaArrowUpRightFromSquare, FaRegBookmark, FaBookmark,
@@ -157,19 +157,22 @@ const DetailRow = ({ icon: Icon, label, value }) => (
 const JobDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, savedJobs, toggleSaved, refreshUser } = useAuth();
-  const [job, setJob] = useState(null);
+  
+  const initialJob = location.state?.initialJob || null;
+  const [job, setJob] = useState(initialJob);
   const [related, setRelated] = useState([]);
   const [match, setMatch] = useState(null);
   const [applied, setApplied] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialJob);
   const [reporting, setReporting] = useState(false);
   const [reportReason, setReportReason] = useState('');
 
   const isSaved = savedJobs.some((j) => j._id === id);
 
   const load = useCallback(async () => {
-    setLoading(true);
+    if (!job) setLoading(true);
     try {
       const { data } = await jobService.get(id);
       setJob(data.job);
@@ -178,12 +181,14 @@ const JobDetailPage = () => {
       setApplied(Boolean(data.applied));
       if (data.applied) refreshUser();
     } catch (err) {
-      toast.error(err.message);
-      navigate('/jobs');
+      if (!job) {
+        toast.error(err.message);
+        navigate('/jobs');
+      }
     } finally {
       setLoading(false);
     }
-  }, [id, navigate, refreshUser]);
+  }, [id, navigate, refreshUser, job]);
 
   useEffect(() => {
     load();

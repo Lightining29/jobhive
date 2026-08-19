@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
-import { authService, candidateService } from '../services';
+import { authService, candidateService, notificationService } from '../services';
 
 const AuthContext = createContext(null);
 
@@ -16,12 +16,9 @@ export const AuthProvider = ({ children }) => {
       const currentUser = data?.user || null;
       setUser(currentUser);
       if (currentUser?.role === 'candidate') {
-        try {
-          const saved = await candidateService.saved();
-          setSavedJobs(saved?.data?.jobs || []);
-        } catch {
-          setSavedJobs([]);
-        }
+        candidateService.saved()
+          .then((saved) => setSavedJobs(saved?.data?.jobs || []))
+          .catch(() => setSavedJobs([]));
       }
       return currentUser;
     } catch {
@@ -36,12 +33,11 @@ export const AuthProvider = ({ children }) => {
       try {
         const u = await refreshUser();
         if (u && isMounted) {
-          try {
-            const { data } = await import('../services').then((m) => m.notificationService.list());
-            if (isMounted) setUnreadCount(data?.unreadCount || 0);
-          } catch {
-            // ignore notification fetch errors
-          }
+          notificationService.list()
+            .then((res) => {
+              if (isMounted) setUnreadCount(res?.data?.unreadCount || 0);
+            })
+            .catch(() => {});
         }
       } finally {
         if (isMounted) setLoading(false);
@@ -55,12 +51,9 @@ export const AuthProvider = ({ children }) => {
     const loggedUser = data?.user || null;
     setUser(loggedUser);
     if (loggedUser?.role === 'candidate') {
-      try {
-        const saved = await candidateService.saved();
-        setSavedJobs(saved?.data?.jobs || []);
-      } catch {
-        setSavedJobs([]);
-      }
+      candidateService.saved()
+        .then((saved) => setSavedJobs(saved?.data?.jobs || []))
+        .catch(() => setSavedJobs([]));
     }
     toast.success('Welcome back!');
     return loggedUser;

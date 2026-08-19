@@ -334,12 +334,23 @@ const generatePortfolio = asyncHandler(async (req, res, next) => {
 // ── 2. Get My Portfolio ─────────────────────────────────────────────
 const getMyPortfolio = asyncHandler(async (req, res) => {
   let portfolio = null;
-  try {
-    portfolio = await PortfolioMongo.findOne({ user: req.user.id });
-  } catch (e) {}
-  if (!portfolio) {
+  const userMongoId = req.user._id || req.user.mongoId;
+  const userSqlId = req.user.id;
+
+  if (userMongoId && mongoose.isValidObjectId(userMongoId)) {
     try {
-      portfolio = await PortfolioSQL.findOne({ where: { userId: req.user.id } });
+      portfolio = await PortfolioMongo.findOne({ user: userMongoId }).lean();
+    } catch (e) {}
+  }
+  if (!portfolio && req.user.email) {
+    try {
+      portfolio = await PortfolioMongo.findOne({ 'hero.email': req.user.email }).lean();
+    } catch (e) {}
+  }
+  if (!portfolio && userSqlId) {
+    try {
+      portfolio = await PortfolioSQL.findOne({ where: { userId: userSqlId } });
+      if (portfolio && portfolio.toJSON) portfolio = portfolio.toJSON();
     } catch (e) {}
   }
 
@@ -354,30 +365,49 @@ const getMyPortfolio = asyncHandler(async (req, res) => {
 const updateMyPortfolio = asyncHandler(async (req, res, next) => {
   const updates = req.body;
   let portfolio = null;
+  const userMongoId = req.user._id || req.user.mongoId;
+  const userSqlId = req.user.id;
 
   if (updates.slug) {
     updates.slug = updates.slug.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     // Check collision
     try {
-      const dup = await PortfolioMongo.findOne({ slug: updates.slug, user: { $ne: req.user.id } });
+      const dup = await PortfolioMongo.findOne({
+        slug: updates.slug,
+        ...(userMongoId && mongoose.isValidObjectId(userMongoId) ? { user: { $ne: userMongoId } } : {}),
+      });
       if (dup) return next(new ApiError(400, 'This portfolio URL slug is already taken.'));
     } catch (e) {}
   }
 
-  try {
-    portfolio = await PortfolioMongo.findOneAndUpdate(
-      { user: req.user.id },
-      { $set: updates },
-      { new: true }
-    );
-  } catch (e) {}
+  if (userMongoId && mongoose.isValidObjectId(userMongoId)) {
+    try {
+      portfolio = await PortfolioMongo.findOneAndUpdate(
+        { user: userMongoId },
+        { $set: updates },
+        { new: true }
+      ).lean();
+    } catch (e) {}
+  }
+  if (!portfolio && req.user.email) {
+    try {
+      portfolio = await PortfolioMongo.findOneAndUpdate(
+        { 'hero.email': req.user.email },
+        { $set: updates },
+        { new: true }
+      ).lean();
+    } catch (e) {}
+  }
 
-  try {
-    await PortfolioSQL.update(updates, { where: { userId: req.user.id } });
-    if (!portfolio) {
-      portfolio = await PortfolioSQL.findOne({ where: { userId: req.user.id } });
-    }
-  } catch (e) {}
+  if (userSqlId) {
+    try {
+      await PortfolioSQL.update(updates, { where: { userId: userSqlId } });
+      if (!portfolio) {
+        portfolio = await PortfolioSQL.findOne({ where: { userId: userSqlId } });
+        if (portfolio && portfolio.toJSON) portfolio = portfolio.toJSON();
+      }
+    } catch (e) {}
+  }
 
   if (!portfolio) return next(new ApiError(404, 'Portfolio not found. Please click Generate first.'));
 

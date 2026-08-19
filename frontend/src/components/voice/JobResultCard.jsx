@@ -33,6 +33,7 @@ export default function JobResultCard({ job, index = 0 }) {
     >
       <Link
         to={`/jobs/${job._id}`}
+        state={{ initialJob: job }}
         className="block p-3 rounded-xl border border-line bg-white hover:border-primary-300 hover:shadow-soft transition-all group"
         target="_blank"
         rel="noopener noreferrer"

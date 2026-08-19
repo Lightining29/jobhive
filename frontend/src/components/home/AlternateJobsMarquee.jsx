@@ -41,6 +41,7 @@ const MarqueeJobItem = ({ job, neonColor = 'pink' }) => {
           <div className="min-w-0">
             <Link
               to={`/jobs/${job._id}`}
+              state={{ initialJob: job }}
               className="font-black text-sm text-slate-900 dark:text-white dark:neon-text-cyan truncate block group-hover:text-cyan-300 transition-all drop-shadow-sm"
             >
               {job.jobTitle}
@@ -95,6 +96,7 @@ const MarqueeJobItem = ({ job, neonColor = 'pink' }) => {
         </span>
         <Link
           to={`/jobs/${job._id}`}
+          state={{ initialJob: job }}
           className="text-xs font-black px-3.5 py-1.5 rounded-xl bg-slate-900 text-white dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 hover:scale-105 transition-all flex items-center gap-1 shadow-md dark:shadow-[0_0_15px_rgba(0,240,255,0.7)]"
         >
           View Role

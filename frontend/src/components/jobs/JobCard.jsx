@@ -193,6 +193,7 @@ const JobCard = ({ job, match }) => {
             <div className="min-w-0">
               <Link
                 to={`/jobs/${job._id}`}
+                state={{ initialJob: job }}
                 className="block font-black text-slate-900 dark:text-white dark:neon-text-cyan leading-snug hover:text-primary-600 dark:hover:text-cyan-200 transition-all"
                 style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
               >
@@ -336,6 +337,7 @@ const JobCard = ({ job, match }) => {
             </span>
             <Link
               to={`/jobs/${job._id}`}
+              state={{ initialJob: job }}
               className="text-sm font-black bg-slate-900 dark:bg-amber-400 text-white dark:text-slate-950 px-4 py-2 rounded-xl transition-all inline-flex items-center gap-1.5 hover:scale-105 shadow-md dark:shadow-[0_0_15px_rgba(250,204,21,0.6)]"
             >
               View job
