@@ -309,48 +309,31 @@ const HomePage = () => {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-16 md:space-y-20">
-        {/* Recommended for logged-in candidates */}
-        {user && (
-          <LazyJobSection
-            sectionName="recommended"
-            title="AI Recommended for You"
-            subtitle="Hand-picked by our AI engine based on your skills and preferences"
-            to="/jobs/recommended"
-            initialJobs={homeData?.recommended}
-            initialVisible={true}
-            emptyText="Complete your profile skills to get tailored AI recommendations."
-          />
-        )}
-
-        {/* 1. Latest Jobs (Always loaded first / at the top) */}
+        {/* 1. Technical Jobs (Loaded first at the top) */}
         <LazyJobSection
-          sectionName="latest"
-          title="Latest Jobs"
-          subtitle="Fresh opportunities posted in the last few days"
-          to="/jobs"
-          initialJobs={homeData?.latest}
+          sectionName="technical"
+          title="Technical Jobs"
+          subtitle="Software engineering, developers, DevOps, Cloud & AI opportunities"
+          to="/jobs/technical"
+          cols={4}
+          limit={8}
+          initialJobs={homeData?.technical}
           initialVisible={true}
         />
 
-        {/* 2. Trending Jobs (Fetched on scroll) */}
+        {/* 2. Latest Jobs */}
         <LazyJobSection
-          sectionName="trending"
-          title="Trending Jobs"
-          subtitle="High-applicant roles and in-demand positions"
-          to="/jobs?sort=trending"
-          initialJobs={homeData?.trending}
+          sectionName="latest"
+          title="Latest Jobs"
+          subtitle="Fresh opportunities posted across top employers in the last few days"
+          to="/jobs"
+          cols={4}
+          limit={8}
+          initialJobs={homeData?.latest}
         />
 
-        {/* 3. Tech & Non-Tech Split Sections (Fetched on scroll) */}
+        {/* 3. Non-Technical & Remote Jobs */}
         <div className="grid md:grid-cols-2 gap-10 md:gap-12">
-          <LazyJobSection
-            sectionName="technical"
-            title="Technical Jobs"
-            to="/jobs/technical"
-            cols={2}
-            limit={6}
-            initialJobs={homeData?.technical}
-          />
           <LazyJobSection
             sectionName="non-technical"
             title="Non-Technical Jobs"
@@ -359,18 +342,17 @@ const HomePage = () => {
             limit={6}
             initialJobs={homeData?.nonTechnical}
           />
+          <LazyJobSection
+            sectionName="remote"
+            title="Remote Jobs"
+            to="/jobs/remote"
+            cols={2}
+            limit={6}
+            initialJobs={homeData?.remote}
+          />
         </div>
 
-        {/* 4. Remote Jobs (Fetched on scroll) */}
-        <LazyJobSection
-          sectionName="remote"
-          title="Remote Jobs"
-          subtitle="Work from anywhere — top remote and distributed roles"
-          to="/jobs/remote"
-          initialJobs={homeData?.remote}
-        />
-
-        {/* 5. Internships & Freshers (Fetched on scroll) */}
+        {/* 4. Internships & Freshers */}
         <div className="grid md:grid-cols-2 gap-10 md:gap-12">
           <LazyJobSection
             sectionName="internship"
@@ -390,7 +372,7 @@ const HomePage = () => {
           />
         </div>
 
-        {/* 6. Highest Paying Jobs (Fetched on scroll) */}
+        {/* 5. Highest Paying Jobs */}
         <LazyJobSection
           sectionName="highest-paying"
           title="Highest Paying Jobs"
@@ -399,10 +381,10 @@ const HomePage = () => {
           initialJobs={homeData?.highestPaying}
         />
 
-        {/* 7. Featured Companies (Fetched on scroll) */}
+        {/* 6. Featured Companies */}
         <LazyCompaniesSection initialItems={homeData?.topCompanies} />
 
-        {/* 8. Jobs Near Me (Fetched on scroll) */}
+        {/* 7. Jobs Near Me */}
         <LazyLocationsSection initialItems={homeData?.jobsNearMe} />
       </div>
 
