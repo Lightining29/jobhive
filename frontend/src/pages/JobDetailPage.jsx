@@ -201,7 +201,18 @@ const JobDetailPage = () => {
     load();
   }, [id, load]);
 
+  const targetUrl = job?.applicationUrl || job?.applyLink || job?.companyWebsite;
+
   const apply = async () => {
+    if (targetUrl) {
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
+      if (user?.role === 'candidate') {
+        jobService.apply(id, {}).catch(() => {});
+        setApplied(true);
+      }
+      return;
+    }
+
     if (!user) {
       toast.error('Please login to apply');
       navigate('/auth/login');
@@ -217,7 +228,7 @@ const JobDetailPage = () => {
       setApplied(true);
       refreshUser();
       if (data.redirectUrl) {
-        setTimeout(() => window.open(data.redirectUrl, '_blank', 'noopener,noreferrer'), 800);
+        window.open(data.redirectUrl, '_blank', 'noopener,noreferrer');
       }
     } catch (err) {
       toast.error(err.message);
@@ -263,8 +274,23 @@ const JobDetailPage = () => {
         {isSaved ? <FaBookmark className="h-4 w-4" /> : <FaRegBookmark className="h-4 w-4" />}
         {isSaved ? 'Saved' : 'Save'}
       </button>
-      {canApply ? (
-        <button onClick={apply} className="btn-primary">
+      {targetUrl ? (
+        <a
+          href={targetUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => {
+            if (user?.role === 'candidate') {
+              jobService.apply(id, {}).catch(() => {});
+              setApplied(true);
+            }
+          }}
+          className="btn-primary inline-flex items-center justify-center gap-2"
+        >
+          <FaArrowUpRightFromSquare className="h-4 w-4" /> Apply for this Job
+        </a>
+      ) : canApply ? (
+        <button onClick={apply} className="btn-primary inline-flex items-center justify-center gap-2">
           <FaBolt className="h-4 w-4" /> {user?.role === 'candidate' ? 'Apply Now' : 'Login to Apply'}
         </button>
       ) : (
@@ -439,15 +465,29 @@ const JobDetailPage = () => {
         )}
 
         <div className="hidden md:flex flex-wrap gap-3 mt-8">
-          {canApply && (
+          {targetUrl ? (
+            <a
+              href={targetUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                if (user?.role === 'candidate') {
+                  jobService.apply(id, {}).catch(() => {});
+                  setApplied(true);
+                }
+              }}
+              className="btn-primary !px-8 !py-3 inline-flex items-center gap-2"
+            >
+              <FaArrowUpRightFromSquare className="h-4 w-4" /> Apply for this Job
+            </a>
+          ) : canApply ? (
             <button onClick={apply} className="btn-primary !px-8 !py-3">
               {user?.role === 'candidate' ? 'Apply for this job' : 'Login to Apply'}
             </button>
-          )}
-          {job.applicationUrl && (
-            <a href={job.applicationUrl} target="_blank" rel="noreferrer" className="btn-outline">
-              <FaArrowUpRightFromSquare className="h-4 w-4" /> View on {job.source}
-            </a>
+          ) : (
+            <button disabled className="btn bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default !px-8 !py-3">
+              <FaCircleCheck className="h-4 w-4" /> Applied
+            </button>
           )}
         </div>
       </div>

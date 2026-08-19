@@ -14,10 +14,18 @@ const { formatCurrency } = require('../utils/helpers');
 const { parseNaturalQuery } = require('../services/semanticSearch.service');
 const { fetchAllJobs, cleanupExpiredJobs } = require('../services/jobIngestion.service');
 
-const baseJobFilter = () => ({
-  isActive: true,
-  isExpired: false,
-});
+const baseJobFilter = () => {
+  const now = new Date();
+  return {
+    isActive: true,
+    isExpired: false,
+    $or: [
+      { expiresAt: { $exists: false } },
+      { expiresAt: null },
+      { expiresAt: { $gt: now } },
+    ],
+  };
+};
 
 const indiaScopeFilter = () => ({
   $or: [

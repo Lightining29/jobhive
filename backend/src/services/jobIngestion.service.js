@@ -165,7 +165,16 @@ const fetchFromProvider = async (provider) => {
     attempt += 1;
     try {
       const jobs = await provider.fetch();
-      const docs = jobs.map((normalized) => buildJobDoc(provider.name, normalized));
+      const now = new Date();
+      const docs = (jobs || [])
+        .map((normalized) => buildJobDoc(provider.name, normalized))
+        .filter((doc) => {
+          if (!doc.jobTitle || !doc.companyName) return false;
+          if (doc.expiresAt && new Date(doc.expiresAt) <= now) return false;
+          if (doc.applicationUrl && (doc.applicationUrl.includes('/expired') || doc.applicationUrl.includes('/closed'))) return false;
+          return true;
+        });
+
       const ops = docs.map((doc) => ({
         updateOne: {
           filter: { jobId: doc.jobId },
@@ -310,6 +319,10 @@ const fetchAllJobs = async () => {
       }
     })
   );
+
+  // Automatically sweep and mark expired jobs
+  cleanupExpiredJobs().catch((err) => logger.warn(`[jobs] Cleanup expired jobs notice: ${err.message}`));
+
   return settled.map((r) =>
     r.status === 'fulfilled' ? r.value : { provider: 'unknown', status: 'failed', message: r.reason?.message, saved: 0 }
   );
