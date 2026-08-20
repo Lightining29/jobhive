@@ -1,6 +1,7 @@
 const { JobProvider } = require('./base.provider');
 const { extractSkills } = require('../../utils/skillExtractor');
 const { classifyJob } = require('../../utils/jobClassifier');
+const { buildLiveCompanyCareerUrl } = require('../../utils/helpers');
 
 // Verified Live Career Portal Data for the requested companies
 const DIRECT_COMPANY_FEEDS = [
@@ -1322,7 +1323,7 @@ class CompanyPortalsProvider extends JobProvider {
           salaryMin: item.salaryMin,
           salaryMax: item.salaryMax,
           currency: item.currency || 'INR',
-          link: item.url,
+          link: buildLiveCompanyCareerUrl(group.company, item.title, item.location, item.url),
           source: 'company_portals',
           postedDate: new Date(),
         });

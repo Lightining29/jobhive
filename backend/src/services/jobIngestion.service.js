@@ -3,7 +3,7 @@ const JobSQL = require('../models/sql/Job.sql');
 const JobLog = require('../models/JobLog');
 const logger = require('../config/logger');
 const { getProviders } = require('./providers');
-const { cleanUrl } = require('../utils/helpers');
+const { cleanUrl, buildLiveCompanyCareerUrl } = require('../utils/helpers');
 
 const clean = (value) => (value === null || value === undefined ? '' : String(value).trim());
 
@@ -145,7 +145,7 @@ const buildJobDoc = (providerName, normalized) => {
     industry: clean(normalized.industry) || clean(normalized.subCategory),
     postedDate,
     expiresAt,
-    applicationUrl: cleanUrl(normalized.link),
+    applicationUrl: buildLiveCompanyCareerUrl(companyName, normalized.title, loc.location, normalized.link),
     isActive: true,
     isVerified: true,
     isExpired: false,

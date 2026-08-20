@@ -10,7 +10,7 @@ const ApiError = require('../utils/ApiError');
 const asyncHandler = require('../utils/asyncHandler');
 const { paginate, buildPagination, parseSalary, parseArray, parseBool, toObjectId } = require('../utils/query');
 const { computeMatchScore } = require('../services/aiRecommendation.service');
-const { formatCurrency } = require('../utils/helpers');
+const { formatCurrency, buildLiveCompanyCareerUrl } = require('../utils/helpers');
 const { parseNaturalQuery } = require('../services/semanticSearch.service');
 const { fetchAllJobs, cleanupExpiredJobs } = require('../services/jobIngestion.service');
 
@@ -431,9 +431,15 @@ const getJob = asyncHandler(async (req, res, next) => {
       .lean(),
   ]);
 
+  const liveApplicationUrl = buildLiveCompanyCareerUrl(job.companyName, job.jobTitle, job.location, job.applicationUrl);
+
   res.json({
     success: true,
-    job: { ...job, formattedSalary: formatCurrency(job.salaryMax || job.salary, job.currency) },
+    job: {
+      ...job,
+      applicationUrl: liveApplicationUrl,
+      formattedSalary: formatCurrency(job.salaryMax || job.salary, job.currency),
+    },
     match: matchData.match,
     applied: matchData.applied,
     related,
@@ -780,11 +786,12 @@ const applyToJob = asyncHandler(async (req, res, next) => {
   }
 
   const isExternal = job.source !== 'recruiter';
+  const liveRedirectUrl = isExternal ? buildLiveCompanyCareerUrl(job.companyName, job.jobTitle, job.location, job.applicationUrl) : '';
   res.status(201).json({
     success: true,
-    message: isExternal ? 'Application recorded. Redirecting to the employer\'s application page...' : 'Application submitted.',
+    message: isExternal ? 'Application recorded. Redirecting to employer\'s official portal...' : 'Application submitted.',
     application,
-    redirectUrl: isExternal && job.applicationUrl ? job.applicationUrl : '',
+    redirectUrl: liveRedirectUrl,
   });
 });
 
