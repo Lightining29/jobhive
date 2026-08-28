@@ -143,6 +143,32 @@ export const ManishKumarDevOpsPage = () => {
           </p>
         </section>
 
+        {/* Author Bio Card with Photo */}
+        <section className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#070e24] border border-slate-200 dark:border-cyan-500/30 shadow-xl flex flex-col sm:flex-row items-center gap-6">
+          <img
+            src="/assets/manish-kumar.jpg"
+            alt="Manish Kumar - AWS DevOps Engineer"
+            className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover object-top border-2 border-cyan-400 dark:border-cyan-400 shrink-0 shadow-md"
+          />
+          <div className="space-y-2 text-center sm:text-left">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <h3 className="text-xl font-black text-slate-900 dark:text-white">Manish Kumar</h3>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-cyan-500 text-slate-950">Cloud Architect</span>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              AWS DevOps Solution Architect & Lead Developer • Ghaziabad, Delhi NCR, India
+            </p>
+            <p className="text-xs text-slate-600 dark:text-slate-300">
+              Architecting production Kubernetes clusters, Jenkins CI/CD pipelines, Docker containerization, and enterprise AWS deployments.
+            </p>
+            <div className="pt-2">
+              <Link to="/manish-kumar" className="text-xs font-black text-amber-600 dark:text-cyan-400 hover:underline">
+                View Full Authority Profile & Bio →
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* Contact CTA */}
         <section className="p-8 rounded-3xl bg-slate-900 text-white border border-cyan-400/30 space-y-4">
           <h3 className="text-xl font-black">Ready to scale your cloud infrastructure?</h3>

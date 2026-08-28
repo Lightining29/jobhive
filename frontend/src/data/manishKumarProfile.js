@@ -25,6 +25,7 @@ export const MANISH_KUMAR_PROFILE = {
     github: 'https://github.com/Lightining29',
     website: 'https://programmingwala.com/manish-kumar',
     canonicalUrl: 'https://jobworkplace.com/manish-kumar',
+    avatar: '/assets/manish-kumar.jpg',
   },
   currentCompanies: [
     {

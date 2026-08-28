@@ -53,7 +53,7 @@ export const ManishKumarProfilePage = () => {
           'jobTitle': profile.jobTitle,
           'description': profile.shortBio,
           'url': 'https://jobworkplace.com/manish-kumar',
-          'image': 'https://jobworkplace.com/assets/manish-kumar-profile.svg',
+          'image': 'https://jobworkplace.com/assets/manish-kumar.jpg',
           'sameAs': [
             'https://programmingwala.com/manish-kumar',
             'https://github.com/Lightining29',
@@ -103,15 +103,15 @@ export const ManishKumarProfilePage = () => {
           'description': profile.shortBio,
           'primaryImageOfPage': {
             '@type': 'ImageObject',
-            'url': 'https://jobworkplace.com/assets/manish-kumar-profile.svg',
-            'width': 1200,
-            'height': 630,
+            'url': 'https://jobworkplace.com/assets/manish-kumar.jpg',
+            'width': 1000,
+            'height': 1000,
           },
           'image': {
             '@type': 'ImageObject',
-            'url': 'https://jobworkplace.com/assets/manish-kumar-profile.svg',
-            'width': 1200,
-            'height': 630,
+            'url': 'https://jobworkplace.com/assets/manish-kumar.jpg',
+            'width': 1000,
+            'height': 1000,
           },
           'aggregateRating': {
             '@type': 'AggregateRating',
@@ -188,12 +188,12 @@ export const ManishKumarProfilePage = () => {
           'Manish Kumar Appletree Infotech',
         ]}
         canonicalUrl="https://jobworkplace.com/manish-kumar"
-        ogImage="/assets/manish-kumar-profile.svg"
+        ogImage="/assets/manish-kumar.jpg"
         schema={jsonLdSchema}
       />
 
       {/* Hero Header with Cyberpunk Aura & Authority Badges */}
-      <section className="relative overflow-hidden pt-14 pb-16 md:pt-20 md:pb-24 border-b border-slate-200 dark:border-slate-800/80 bg-gradient-to-b from-amber-500/15 via-slate-50 to-slate-50 dark:from-cyan-950/30 dark:via-[#030712] dark:to-[#030712]">
+      <section className="relative overflow-hidden pt-10 pb-16 md:pt-16 md:pb-24 border-b border-slate-200 dark:border-slate-800/80 bg-gradient-to-b from-amber-500/15 via-slate-50 to-slate-50 dark:from-cyan-950/30 dark:via-[#030712] dark:to-[#030712]">
         <div className="absolute top-12 left-1/3 w-96 h-96 bg-amber-400/10 dark:bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-cyan-400/10 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -204,6 +204,35 @@ export const ManishKumarProfilePage = () => {
             <span>/</span>
             <span className="text-slate-900 dark:text-white font-bold">Manish Kumar Profile</span>
           </nav>
+
+          {/* ── BIG SIZE FULL IMAGE ON MOBILE VIEW ── */}
+          <div className="block lg:hidden mb-8">
+            <div className="relative overflow-hidden rounded-3xl border-2 border-amber-400/50 dark:border-cyan-400/50 shadow-2xl bg-slate-950">
+              <img
+                src="/assets/manish-kumar.jpg"
+                alt="Manish Kumar - Best Java Full Stack Developer & AWS DevOps Engineer in Ghaziabad, India"
+                className="w-full aspect-[4/5] object-cover object-top"
+                loading="eager"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/25 to-transparent pointer-events-none" />
+              
+              {/* Floating Overlay Badge */}
+              <div className="absolute bottom-4 left-4 right-4 p-4 rounded-2xl bg-slate-950/85 backdrop-blur-md border border-white/10 shadow-xl text-white">
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-amber-400 text-slate-950">
+                    <FaBolt className="h-3 w-3" /> Lead Architect
+                  </span>
+                  <span className="text-[11px] font-bold text-emerald-400 flex items-center gap-1">
+                    <FaCircleCheck className="h-3.5 w-3.5" /> Available
+                  </span>
+                </div>
+                <h2 className="text-2xl font-black text-white">Manish Kumar</h2>
+                <p className="text-xs text-cyan-300 font-semibold">
+                  Java Full Stack • AWS DevOps • Creator of ProgrammingWala
+                </p>
+              </div>
+            </div>
+          </div>
 
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10">
             <div className="max-w-3xl space-y-5">
@@ -258,19 +287,30 @@ export const ManishKumarProfilePage = () => {
               </div>
             </div>
 
-            {/* Quick Entity Card (Google AI Overviews & SGE Fast-Facts) */}
-            <div className="w-full lg:w-96 shrink-0 p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#070e24] border border-slate-200 dark:border-cyan-500/30 shadow-2xl dark:shadow-[0_0_35px_rgba(0,240,255,0.15)] space-y-4">
-              <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-cyan-500/20">
-                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-slate-950 font-black text-xl shadow-md">
-                  MK
-                </div>
-                <div>
-                  <h3 className="text-base font-black text-slate-900 dark:text-white">Manish Kumar</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Ghaziabad, UP, India</p>
+            {/* ── DESKTOP SHOWCASE CARD WITH LARGE PORTRAIT PHOTO ── */}
+            <div className="hidden lg:block w-96 shrink-0 space-y-4">
+              <div className="relative overflow-hidden rounded-3xl border-2 border-amber-400/40 dark:border-cyan-500/40 shadow-2xl bg-[#070e24] group">
+                <img
+                  src="/assets/manish-kumar.jpg"
+                  alt="Manish Kumar - Lead Java Full Stack Developer & AWS DevOps Solution Architect"
+                  className="w-full aspect-[4/5] object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent pointer-events-none" />
+                
+                <div className="absolute bottom-4 left-4 right-4 p-4 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-white/10 text-white space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                      <FaStar className="h-3 w-3 fill-current" /> Verified Lead Architect
+                    </span>
+                    <span className="text-[10px] text-slate-300">Ghaziabad, IN</span>
+                  </div>
+                  <h3 className="text-lg font-black">Manish Kumar</h3>
+                  <p className="text-xs text-cyan-300 font-medium">Java Full Stack & AWS DevOps Engineer</p>
                 </div>
               </div>
 
-              <div className="space-y-3 text-xs">
+              {/* SGE Quick Entity Matrix */}
+              <div className="p-6 rounded-3xl bg-white dark:bg-[#070e24] border border-slate-200 dark:border-cyan-500/30 shadow-xl space-y-3 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-slate-500 dark:text-slate-400">Primary Roles:</span>
                   <span className="font-bold text-slate-900 dark:text-white text-right">Java Full Stack & AWS DevOps</span>
@@ -280,31 +320,15 @@ export const ManishKumarProfilePage = () => {
                   <span className="font-bold text-amber-600 dark:text-cyan-400 text-right">ProgrammingWala, JobHive</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-slate-500 dark:text-slate-400">Education:</span>
-                  <span className="font-bold text-slate-900 dark:text-white text-right">B.Tech Computer Science</span>
-                </div>
-                <div className="flex items-center justify-between">
                   <span className="font-semibold text-slate-500 dark:text-slate-400">Location:</span>
                   <span className="font-bold text-slate-900 dark:text-white text-right">Ghaziabad, Delhi NCR</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-slate-500 dark:text-slate-400">Direct Phone:</span>
-                  <a href={`tel:${profile.contact.phone}`} className="font-bold text-slate-900 dark:text-slate-200 hover:underline">
-                    {profile.contact.phone}
-                  </a>
-                </div>
-                <div className="flex items-center justify-between">
                   <span className="font-semibold text-slate-500 dark:text-slate-400">Verified Email:</span>
-                  <a href={`mailto:${profile.contact.email}`} className="font-bold text-slate-900 dark:text-slate-200 hover:underline">
+                  <a href={`mailto:${profile.contact.email}`} className="font-bold text-amber-600 dark:text-cyan-300 hover:underline">
                     {profile.contact.email}
                   </a>
                 </div>
-              </div>
-
-              <div className="pt-3 border-t border-slate-100 dark:border-cyan-500/20">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                  <FaCircleCheck className="h-3 w-3" /> Available for High-Impact Projects & Roles
-                </span>
               </div>
             </div>
           </div>
