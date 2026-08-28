@@ -21,6 +21,7 @@ import SEOHead from '../components/seo/SEOHead';
 import DarkHeroParallaxScene from '../components/home/DarkHeroParallaxScene';
 import AlternateJobsMarquee from '../components/home/AlternateJobsMarquee';
 import { LazyJobSection, LazyCompaniesSection, LazyLocationsSection } from '../components/home/LazyJobSection';
+import { TRENDING_KEYWORDS_DATA } from '../data/trendingKeywords';
 
 const SearchHero = () => {
   const [query, setQuery] = useState('');
@@ -386,6 +387,40 @@ const HomePage = () => {
 
         {/* 7. Jobs Near Me */}
         <LazyLocationsSection initialItems={homeData?.jobsNearMe} />
+
+        {/* 8. Trending Job Keywords & Career Pathways (SEO Power Hub) */}
+        <section className="pt-6">
+          <SectionHeader
+            title="Explore Trending Job Keywords & High-Growth Roles"
+            subtitle="Deep-dive into verified salaries, core skills, and direct openings across top tech categories"
+            to="/trending-keywords"
+          />
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            {TRENDING_KEYWORDS_DATA.slice(0, 10).map((keyword) => (
+              <Link
+                key={keyword.slug}
+                to={`/jobs/keyword/${keyword.slug}`}
+                className="group p-4 rounded-2xl bg-white dark:bg-[#070e24] border border-slate-200 dark:border-cyan-500/20 hover:border-amber-400 dark:hover:border-cyan-400 hover:shadow-lg transition-all"
+              >
+                <div className="flex items-center justify-between gap-1 mb-2">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                    {keyword.badge}
+                  </span>
+                  <span className="text-[11px] font-bold text-slate-400">
+                    {keyword.openingsCount}
+                  </span>
+                </div>
+                <h3 className="text-sm font-black text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-cyan-300 transition-colors line-clamp-1">
+                  {keyword.shortName}
+                </h3>
+                <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                  {keyword.averageSalary}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
       </div>
 
       <CandidateCTABand />

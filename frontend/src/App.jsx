@@ -41,6 +41,8 @@ const AboutPage = lazyWithRetry(() => import('./pages/AboutPage'));
 
 const ResumeAnalyzerPage = lazyWithRetry(() => import('./pages/candidate/ResumeAnalyzerPage'));
 const CareerNewsPage = lazyWithRetry(() => import('./pages/CareerNewsPage'));
+const TrendingKeywordPage = lazyWithRetry(() => import('./pages/TrendingKeywordPage'));
+const TrendingKeywordsHubPage = lazyWithRetry(() => import('./pages/TrendingKeywordsHubPage'));
 
 const CandidateDashboardPage = lazyWithRetry(() => import('./pages/candidate/CandidateDashboardPage'));
 const CandidateProfilePage = lazyWithRetry(() => import('./pages/candidate/CandidateProfilePage'));
@@ -96,6 +98,10 @@ const App = () => (
             <Route path="/jobs/onsite" element={withSuspense(<JobsPage key="onsite" />)} />
             <Route path="/jobs/recommended" element={withSuspense(<RecommendedJobsPage />)} />
             <Route path="/jobs/:id" element={withSuspense(<JobDetailPage />)} />
+            <Route path="/jobs/keyword/:slug" element={withSuspense(<TrendingKeywordPage />)} />
+            <Route path="/trending-jobs/:slug" element={withSuspense(<TrendingKeywordPage />)} />
+            <Route path="/trending-keywords" element={withSuspense(<TrendingKeywordsHubPage />)} />
+            <Route path="/trending-jobs" element={withSuspense(<TrendingKeywordsHubPage />)} />
             <Route path="/about" element={withSuspense(<AboutPage />)} />
             <Route path="/career-news" element={withSuspense(<CareerNewsPage />)} />
 

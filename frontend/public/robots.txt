@@ -3,6 +3,9 @@ User-agent: *
 Allow: /
 Allow: /jobs
 Allow: /jobs/*
+Allow: /trending-keywords
+Allow: /trending-jobs
+Allow: /trending-jobs/*
 Allow: /about
 Allow: /career-news
 

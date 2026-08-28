@@ -11,77 +11,87 @@
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
   </url>
+  <url>
+    <loc>https://jobworkplace.com/trending-keywords</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
 
-  <!-- Popular High-Search Keyword Landing Pages (Java Jobs, React, Python, Remote, etc.) -->
+  <!-- High-Ranking Dedicated Keyword Pages (Static / Deep Landing Pages) -->
   <url>
-    <loc>https://jobworkplace.com/jobs?search=Java</loc>
+    <loc>https://jobworkplace.com/jobs/keyword/java-developer-jobs</loc>
     <changefreq>hourly</changefreq>
     <priority>0.90</priority>
   </url>
   <url>
-    <loc>https://jobworkplace.com/jobs?search=Java+Developer</loc>
+    <loc>https://jobworkplace.com/jobs/keyword/python-developer-jobs</loc>
     <changefreq>hourly</changefreq>
     <priority>0.90</priority>
   </url>
   <url>
-    <loc>https://jobworkplace.com/jobs?search=Spring+Boot</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://jobworkplace.com/jobs?search=Python</loc>
+    <loc>https://jobworkplace.com/jobs/keyword/react-developer-jobs</loc>
     <changefreq>hourly</changefreq>
     <priority>0.90</priority>
   </url>
   <url>
-    <loc>https://jobworkplace.com/jobs?search=React</loc>
+    <loc>https://jobworkplace.com/jobs/keyword/full-stack-developer-jobs</loc>
     <changefreq>hourly</changefreq>
     <priority>0.90</priority>
   </url>
   <url>
-    <loc>https://jobworkplace.com/jobs?search=Node.js</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://jobworkplace.com/jobs?search=Full+Stack</loc>
+    <loc>https://jobworkplace.com/jobs/keyword/remote-tech-jobs</loc>
     <changefreq>hourly</changefreq>
     <priority>0.90</priority>
   </url>
   <url>
-    <loc>https://jobworkplace.com/jobs?search=Frontend</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://jobworkplace.com/jobs?search=Backend</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://jobworkplace.com/jobs?search=Data+Science</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://jobworkplace.com/jobs?search=DevOps</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://jobworkplace.com/jobs?search=Remote</loc>
+    <loc>https://jobworkplace.com/jobs/keyword/fresher-software-engineer-jobs</loc>
     <changefreq>hourly</changefreq>
     <priority>0.90</priority>
   </url>
   <url>
-    <loc>https://jobworkplace.com/jobs?search=Sales</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.80</priority>
+    <loc>https://jobworkplace.com/jobs/keyword/devops-engineer-jobs</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.90</priority>
   </url>
   <url>
-    <loc>https://jobworkplace.com/jobs?search=Marketing</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.80</priority>
+    <loc>https://jobworkplace.com/jobs/keyword/data-scientist-jobs</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.90</priority>
+  </url>
+  <url>
+    <loc>https://jobworkplace.com/jobs/keyword/internships-jobs</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.90</priority>
+  </url>
+  <url>
+    <loc>https://jobworkplace.com/jobs/keyword/ui-ux-designer-jobs</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://jobworkplace.com/jobs/keyword/jobs-in-bangalore</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.90</priority>
+  </url>
+  <url>
+    <loc>https://jobworkplace.com/jobs/keyword/jobs-in-hyderabad</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.90</priority>
+  </url>
+  <url>
+    <loc>https://jobworkplace.com/jobs/keyword/jobs-in-pune</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://jobworkplace.com/jobs/keyword/jobs-in-noida-delhi-ncr</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://jobworkplace.com/jobs/keyword/jobs-in-mumbai</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.85</priority>
   </url>
 
   <!-- Category & Work Mode Pages -->
