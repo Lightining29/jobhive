@@ -17,6 +17,28 @@
     <priority>0.95</priority>
   </url>
 
+  <!-- Manish Kumar Official Profile & Deep Authority Pages (Google Knowledge Graph & AI Overviews) -->
+  <url>
+    <loc>https://jobworkplace.com/manish-kumar</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.98</priority>
+  </url>
+  <url>
+    <loc>https://jobworkplace.com/manish-kumar/java-developer</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://jobworkplace.com/manish-kumar/aws-devops</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://jobworkplace.com/manish-kumar/projects</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+
   <!-- High-Ranking Dedicated Keyword Pages (Static / Deep Landing Pages) -->
   <url>
     <loc>https://jobworkplace.com/jobs/keyword/java-developer-jobs</loc>

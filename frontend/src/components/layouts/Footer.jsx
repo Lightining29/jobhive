@@ -40,8 +40,9 @@ const Footer = () => (
           </ul>
         </div>
         <div>
-          <h4 className="font-semibold mb-3 text-sm text-slate-900 dark:text-white">Company</h4>
+          <h4 className="font-semibold mb-3 text-sm text-slate-900 dark:text-white">Company & Founder</h4>
           <ul className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
+            <li><Link to="/manish-kumar" className="font-bold text-amber-600 dark:text-cyan-400 hover:underline transition-colors">Manish Kumar (Lead Architect)</Link></li>
             <li><Link to="/about" className="hover:text-slate-900 dark:hover:text-white transition-colors">About Us</Link></li>
             <li><Link to="/career-news" className="hover:text-slate-900 dark:hover:text-white transition-colors">Career News</Link></li>
             <li><Link to="/auth/login" className="hover:text-slate-900 dark:hover:text-white transition-colors">Sign In</Link></li>

@@ -6,6 +6,8 @@ Allow: /jobs/*
 Allow: /trending-keywords
 Allow: /trending-jobs
 Allow: /trending-jobs/*
+Allow: /manish-kumar
+Allow: /manish-kumar/*
 Allow: /about
 Allow: /career-news
 

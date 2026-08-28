@@ -44,6 +44,11 @@ const CareerNewsPage = lazyWithRetry(() => import('./pages/CareerNewsPage'));
 const TrendingKeywordPage = lazyWithRetry(() => import('./pages/TrendingKeywordPage'));
 const TrendingKeywordsHubPage = lazyWithRetry(() => import('./pages/TrendingKeywordsHubPage'));
 
+const ManishKumarProfilePage = lazyWithRetry(() => import('./pages/public/ManishKumarProfilePage'));
+const ManishKumarJavaDeveloperPage = lazyWithRetry(() => import('./pages/public/ManishKumarJavaDeveloperPage'));
+const ManishKumarDevOpsPage = lazyWithRetry(() => import('./pages/public/ManishKumarDevOpsPage'));
+const ManishKumarProjectsPage = lazyWithRetry(() => import('./pages/public/ManishKumarProjectsPage'));
+
 const CandidateDashboardPage = lazyWithRetry(() => import('./pages/candidate/CandidateDashboardPage'));
 const CandidateProfilePage = lazyWithRetry(() => import('./pages/candidate/CandidateProfilePage'));
 const SavedJobsPage = lazyWithRetry(() => import('./pages/candidate/SavedJobsPage'));
@@ -102,6 +107,18 @@ const App = () => (
             <Route path="/trending-jobs/:slug" element={withSuspense(<TrendingKeywordPage />)} />
             <Route path="/trending-keywords" element={withSuspense(<TrendingKeywordsHubPage />)} />
             <Route path="/trending-jobs" element={withSuspense(<TrendingKeywordsHubPage />)} />
+
+            {/* Manish Kumar Master Authority Pages */}
+            <Route path="/manish-kumar" element={withSuspense(<ManishKumarProfilePage />)} />
+            <Route path="/about/manish-kumar" element={withSuspense(<ManishKumarProfilePage />)} />
+            <Route path="/developer/manish-kumar" element={withSuspense(<ManishKumarProfilePage />)} />
+            <Route path="/manish-kumar/java-developer" element={withSuspense(<ManishKumarJavaDeveloperPage />)} />
+            <Route path="/manish-kumar-java-developer" element={withSuspense(<ManishKumarJavaDeveloperPage />)} />
+            <Route path="/manish-kumar/aws-devops" element={withSuspense(<ManishKumarDevOpsPage />)} />
+            <Route path="/manish-kumar-aws-devops-engineer" element={withSuspense(<ManishKumarDevOpsPage />)} />
+            <Route path="/manish-kumar/projects" element={withSuspense(<ManishKumarProjectsPage />)} />
+            <Route path="/manish-kumar-projects" element={withSuspense(<ManishKumarProjectsPage />)} />
+
             <Route path="/about" element={withSuspense(<AboutPage />)} />
             <Route path="/career-news" element={withSuspense(<CareerNewsPage />)} />
 
