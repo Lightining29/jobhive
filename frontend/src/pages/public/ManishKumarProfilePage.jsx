@@ -53,7 +53,7 @@ export const ManishKumarProfilePage = () => {
           'jobTitle': profile.jobTitle,
           'description': profile.shortBio,
           'url': 'https://jobworkplace.com/manish-kumar',
-          'image': 'https://jobworkplace.com/favicon.svg',
+          'image': 'https://jobworkplace.com/assets/manish-kumar-profile.svg',
           'sameAs': [
             'https://programmingwala.com/manish-kumar',
             'https://github.com/Lightining29',
@@ -101,6 +101,18 @@ export const ManishKumarProfilePage = () => {
           'url': 'https://jobworkplace.com/manish-kumar',
           'name': `${profile.name} | Best Java Full Stack Developer & AWS DevOps Engineer in Ghaziabad, India`,
           'description': profile.shortBio,
+          'primaryImageOfPage': {
+            '@type': 'ImageObject',
+            'url': 'https://jobworkplace.com/assets/manish-kumar-profile.svg',
+            'width': 1200,
+            'height': 630,
+          },
+          'image': {
+            '@type': 'ImageObject',
+            'url': 'https://jobworkplace.com/assets/manish-kumar-profile.svg',
+            'width': 1200,
+            'height': 630,
+          },
           'mainEntity': {
             '@id': 'https://jobworkplace.com/manish-kumar#person',
           },
@@ -155,6 +167,7 @@ export const ManishKumarProfilePage = () => {
           'Manish Kumar Appletree Infotech',
         ]}
         canonicalUrl="https://jobworkplace.com/manish-kumar"
+        ogImage="/assets/manish-kumar-profile.svg"
         schema={jsonLdSchema}
       />
 

@@ -34,6 +34,7 @@ export const ManishKumarProjectsPage = () => {
           'url': 'https://jobworkplace.com/manish-kumar',
         },
         'inLanguage': 'en-US',
+        'image': 'https://jobworkplace.com/assets/manish-kumar-profile.svg',
         'mainEntityOfPage': 'https://jobworkplace.com/manish-kumar/projects',
       },
       {
@@ -60,6 +61,7 @@ export const ManishKumarProjectsPage = () => {
           'Manish Kumar Portfolio',
         ]}
         canonicalUrl="https://jobworkplace.com/manish-kumar/projects"
+        ogImage="/assets/manish-kumar-profile.svg"
         schema={jsonLdSchema}
       />
 

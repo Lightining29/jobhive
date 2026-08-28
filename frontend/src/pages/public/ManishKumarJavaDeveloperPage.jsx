@@ -39,6 +39,7 @@ export const ManishKumarJavaDeveloperPage = () => {
           'url': 'https://jobworkplace.com',
         },
         'inLanguage': 'en-US',
+        'image': 'https://jobworkplace.com/assets/manish-kumar-profile.svg',
         'mainEntityOfPage': 'https://jobworkplace.com/manish-kumar/java-developer',
       },
       {
@@ -67,6 +68,7 @@ export const ManishKumarJavaDeveloperPage = () => {
           'Manish Kumar ProgrammingWala Java',
         ]}
         canonicalUrl="https://jobworkplace.com/manish-kumar/java-developer"
+        ogImage="/assets/manish-kumar-profile.svg"
         schema={jsonLdSchema}
       />
 

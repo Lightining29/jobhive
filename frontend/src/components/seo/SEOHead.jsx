@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 
 const DEFAULT_TITLE = 'Job Workplace - Find Dream Jobs, Tech Careers & Remote Work';
 const DEFAULT_DESCRIPTION = 'Explore 10,000+ verified job openings in Java, React, Tech, Non-Technical, and Remote roles. AI-powered matching from top global companies and startups.';
-const DEFAULT_KEYWORDS = 'jobs, java jobs, remote jobs, software developer jobs, tech careers, hiring in India, fresher jobs, internships, work from home, IT jobs, react developer, python jobs, full stack developer';
+const DEFAULT_KEYWORDS = 'jobs, java jobs, remote jobs, software developer jobs, tech careers, hiring in India, fresher jobs, internships, work from home, IT jobs, react developer, python jobs, full stack developer, Manish Kumar Java Developer';
+const DEFAULT_IMAGE = '/assets/job-workplace-banner.svg';
 const SITE_NAME = 'Job Workplace';
 
 export const SEOHead = ({
@@ -11,7 +12,7 @@ export const SEOHead = ({
   keywords = DEFAULT_KEYWORDS,
   canonicalUrl,
   ogType = 'website',
-  ogImage = '/favicon.svg',
+  ogImage = DEFAULT_IMAGE,
   schema,
   noIndex = false,
 }) => {
@@ -32,12 +33,17 @@ export const SEOHead = ({
       element.setAttribute('content', content);
     };
 
-    // 2. Standard Meta Tags
-    setMetaTag('name', 'description', description);
-    const keywordsStr = Array.isArray(keywords) ? keywords.join(', ') : keywords;
-    setMetaTag('name', 'keywords', keywordsStr);
-    setMetaTag('name', 'author', 'Job Workplace by Appletree Infotech');
-    setMetaTag('name', 'robots', noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+    // Helper to set or create link tag
+    const setLinkTag = (rel, href) => {
+      if (!href) return;
+      let element = document.querySelector(`link[rel="${rel}"]`);
+      if (!element) {
+        element = document.createElement('link');
+        element.setAttribute('rel', rel);
+        document.head.appendChild(element);
+      }
+      element.setAttribute('href', href);
+    };
 
     // Helper to get real production origin (never localhost)
     const getCleanOrigin = () => {
@@ -51,6 +57,14 @@ export const SEOHead = ({
 
     const cleanOrigin = getCleanOrigin();
 
+    // 2. Standard Meta Tags
+    setMetaTag('name', 'description', description);
+    const keywordsStr = Array.isArray(keywords) ? keywords.join(', ') : keywords;
+    setMetaTag('name', 'keywords', keywordsStr);
+    setMetaTag('name', 'author', 'Job Workplace by Appletree Infotech');
+    // max-image-preview:large ensures Google search result thumbnail renders on the right side
+    setMetaTag('name', 'robots', noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+
     // 3. Canonical URL
     let currentUrl = canonicalUrl;
     if (!currentUrl) {
@@ -58,30 +72,37 @@ export const SEOHead = ({
       const search = typeof window !== 'undefined' ? window.location.search : '';
       currentUrl = `${cleanOrigin}${pathname}${search}`;
     }
-    let canonicalLink = document.querySelector('link[rel="canonical"]');
-    if (!canonicalLink) {
-      canonicalLink = document.createElement('link');
-      canonicalLink.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonicalLink);
-    }
-    canonicalLink.setAttribute('href', currentUrl);
+    setLinkTag('canonical', currentUrl);
 
-    // 4. OpenGraph Tags
-    const fullOgImage = ogImage?.startsWith('http') ? ogImage : `${cleanOrigin}${ogImage.startsWith('/') ? ogImage : `/${ogImage}`}`;
+    // 4. Absolute High-Resolution OpenGraph & Search Thumbnail Image
+    const fullOgImage = ogImage?.startsWith('http')
+      ? ogImage
+      : `${cleanOrigin}${ogImage.startsWith('/') ? ogImage : `/${ogImage}`}`;
+
+    // Standard Google Search Thumbnail attributes
+    setMetaTag('name', 'image', fullOgImage);
+    setMetaTag('name', 'thumbnail', fullOgImage);
+    setLinkTag('image_src', fullOgImage);
+
+    // OpenGraph Tags
     setMetaTag('property', 'og:title', formattedTitle);
     setMetaTag('property', 'og:description', description);
     setMetaTag('property', 'og:url', currentUrl);
     setMetaTag('property', 'og:type', ogType);
     setMetaTag('property', 'og:site_name', SITE_NAME);
     setMetaTag('property', 'og:image', fullOgImage);
+    setMetaTag('property', 'og:image:secure_url', fullOgImage);
+    setMetaTag('property', 'og:image:width', '1200');
+    setMetaTag('property', 'og:image:height', '630');
+    setMetaTag('property', 'og:image:alt', formattedTitle);
 
-    // 5. Twitter Card Tags
+    // Twitter Card Tags
     setMetaTag('name', 'twitter:card', 'summary_large_image');
     setMetaTag('name', 'twitter:title', formattedTitle);
     setMetaTag('name', 'twitter:description', description);
     setMetaTag('name', 'twitter:image', fullOgImage);
 
-    // 6. JSON-LD Structured Data Schema for Google Search
+    // 5. JSON-LD Structured Data Schema with primaryImageOfPage & image
     const schemaId = 'seo-structured-data-jsonld';
     let scriptTag = document.getElementById(schemaId);
     if (!scriptTag) {
@@ -94,7 +115,7 @@ export const SEOHead = ({
     if (schema) {
       scriptTag.textContent = JSON.stringify(schema);
     } else {
-      // Default WebSite + Organization Schema
+      // Default WebSite + Organization + ImageObject Schema
       const defaultSchema = {
         '@context': 'https://schema.org',
         '@graph': [
@@ -104,7 +125,8 @@ export const SEOHead = ({
             'name': 'Job Workplace',
             'alternateName': 'JobHive',
             'url': cleanOrigin,
-            'logo': `${cleanOrigin}/favicon.svg`,
+            'logo': `${cleanOrigin}/assets/job-workplace-banner.svg`,
+            'image': `${cleanOrigin}/assets/job-workplace-banner.svg`,
             'description': 'AI-driven employment marketplace connecting candidates with verified tech & non-tech job opportunities.',
           },
           {
@@ -121,6 +143,26 @@ export const SEOHead = ({
               },
               'query-input': 'required name=search_term_string',
             },
+          },
+          {
+            '@type': 'WebPage',
+            '@id': currentUrl,
+            'url': currentUrl,
+            'name': formattedTitle,
+            'description': description,
+            'primaryImageOfPage': {
+              '@type': 'ImageObject',
+              'url': fullOgImage,
+              'width': 1200,
+              'height': 630,
+            },
+            'image': {
+              '@type': 'ImageObject',
+              'url': fullOgImage,
+              'width': 1200,
+              'height': 630,
+            },
+            'thumbnailUrl': fullOgImage,
           },
         ],
       };

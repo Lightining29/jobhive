@@ -40,6 +40,7 @@ export const ManishKumarDevOpsPage = () => {
           'url': 'https://jobworkplace.com',
         },
         'inLanguage': 'en-US',
+        'image': 'https://jobworkplace.com/assets/manish-kumar-profile.svg',
         'mainEntityOfPage': 'https://jobworkplace.com/manish-kumar/aws-devops',
       },
       {
@@ -68,6 +69,7 @@ export const ManishKumarDevOpsPage = () => {
           'Manish Kumar Cloud Engineer',
         ]}
         canonicalUrl="https://jobworkplace.com/manish-kumar/aws-devops"
+        ogImage="/assets/manish-kumar-profile.svg"
         schema={jsonLdSchema}
       />
 
