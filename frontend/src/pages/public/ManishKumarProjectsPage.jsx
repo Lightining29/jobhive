@@ -142,6 +142,66 @@ export const ManishKumarProjectsPage = () => {
             )}
           </article>
         ))}
+
+        {/* Client & Product Reviews */}
+        <section className="space-y-6 pt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex text-amber-400">
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar key={i} className="h-4 w-4 fill-current" />
+                  ))}
+                </div>
+                <span className="text-sm font-black text-slate-900 dark:text-white">5.0 / 5.0 (Verified Reviews)</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                Project & Product Testimonials
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Authentic feedback from engineering partners and product managers on systems engineered by Manish Kumar
+              </p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {profile.reviews.map((rev) => (
+              <div
+                key={rev.id}
+                className="p-6 rounded-3xl bg-white dark:bg-[#070e24] border border-slate-200 dark:border-cyan-500/30 shadow-md flex flex-col justify-between"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex text-amber-400">
+                      {[...Array(rev.rating)].map((_, i) => (
+                        <FaStar key={i} className="h-3.5 w-3.5 fill-current" />
+                      ))}
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-400">{rev.date}</span>
+                  </div>
+
+                  <p className="text-xs font-black uppercase tracking-wider text-amber-600 dark:text-cyan-400">
+                    {rev.productName}
+                  </p>
+
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed italic">
+                    "{rev.comment}"
+                  </p>
+                </div>
+
+                <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-slate-950 font-black text-xs">
+                    {rev.reviewerName.split(' ').map((n) => n[0]).join('')}
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-slate-900 dark:text-white">{rev.reviewerName}</h4>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">{rev.role} • {rev.company}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   );
