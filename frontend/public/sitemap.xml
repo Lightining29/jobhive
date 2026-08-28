@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <!-- Core Main Pages -->
   <url>
     <loc>https://jobworkplace.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://jobworkplace.com/assets/job-workplace-banner.svg</image:loc>
+      <image:title>Job Workplace - AI Powered Career Marketplace</image:title>
+      <image:caption>Find 10,000+ verified live jobs in Java, Python, React, and AWS DevOps roles.</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://jobworkplace.com/jobs</loc>
@@ -17,29 +23,86 @@
     <priority>0.95</priority>
   </url>
 
-  <!-- Manish Kumar Official Profile & Deep Authority Pages (Google Knowledge Graph & AI Overviews) -->
+  <!-- ══════════════════════════════════════════════════════════════════════════ -->
+  <!-- MANISH KUMAR OFFICIAL PROFILE & GOOGLE KNOWLEDGE GRAPH AUTHORITY PAGES   -->
+  <!-- ══════════════════════════════════════════════════════════════════════════ -->
   <url>
     <loc>https://jobworkplace.com/manish-kumar</loc>
+    <lastmod>2026-08-28</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.98</priority>
-  </url>
-  <url>
-    <loc>https://jobworkplace.com/manish-kumar/java-developer</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.95</priority>
-  </url>
-  <url>
-    <loc>https://jobworkplace.com/manish-kumar/aws-devops</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.95</priority>
-  </url>
-  <url>
-    <loc>https://jobworkplace.com/manish-kumar/projects</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.95</priority>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://jobworkplace.com/assets/manish-kumar.jpg</image:loc>
+      <image:title>Manish Kumar - Best Java Full Stack Developer and AWS DevOps Solution Architect in Ghaziabad, India</image:title>
+      <image:caption>Official profile photograph of Manish Kumar, creator of ProgrammingWala and Job Workplace.</image:caption>
+      <image:geo_location>Ghaziabad, Uttar Pradesh, India</image:geo_location>
+    </image:image>
   </url>
 
-  <!-- High-Ranking Dedicated Keyword Pages (Static / Deep Landing Pages) -->
+  <url>
+    <loc>https://jobworkplace.com/about/manish-kumar</loc>
+    <lastmod>2026-08-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://jobworkplace.com/assets/manish-kumar.jpg</image:loc>
+      <image:title>About Manish Kumar - Full Stack Software Architect</image:title>
+      <image:caption>Manish Kumar technical biography and engineering milestones.</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://jobworkplace.com/developer/manish-kumar</loc>
+    <lastmod>2026-08-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://jobworkplace.com/assets/manish-kumar.jpg</image:loc>
+      <image:title>Manish Kumar - Developer Profile &amp; Tech Stack</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://jobworkplace.com/manish-kumar/java-developer</loc>
+    <lastmod>2026-08-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://jobworkplace.com/assets/manish-kumar.jpg</image:loc>
+      <image:title>Manish Kumar - Enterprise Java Full Stack Developer &amp; Spring Boot Architect in Ghaziabad</image:title>
+      <image:caption>Core Java, Spring Boot 3, Microservices, and React integration by Manish Kumar.</image:caption>
+      <image:geo_location>Ghaziabad, Delhi NCR, India</image:geo_location>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://jobworkplace.com/manish-kumar/aws-devops</loc>
+    <lastmod>2026-08-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://jobworkplace.com/assets/manish-kumar.jpg</image:loc>
+      <image:title>Manish Kumar - Top AWS DevOps Engineer &amp; Cloud Solution Architect in Ghaziabad, India</image:title>
+      <image:caption>AWS Cloud architecture, Docker, Kubernetes, and Jenkins CI/CD pipelines by Manish Kumar.</image:caption>
+      <image:geo_location>Ghaziabad, Delhi NCR, India</image:geo_location>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://jobworkplace.com/manish-kumar/projects</loc>
+    <lastmod>2026-08-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://jobworkplace.com/assets/manish-kumar.jpg</image:loc>
+      <image:title>Manish Kumar Projects Portfolio - Job Workplace, ProgrammingWala, Afsha Enterprises</image:title>
+      <image:caption>Production engineering portfolio and case studies built by Manish Kumar.</image:caption>
+    </image:image>
+  </url>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════ -->
+  <!-- HIGH-RANKING KEYWORD PAGES (Static / Deep Landing Pages)                  -->
+  <!-- ══════════════════════════════════════════════════════════════════════════ -->
   <url>
     <loc>https://jobworkplace.com/jobs/keyword/java-developer-jobs</loc>
     <changefreq>hourly</changefreq>
