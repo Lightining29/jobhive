@@ -2,6 +2,30 @@ const express = require('express');
 const router = express.Router();
 const Card = require('../models/Card');
 const logger = require('../config/logger');
+const { uploadImage } = require('../middleware/upload');
+
+// ── POST /api/cards/upload - Upload card image (avatar, logo, signature, background) ──
+router.post('/upload', uploadImage.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No image file provided' });
+    }
+
+    const imageUrl = `/uploads/${req.file.filename}`;
+    logger.info(`[cards.upload] image uploaded successfully: ${imageUrl}`);
+
+    return res.status(200).json({
+      success: true,
+      imageUrl,
+      filename: req.file.filename,
+      size: req.file.size,
+      mimetype: req.file.mimetype,
+    });
+  } catch (error) {
+    logger.error('[cards.upload] error:', error);
+    return res.status(500).json({ success: false, message: error.message || 'Image upload failed' });
+  }
+});
 
 // ── GET /api/cards - Get all cards (with optional search/filter) ────────────────
 router.get('/', async (req, res) => {

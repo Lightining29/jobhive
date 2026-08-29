@@ -13,6 +13,24 @@ export const setStoredHfKey = (key) => {
 };
 
 export const cardApi = {
+  // Image Upload for Cards (Avatar, Logo, Signature, Background)
+  uploadImage: async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const res = await fetch(`${API_BASE}/cards/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      return data;
+    } catch (e) {
+      console.error('Failed to upload card image:', e);
+      return { success: false, error: e.message };
+    }
+  },
+
   // Cards CRUD
   getCards: async (params = {}) => {
     try {
