@@ -124,10 +124,10 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
               <span className="mr-3 font-extrabold">:</span>
               <span className="font-semibold text-slate-700">{card.contact?.phone || '123 456 789'}</span>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-start">
               <span className="w-20 text-slate-900 font-extrabold flex-shrink-0">E-mail</span>
               <span className="mr-3 font-extrabold">:</span>
-              <span className="font-semibold text-slate-700 truncate">{card.contact?.email || 'youridhere'}</span>
+              <span className="font-semibold text-slate-700 break-all text-[11px] leading-tight flex-1">{card.contact?.email || 'info@appletreeinfotech.in'}</span>
             </div>
           </div>
         </div>
@@ -274,15 +274,14 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
           </p>
 
           <div className="flex items-center gap-3 text-[10px] text-slate-600 font-mono mt-1 font-semibold leading-normal">
-            <span>Join Date: <strong className="text-slate-900">{card.personal?.issueDate || '07/21'}</strong></span>
-            <span>Valid Thru: <strong className="text-slate-900">{card.personal?.expiryDate || '09/22'}</strong></span>
+            <span>Date of Issue: <strong className="text-slate-900">{card.personal?.issueDate || '01-01-2024'}</strong></span>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[9.5px] text-slate-700 font-mono mt-2 pt-2 border-t border-slate-100 w-full max-w-[260px] leading-normal">
-            <div className="truncate"><span className="text-slate-400">P:</span> {card.contact?.phone || '+098209283038'}</div>
-            <div className="truncate"><span className="text-slate-400">E:</span> {card.contact?.email || 'Name@company.com'}</div>
-            <div className="truncate"><span className="text-slate-400">Dep:</span> {card.personal?.department || 'Engineering'}</div>
-            <div className="truncate"><span className="text-slate-400">Blood:</span> {card.personal?.bloodGroup || 'O+'}</div>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[9.5px] text-slate-700 font-mono mt-2 pt-2 border-t border-slate-100 w-full max-w-[280px] leading-normal">
+            <div><span className="text-slate-400">P:</span> {card.contact?.phone || '+91 98765 43210'}</div>
+            <div className="break-all"><span className="text-slate-400">E:</span> {card.contact?.email || 'info@appletreeinfotech.in'}</div>
+            <div><span className="text-slate-400">Dep:</span> {card.personal?.department || 'Engineering'}</div>
+            <div><span className="text-slate-400">Blood:</span> {card.personal?.bloodGroup || 'O+'}</div>
           </div>
         </div>
 
@@ -356,13 +355,13 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
               <span className="text-slate-500 font-bold">Phone:</span>
               <strong className="text-slate-900">{card.contact?.phone || '+1 800 555 0192'}</strong>
             </div>
-            <div className="flex justify-between border-b border-slate-100 pb-0.5">
-              <span className="text-slate-500 font-bold">Email:</span>
-              <strong className="text-slate-900 truncate max-w-[170px]">{card.contact?.email || 'amy.williams@logohouse.com'}</strong>
+            <div className="flex items-start justify-between border-b border-slate-100 pb-0.5">
+              <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Email:</span>
+              <strong className="text-slate-900 break-all text-[8.5px] leading-tight text-right flex-1">{card.contact?.email || 'info@appletreeinfotech.in'}</strong>
             </div>
-            <div className="flex justify-between text-[8.5px] pt-0.5 text-slate-500 font-semibold">
-              <span>Join: {card.personal?.issueDate || '00-00-2021'}</span>
-              <span>Expire: {card.personal?.validUntil || card.personal?.expiryDate || '12-2028'}</span>
+            <div className="flex justify-between text-[9px] pt-0.5 text-slate-600 font-bold font-mono">
+              <span>Date of Issue:</span>
+              <span className="text-slate-900">{card.personal?.issueDate || '01-01-2024'}</span>
             </div>
           </div>
 
@@ -451,8 +450,8 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
               <span className="font-semibold">{card.contact?.phone || '123 456 789'}</span>
             </div>
             <div className="flex border-b border-slate-100 pb-1">
-              <span className="w-20 font-black text-slate-900">E-mail:</span>
-              <span className="font-semibold truncate">{card.contact?.email || 'youridhere'}</span>
+              <span className="w-20 font-black text-slate-900 flex-shrink-0">E-mail:</span>
+              <span className="font-semibold break-all text-[11px] leading-tight flex-1">{card.contact?.email || 'info@appletreeinfotech.in'}</span>
             </div>
             <div className="flex">
               <span className="w-20 font-black text-slate-900">Blood G:</span>
@@ -513,7 +512,7 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
             {card.personal?.jobTitle || 'CREATIVE MANAGER'}
           </p>
 
-          <div className="space-y-1 text-xs font-semibold text-slate-700 mt-3 text-left w-full max-w-[210px] leading-normal">
+          <div className="space-y-1 text-xs font-semibold text-slate-700 mt-3 text-left w-full max-w-[220px] leading-normal">
             <div className="flex justify-between">
               <span className="text-slate-900 font-bold">ID No</span>
               <span>: {card.personal?.idNumber || '000 000 000'}</span>
@@ -522,9 +521,9 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
               <span className="text-slate-900 font-bold">DOB</span>
               <span>: {card.personal?.dob || 'MM/DD/YEAR'}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-900 font-bold">Email</span>
-              <span className="truncate">: {card.contact?.email || 'youremail@here'}</span>
+            <div className="flex items-start justify-between">
+              <span className="text-slate-900 font-bold flex-shrink-0 mr-2">Email:</span>
+              <span className="break-all text-[10px] leading-tight text-right flex-1">{card.contact?.email || 'info@appletreeinfotech.in'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-900 font-bold">Phone</span>
@@ -597,10 +596,10 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
               <span className="mr-3 font-black">:</span>
               <span className="font-semibold truncate">{card.personal?.dob || '06/08/16'}</span>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-start">
               <span className="w-20 font-black text-[#0b1d3a] flex-shrink-0">Email</span>
               <span className="mr-3 font-black">:</span>
-              <span className="font-semibold truncate">{card.contact?.email || 'Austinortiz@gmail.com'}</span>
+              <span className="font-semibold break-all text-[11px] leading-tight flex-1">{card.contact?.email || 'info@appletreeinfotech.in'}</span>
             </div>
             <div className="flex items-center">
               <span className="w-20 font-black text-[#0b1d3a] flex-shrink-0">Phone</span>

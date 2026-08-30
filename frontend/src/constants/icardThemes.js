@@ -873,24 +873,24 @@ export const INITIAL_CARD_DATA = {
     gender: "Male",
     dob: "01-10-21",
     jobTitle: "GRAPHIC DESIGNER",
-    organization: "COMPANY NAME",
+    organization: "Appletree Infotech",
     department: "CREATIVE LABS",
     idNumber: "1234567890",
-    validUntil: "00-00-0000",
-    issueDate: "00-00-0000",
-    expiryDate: "00-00-0000",
+    validUntil: "01-01-2024",
+    issueDate: "01-01-2024",
+    expiryDate: "01-01-2024",
     bloodGroup: "AB+",
-    emergencyContact: "123 456 789",
-    bio: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt aliquam erat.",
+    emergencyContact: "+91 98765 43210",
+    bio: "Passionate designer and developer working on high-quality web, mobile, and print digital assets.",
     termsAndConditions: [
-      "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt aliquam erat.",
-      "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt aliquam erat.",
-      "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt aliquam erat.",
-      "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt aliquam erat."
+      "This card is the property of Appletree Infotech and must be returned upon request.",
+      "Holder must visibly wear this badge at all times on corporate facilities.",
+      "Scan genuine QR code on back for instant cryptographic validation.",
+      "Loss or theft of this card must be reported immediately."
     ],
-    directorName: "Director",
-    signatureText: "Sign here",
-    tagline: "TAGLINE HERE",
+    directorName: "Authorized Signatory",
+    signatureText: "Authorized Signatory",
+    tagline: "INNOVATING THE FUTURE",
     skills: ["Branding", "Vector UI", "Print Design", "Identity"]
   },
   media: {
@@ -901,11 +901,11 @@ export const INITIAL_CARD_DATA = {
     coverBannerUrl: ""
   },
   contact: {
-    email: "youridhere",
+    email: "info@appletreeinfotech.in",
     phone: "123 456 789",
-    website: "www.yourcompany.com",
-    location: "North Street Avenue 90",
-    address: "North Street Avenue 90"
+    website: "www.appletreeinfotech.in",
+    location: "C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad.",
+    address: "C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad."
   },
   socials: {
     github: "christian-martin",

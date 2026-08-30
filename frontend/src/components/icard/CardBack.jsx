@@ -144,16 +144,16 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
                 <strong className="text-[#071d36] font-black">{card.personal?.idNumber || 'JHV-9048-X'}</strong>
               </div>
               <div className="flex justify-between border-b border-slate-200/80 pb-1">
-                <span className="text-slate-500 font-bold">Issue / Valid:</span>
-                <strong className="text-[#071d36]">{card.personal?.issueDate || '01-01-2024'} – {card.personal?.validUntil || card.personal?.expiryDate || '12-2028'}</strong>
+                <span className="text-slate-500 font-bold">Date of Issue:</span>
+                <strong className="text-[#071d36]">{card.personal?.issueDate || '01-01-2024'}</strong>
               </div>
               <div className="flex justify-between border-b border-slate-200/80 pb-1">
                 <span className="text-slate-500 font-bold">Emergency Phone:</span>
                 <strong className="text-[#071d36]">{card.contact?.phone || '+91 98765 43210'}</strong>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500 font-bold">Official Email:</span>
-                <strong className="text-[#071d36] truncate max-w-[170px]">{card.contact?.email || 'alex@jobhive.app'}</strong>
+              <div className="flex items-start justify-between">
+                <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Official Email:</span>
+                <strong className="text-[#071d36] break-all text-[9.5px] leading-tight text-right flex-1">{card.contact?.email || 'info@appletreeinfotech.in'}</strong>
               </div>
             </div>
 
@@ -209,8 +209,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
                   <span className="text-[#071d36]">{card.personal?.idNumber || 'JHV-9048'}</span>
                 </div>
                 <div className="flex justify-between border-b border-slate-100 pb-0.5">
-                  <span className="text-slate-500">Valid Until:</span>
-                  <span className="text-[#071d36]">{card.personal?.validUntil || '12-2028'}</span>
+                  <span className="text-slate-500">Date of Issue:</span>
+                  <span className="text-[#071d36]">{card.personal?.issueDate || '01-01-2024'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Emergency:</span>
@@ -292,16 +292,16 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
               <strong className="text-[#1b1c3a] font-mono">{card.security?.barcodeNumber || card.personal?.idNumber || '89845653208871'}</strong>
             </div>
             <div className="flex justify-between border-b border-slate-200/60 pb-0.5">
-              <span className="text-slate-500 font-bold">Issue / Expiry:</span>
-              <strong className="text-[#1b1c3a]">{card.personal?.issueDate || '01/01/2024'} – {card.personal?.validUntil || card.personal?.expiryDate || '12/2028'}</strong>
+              <span className="text-slate-500 font-bold">Date of Issue:</span>
+              <strong className="text-[#1b1c3a]">{card.personal?.issueDate || '01/01/2024'}</strong>
             </div>
             <div className="flex justify-between border-b border-slate-200/60 pb-0.5">
               <span className="text-slate-500 font-bold">Emergency Hotline:</span>
               <strong className="text-[#1b1c3a]">{card.contact?.phone || '+1 800 555 0192'}</strong>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500 font-bold">Headquarters:</span>
-              <strong className="text-[#1b1c3a] truncate max-w-[170px]">{card.contact?.address || '450 Corporate Plaza, Suite 400'}</strong>
+            <div className="flex items-start justify-between">
+              <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Office Address:</span>
+              <strong className="text-[#1b1c3a] break-words text-[9px] leading-tight text-right flex-1">{card.contact?.address || 'C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad.'}</strong>
             </div>
           </div>
         </div>
@@ -362,12 +362,12 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
               <strong className="text-[#0077b6] font-black">{card.personal?.idNumber || 'JHV-01930'}</strong>
             </div>
             <div className="flex justify-between border-b border-slate-200/80 pb-0.5">
-              <span className="text-slate-500 font-bold">Valid Period:</span>
-              <strong className="text-slate-900">{card.personal?.issueDate || '01-01-2024'} – {card.personal?.validUntil || '12-2028'}</strong>
+              <span className="text-slate-500 font-bold">Date of Issue:</span>
+              <strong className="text-slate-900">{card.personal?.issueDate || '01-01-2024'}</strong>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500 font-bold">Contact Email:</span>
-              <strong className="text-slate-900 truncate max-w-[160px]">{card.contact?.email || 'alex@jobhive.app'}</strong>
+            <div className="flex items-start justify-between">
+              <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Contact Email:</span>
+              <strong className="text-slate-900 break-all text-[9px] leading-tight text-right flex-1">{card.contact?.email || 'info@appletreeinfotech.in'}</strong>
             </div>
           </div>
         </div>
@@ -416,8 +416,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
               <strong className="text-[#071d36]">{card.personal?.organization || 'JobHive Real Estate'}</strong>
             </div>
             <div className="flex justify-between border-b border-slate-100 pb-0.5">
-              <span className="text-slate-500 font-bold">Validity:</span>
-              <strong className="text-[#071d36]">{card.personal?.validUntil || '12/2028'}</strong>
+              <span className="text-slate-500 font-bold">Date of Issue:</span>
+              <strong className="text-[#071d36]">{card.personal?.issueDate || '01-01-2024'}</strong>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500 font-bold">Emergency Hotline:</span>
@@ -481,8 +481,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
               <strong className="text-[#0066cc]">{card.personal?.idNumber || 'JHV-9048'}</strong>
             </div>
             <div className="flex justify-between border-b border-slate-200/80 pb-0.5">
-              <span className="text-slate-500 font-bold">Valid Period:</span>
-              <strong className="text-slate-900">{card.personal?.issueDate || '01-01-2024'} – {card.personal?.validUntil || '12-2028'}</strong>
+              <span className="text-slate-500 font-bold">Date of Issue:</span>
+              <strong className="text-slate-900">{card.personal?.issueDate || '01-01-2024'}</strong>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500 font-bold">Emergency Phone:</span>
@@ -541,8 +541,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
               <strong className="text-[#0284c7]">{card.personal?.idNumber || 'JHV-9048'}</strong>
             </div>
             <div className="flex justify-between border-b border-slate-200/80 pb-0.5">
-              <span className="text-slate-500 font-bold">Valid Until:</span>
-              <strong className="text-slate-900">{card.personal?.validUntil || '12/2028'}</strong>
+              <span className="text-slate-500 font-bold">Date of Issue:</span>
+              <strong className="text-slate-900">{card.personal?.issueDate || '01-01-2024'}</strong>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500 font-bold">Emergency Phone:</span>
@@ -608,20 +608,20 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
 
           <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-1 text-[10px] text-slate-700 font-mono">
             <div className="flex justify-between border-b border-slate-200/60 pb-0.5">
-              <span className="text-slate-500 font-bold">Issue / Expiry:</span>
-              <strong className="text-[#0b1d3a]">{card.personal?.issueDate || '06/08/16'} – {card.personal?.validUntil || '06/08/26'}</strong>
+              <span className="text-slate-500 font-bold">Date of Issue:</span>
+              <strong className="text-[#0b1d3a]">{card.personal?.issueDate || '06/08/16'}</strong>
             </div>
             <div className="flex justify-between border-b border-slate-200/60 pb-0.5">
               <span className="text-slate-500 font-bold">Emergency Phone:</span>
               <strong className="text-[#0b1d3a]">{card.contact?.phone || '+91 98765 43210'}</strong>
             </div>
-            <div className="flex justify-between border-b border-slate-200/60 pb-0.5">
-              <span className="text-slate-500 font-bold">Official Email:</span>
-              <strong className="text-[#0b1d3a] truncate max-w-[160px]">{card.contact?.email || 'Austinortiz@gmail.com'}</strong>
+            <div className="flex items-start justify-between border-b border-slate-200/60 pb-0.5">
+              <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Official Email:</span>
+              <strong className="text-[#0b1d3a] break-all text-[9px] leading-tight text-right flex-1">{card.contact?.email || 'info@appletreeinfotech.in'}</strong>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500 font-bold">Headquarters:</span>
-              <strong className="text-[#0b1d3a] truncate max-w-[160px]">{card.contact?.address || '100 Financial Way, Tower 1'}</strong>
+            <div className="flex items-start justify-between">
+              <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Office Address:</span>
+              <strong className="text-[#0b1d3a] break-words text-[9px] leading-tight text-right flex-1">{card.contact?.address || 'C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad.'}</strong>
             </div>
           </div>
 
@@ -703,8 +703,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
 
         <div className="grid grid-cols-2 gap-2 text-[9px] text-slate-400 pt-0.5">
           <div>
-            <span className="text-slate-500 block">Valid Period</span>
-            <span className="text-slate-200 font-bold">{card.personal?.issueDate || '01/2024'} – {card.personal?.validUntil || '12/2028'}</span>
+            <span className="text-slate-500 block">Date of Issue</span>
+            <span className="text-slate-200 font-bold">{card.personal?.issueDate || '01/2024'}</span>
           </div>
           <div>
             <span className="text-slate-500 block">Emergency Phone</span>

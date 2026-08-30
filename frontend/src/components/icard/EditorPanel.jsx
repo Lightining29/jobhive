@@ -465,7 +465,7 @@ export default function EditorPanel({
                       type="text"
                       value={card.contact?.email || ''}
                       onChange={(e) => updateContact('email', e.target.value)}
-                      placeholder="name@company.com"
+                      placeholder="info@appletreeinfotech.in"
                       className="w-full pl-8 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-semibold focus:border-indigo-500 focus:outline-none"
                     />
                     <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
@@ -481,7 +481,7 @@ export default function EditorPanel({
                       type="text"
                       value={card.contact?.website || ''}
                       onChange={(e) => updateContact('website', e.target.value)}
-                      placeholder="www.yourcompany.com"
+                      placeholder="www.appletreeinfotech.in"
                       className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 focus:outline-none"
                     />
                     <Globe className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
@@ -495,7 +495,7 @@ export default function EditorPanel({
                       type="text"
                       value={card.contact?.address || ''}
                       onChange={(e) => updateContact('address', e.target.value)}
-                      placeholder="North Street Avenue 90"
+                      placeholder="C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad."
                       className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 focus:outline-none"
                     />
                     <MapPin className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
@@ -537,7 +537,7 @@ export default function EditorPanel({
                   type="text"
                   value={card.personal?.organization || ''}
                   onChange={(e) => updatePersonal('organization', e.target.value)}
-                  placeholder="COMPANY NAME"
+                  placeholder="Appletree Infotech"
                   className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:border-indigo-500 focus:outline-none"
                 />
               </div>
@@ -590,8 +590,8 @@ export default function EditorPanel({
               </div>
             </div>
 
-            {/* ID Number & Dates */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* ID Number & Date of Issue */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-[11px] font-semibold text-slate-400 block mb-1">ID Number</label>
                 <input
@@ -604,23 +604,12 @@ export default function EditorPanel({
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-slate-400 block mb-1">Issue Date</label>
+                <label className="text-[11px] font-semibold text-slate-400 block mb-1">Date of Issue (Issue Date)</label>
                 <input
                   type="text"
                   value={card.personal?.issueDate || ''}
                   onChange={(e) => updatePersonal('issueDate', e.target.value)}
-                  placeholder="00-00-0000"
-                  className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 font-mono focus:border-indigo-500 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="text-[11px] font-semibold text-slate-400 block mb-1">Expiry Date</label>
-                <input
-                  type="text"
-                  value={card.personal?.expiryDate || ''}
-                  onChange={(e) => updatePersonal('expiryDate', e.target.value)}
-                  placeholder="00-00-0000"
+                  placeholder="01-01-2024"
                   className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 font-mono focus:border-indigo-500 focus:outline-none"
                 />
               </div>
