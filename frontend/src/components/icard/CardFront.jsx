@@ -208,17 +208,16 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
           </p>
         </div>
 
-        {/* Bottom Barcode with Bottom Left Yellow Angle */}
-        <div className="relative pb-4 px-6 flex items-center justify-center z-20">
+        {/* Bottom Left Yellow Angle (Barcode Removed) */}
+        <div className="relative pb-5 px-6 flex items-center justify-center z-20">
           <div className="absolute bottom-0 left-0 w-24 h-24 pointer-events-none">
             <svg viewBox="0 0 100 100" className="w-full h-full">
               <polygon points="0,50 100,100 0,100" fill="#fde68a" />
               <polygon points="0,75 100,100 0,100" fill="#e2e8f0" opacity="0.8" />
             </svg>
           </div>
-
-          <div className="relative z-10">
-            <Barcode number={card.security?.barcodeNumber || "89845653208871"} height="h-9" textColor="text-[#1b1c3a]" />
+          <div className="relative z-10 text-[9px] font-mono font-bold text-slate-500 tracking-widest uppercase">
+            AUTHENTICATED BADGE
           </div>
         </div>
       </div>
@@ -233,58 +232,33 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
       <div
         id={id}
         className="relative w-full h-full select-none overflow-hidden flex flex-col justify-between bg-white text-slate-900 shadow-2xl rounded-2xl p-0"
-        style={{ fontFamily: "'Montserrat', sans-serif" }}
+        style={{ fontFamily: "'Outfit', sans-serif" }}
       >
-        <div className="absolute top-0 left-0 right-0 h-44 overflow-hidden pointer-events-none z-10">
-          <svg viewBox="0 0 400 180" className="w-full h-full object-cover" preserveAspectRatio="none">
-            <path d="M0,0 L400,0 L400,90 C300,150 150,20 0,130 Z" fill="#0077b6" />
-            <path d="M0,0 L260,0 C190,70 80,20 0,150 Z" fill="#00b4d8" opacity="0.85" />
-            <path d="M0,20 C120,90 280,10 400,60 L400,0 L0,0 Z" fill="#03045e" opacity="0.75" />
-          </svg>
-        </div>
-
-        <div className="relative z-20 flex justify-end items-center pt-4 pr-5">
-          <div className="text-right">
-            <div className="flex items-center justify-end gap-1.5">
-              <div className="w-5 h-5 rounded-md bg-[#00b4d8] transform rotate-45 flex items-center justify-center shadow">
-                <div className="w-2.5 h-2.5 rounded-sm bg-white" />
-              </div>
-              <span className="text-xs font-black text-slate-900 tracking-wider leading-normal">
-                {card.personal?.organization || 'LOGO NAME'}
-              </span>
-            </div>
-            <span className="text-[9px] text-slate-500 font-medium block leading-normal">
-              {card.personal?.tagline || 'Slogan Goes Here'}
+        <div className="relative z-10 flex items-center justify-between p-5 pb-0">
+          <div className="flex items-center gap-1.5 text-[#0077b6]">
+            <Layers className="w-5 h-5" />
+            <span className="text-xs font-black tracking-widest uppercase font-mono">
+              {card.personal?.organization || 'COMPANY LOGO'}
             </span>
           </div>
         </div>
 
-        <div className="relative z-20 flex flex-col items-center my-auto pt-1 px-5">
-          <div className="w-24 h-24 rounded-full p-1 bg-white shadow-2xl mb-2">
+        <div className="relative z-10 flex flex-col items-center text-center my-auto py-1 px-5">
+          <div className="w-28 h-28 rounded-full p-1 bg-gradient-to-tr from-[#0077b6] to-[#00b4d8] shadow-2xl mb-2">
             <img
-              src={card.media?.avatarUrl || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&auto=format&fit=crop&q=80"}
+              src={card.media?.avatarUrl || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&auto=format&fit=crop&q=80"}
               alt="Avatar"
               className="w-full h-full object-cover rounded-full"
               crossOrigin="anonymous"
             />
           </div>
 
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase truncate max-w-full leading-normal">
+          <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight truncate max-w-full leading-normal">
             {card.personal?.fullName || 'ANNA ROE'}
           </h2>
-          <p className="text-xs font-bold text-[#0077b6] tracking-wider mt-0.5 leading-normal">
-            {card.personal?.jobTitle || 'Web Developer'}
+          <p className="text-xs font-bold text-[#0077b6] tracking-wider uppercase mt-0.5 leading-normal">
+            {card.personal?.jobTitle || 'UI/UX DESIGNER'}
           </p>
-
-          <div className="w-48 h-[1.5px] bg-slate-200 my-2" />
-
-          <p className="text-xs font-extrabold text-slate-800 font-mono leading-normal">
-            ID : {card.personal?.idNumber || '01930381085'}
-          </p>
-
-          <div className="flex items-center gap-3 text-[10px] text-slate-600 font-mono mt-1 font-semibold leading-normal">
-            <span>Date of Issue: <strong className="text-slate-900">{card.personal?.issueDate || '01-01-2024'}</strong></span>
-          </div>
 
           <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[9.5px] text-slate-700 font-mono mt-2 pt-2 border-t border-slate-100 w-full max-w-[280px] leading-normal">
             <div><span className="text-slate-400 font-bold">P:</span> <span className="font-semibold">{card.contact?.phone || '7503962162'}</span></div>
@@ -293,7 +267,23 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
               <span className="text-slate-400 font-bold mr-1 flex-shrink-0">E:</span>
               <span className={`whitespace-nowrap overflow-hidden text-ellipsis font-normal text-slate-800 flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>{card.contact?.email || 'info@appletreeinfotech.in'}</span>
             </div>
-            <div><span className="text-slate-400 font-bold">Blood:</span> <span className="font-semibold">{card.personal?.bloodGroup || 'O+'}</span></div>
+            <div className="col-span-2 flex justify-between text-[9px] pt-0.5 text-slate-600 font-bold font-mono">
+              <span>Date of Issue:</span>
+              <span className="text-slate-900">{card.personal?.issueDate || '01-01-2024'}</span>
+            </div>
+          </div>
+
+          <div className="mt-1 -translate-y-0.5 text-center flex flex-col items-center">
+            <span className="text-[8.5px] text-slate-400 block font-mono font-bold">Signature:</span>
+            <div className="py-0.5">
+              <img
+                src={card.media?.signatureUrl || "/assets/signature.png"}
+                alt="Authorized Signature"
+                className="h-14 max-w-[170px] object-contain drop-shadow-md scale-110"
+                crossOrigin="anonymous"
+              />
+            </div>
+            <div className="w-36 h-[1.5px] bg-slate-300 mx-auto mt-0.5" />
           </div>
         </div>
 
@@ -383,7 +373,7 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
               <img
                 src={card.media?.signatureUrl || "/assets/signature.png"}
                 alt="Authorized Signature"
-                className="h-12 max-w-[160px] object-contain drop-shadow-md scale-105"
+                className="h-16 max-w-[160px] object-contain drop-shadow-md scale-110"
                 crossOrigin="anonymous"
               />
             </div>
@@ -544,8 +534,10 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
           </div>
         </div>
 
-        <div className="relative z-20 pb-4 px-5 flex items-center justify-between">
-          <Barcode number={card.security?.barcodeNumber || "000000000"} height="h-8" textColor="text-slate-700" />
+        <div className="relative z-20 pb-5 px-5 flex items-center justify-between">
+          <div className="text-[9px] font-mono font-bold text-slate-400 uppercase">
+            SECURE ID
+          </div>
           
           <div className="w-20 h-14 absolute bottom-0 right-0 pointer-events-none">
             <svg viewBox="0 0 100 80" className="w-full h-full">

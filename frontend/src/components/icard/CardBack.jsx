@@ -59,18 +59,18 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
     </div>
   );
 
-  // Signature Renderer using Certificate Signature asset (Big Size)
+  // Signature Renderer using Certificate Signature asset (Big Size & Upward Positioned)
   const SignatureBlock = ({ label = "Authorized Signature", customClass = "", darkBg = false, size = "large" }) => {
     const signatureSrc = card.media?.signatureUrl || "/assets/signature.png";
     const imgHeight = size === "xlarge" ? "h-16 sm:h-20 max-w-[210px]" : size === "compact" ? "h-10 max-w-[140px]" : "h-12 sm:h-14 max-w-[180px]";
     const lineWidth = size === "xlarge" ? "w-48" : size === "compact" ? "w-28" : "w-40";
 
     return (
-      <div className={`text-left ${customClass}`}>
+      <div className={`text-left -mt-1.5 -translate-y-1 ${customClass}`}>
         <span className={`text-[8px] font-mono block uppercase font-bold tracking-wider mb-0.5 ${darkBg ? 'text-slate-400' : 'text-slate-500'}`}>
           {label}
         </span>
-        <div className="py-1 flex items-center">
+        <div className="py-0.5 flex items-center">
           <img
             src={signatureSrc}
             alt="Authorized Signature"
@@ -78,7 +78,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             crossOrigin="anonymous"
           />
         </div>
-        <div className={`${lineWidth} h-[1.5px] mt-1 ${darkBg ? 'bg-slate-700' : 'bg-slate-400/80'}`} />
+        <div className={`${lineWidth} h-[1.5px] mt-0.5 ${darkBg ? 'bg-slate-700' : 'bg-slate-400/80'}`} />
       </div>
     );
   };
@@ -94,56 +94,56 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
           className="relative w-full h-full select-none overflow-hidden flex flex-col justify-between bg-white text-slate-900 shadow-2xl rounded-3xl p-0"
           style={{ fontFamily: "'Montserrat', 'Inter', sans-serif" }}
         >
-          {/* Top Header Bar */}
+          {/* Top Diagonal Header Bar */}
           <div className="relative h-14 bg-[#071d36] flex items-center justify-between px-6 text-white overflow-hidden flex-shrink-0">
-            <span className="text-xs font-black tracking-[0.25em] uppercase font-mono relative z-10">
-              {card.personal?.organization || 'JOBHIVE INC.'}
+            <span className="text-xs font-black tracking-[0.2em] uppercase font-mono relative z-10">
+              {card.personal?.organization || 'COMPANY NAME'}
             </span>
-            <div className="flex items-center gap-1.5 text-cyan-400 font-mono text-[10px] font-bold relative z-10">
-              <ShieldCheck className="w-4 h-4" />
+            <div className="flex items-center gap-1 text-cyan-300 font-mono text-[10px] font-bold relative z-10">
+              <ShieldCheck className="w-4 h-4 text-[#0077b6]" />
               <span>OFFICIAL ID</span>
             </div>
+
+            {/* Geometric Vector Corner */}
             <svg viewBox="0 0 120 56" className="absolute top-0 right-0 w-32 h-full pointer-events-none" preserveAspectRatio="none">
               <polygon points="35,0 120,0 120,56 0,56" fill="#0077b6" />
             </svg>
           </div>
 
-          {/* Core Content Area */}
+          {/* Main Body Content */}
           <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
-            {/* Terms of Use */}
+            {/* Terms & Usage Info */}
             <div>
-              <div className="flex items-center justify-between border-b border-slate-200 pb-1 mb-1.5">
-                <h4 className="text-xs font-black text-[#071d36] uppercase tracking-wider flex items-center gap-1.5">
-                  <Award className="w-3.5 h-3.5 text-[#0077b6]" />
-                  <span>Terms & Verification Guidelines</span>
-                </h4>
-                <span className="text-[9px] font-mono font-bold text-emerald-600">VERIFIED</span>
-              </div>
-              <ul className="space-y-1 text-[9.5px] text-slate-700 leading-tight list-disc pl-4 font-medium">
-                <li>This card is non-transferable and remains property of {card.personal?.organization || 'JobHive'}.</li>
-                <li>Holder must present this badge upon request to facility security.</li>
-                <li>Scan the authentic QR code below for instant cryptographic verification.</li>
+              <h4 className="text-xs font-black text-[#071d36] uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#0077b6]" />
+                <span>TERMS & CONDITIONS</span>
+              </h4>
+              <ul className="space-y-1 text-[9.5px] text-slate-600 leading-tight list-disc pl-4 font-medium">
+                <li>This card is property of {card.personal?.organization || 'the company'} and must be returned upon request.</li>
+                <li>Loss of this card must be immediately reported to HR / Administration.</li>
+                <li>Holder is bound by the rules and regulations of the institution.</li>
               </ul>
             </div>
 
-            {/* BIG CENTERED QR CODE */}
-            <div className="flex flex-col items-center justify-center my-auto py-1">
-              <div className="p-3 rounded-2xl bg-white shadow-xl border-2 border-blue-500/40 flex flex-col items-center group hover:scale-105 transition-transform">
-                <QRCodeSVG value={qrValue} size={115} level="H" fgColor="#071d36" bgColor="#ffffff" />
-                <div className="mt-1.5 flex items-center gap-1 text-[8.5px] font-mono font-black text-[#071d36] tracking-wider uppercase">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                  <span>SCAN TO VERIFY ID</span>
-                </div>
+            {/* Centered High-Res QR Verification Badge */}
+            <div className="flex flex-col items-center justify-center my-auto">
+              <div className="p-3 rounded-2xl bg-white shadow-xl border-2 border-[#0077b6]/40 flex flex-col items-center group hover:scale-105 transition-transform">
+                <QRCodeSVG
+                  value={qrValue}
+                  size={115}
+                  level="H"
+                  fgColor="#071d36"
+                  bgColor="#ffffff"
+                />
+                <span className="text-[8.5px] font-mono font-black text-[#071d36] uppercase mt-1">
+                  SCAN TO VERIFY CREDENTIAL
+                </span>
               </div>
             </div>
 
-            {/* Comprehensive Info Ledger */}
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-1 text-[10px] text-slate-800 font-mono">
-              <div className="flex justify-between border-b border-slate-200/80 pb-1">
-                <span className="text-slate-500 font-bold">Credential ID:</span>
-                <strong className="text-[#071d36] font-black">{card.personal?.idNumber || 'JHV-9048-X'}</strong>
-              </div>
-              <div className="flex justify-between border-b border-slate-200/80 pb-1">
+            {/* Office Contact Details */}
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-1 text-[10px] text-slate-700 font-mono">
+              <div className="flex justify-between border-b border-slate-200/80 pb-0.5">
                 <span className="text-slate-500 font-bold">Date of Issue:</span>
                 <strong className="text-[#071d36]">{card.personal?.issueDate || '01-01-2024'}</strong>
               </div>
@@ -157,10 +157,9 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
               </div>
             </div>
 
-            {/* Authorized Signature & Barcode */}
-            <div className="pt-2 border-t border-slate-200 flex items-end justify-between">
-              <SignatureBlock label="Authorized Signature" />
-              <Barcode number={card.security?.barcodeNumber || "1234567890"} height="h-6" textColor="text-[#071d36]" />
+            {/* Authorized Signature (Moved Upward, Barcode Removed) */}
+            <div className="pt-1.5 border-t border-slate-200 flex items-center justify-start">
+              <SignatureBlock label="Authorized Signature" size="large" />
             </div>
           </div>
 
@@ -174,65 +173,56 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
       );
     }
 
-    // Horizontal Layout
+    // Horizontal Corporate Diagonal Back
     return (
       <div
         id={id}
-        className="relative w-full h-full select-none overflow-hidden flex bg-white text-slate-900 shadow-2xl rounded-2xl p-0"
+        className="relative w-full h-full select-none overflow-hidden flex flex-col justify-between bg-white text-slate-900 shadow-2xl rounded-3xl p-0"
         style={{ fontFamily: "'Montserrat', 'Inter', sans-serif" }}
       >
-        <div className="w-14 sm:w-16 bg-[#071d36] flex items-center justify-center relative overflow-hidden flex-shrink-0">
-          <span className="transform -rotate-90 whitespace-nowrap text-white font-black text-xs sm:text-sm tracking-[0.25em] uppercase font-mono leading-normal">
-            IDENTITY CARD
+        <div className="relative h-10 bg-[#071d36] flex items-center justify-between px-6 text-white overflow-hidden flex-shrink-0">
+          <span className="text-xs font-black tracking-[0.2em] uppercase font-mono relative z-10">
+            {card.personal?.organization || 'COMPANY NAME'}
           </span>
+          <span className="text-cyan-300 font-mono text-[9px] font-bold relative z-10">AUTHENTIC ID CARD</span>
         </div>
 
-        <div className="flex-1 min-w-0 flex flex-col justify-between p-4">
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-1">
-              <h3 className="text-xs font-black text-[#071d36] uppercase tracking-tight">
-                Terms & Conditions
-              </h3>
-              <span className="text-[9px] font-mono font-bold text-emerald-600 uppercase flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" /> Authentic
-              </span>
-            </div>
-            
-            <p className="text-[9px] text-slate-600 leading-relaxed font-medium">
-              This card is non-transferable property of {card.personal?.organization || 'JobHive'}. Scan QR code for instant live validation.
-            </p>
+        <div className="p-4 flex-1 flex flex-col justify-between">
+          <div className="grid grid-cols-12 gap-3 items-center">
+            {/* Terms List */}
+            <div className="col-span-7 space-y-1">
+              <h5 className="text-[10px] font-black text-[#071d36] uppercase tracking-wider">
+                Guidelines & Instructions
+              </h5>
+              <p className="text-[8.5px] text-slate-600 leading-tight font-medium">
+                This credential is the property of the organization. Found cards should be reported to the security desk or administration immediately.
+              </p>
 
-            <div className="grid grid-cols-12 gap-3 items-center pt-1">
-              <div className="col-span-7 space-y-1 text-[9.5px] font-bold text-slate-800 font-mono">
-                <div className="flex justify-between border-b border-slate-100 pb-0.5">
-                  <span className="text-slate-500">ID Number:</span>
-                  <span className="text-[#071d36]">{card.personal?.idNumber || 'JHV-9048'}</span>
-                </div>
-                <div className="flex justify-between border-b border-slate-100 pb-0.5">
+              <div className="pt-1 space-y-0.5 text-[8.5px] font-mono text-slate-700">
+                <div className="flex justify-between">
                   <span className="text-slate-500">Date of Issue:</span>
-                  <span className="text-[#071d36]">{card.personal?.issueDate || '01-01-2024'}</span>
+                  <span className="text-[#071d36] font-bold">{card.personal?.issueDate || '01-01-2024'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Phone:</span>
                   <span className="text-[#071d36] truncate">{card.contact?.officePhone || card.contact?.phone || '7503962162'}</span>
                 </div>
               </div>
+            </div>
 
-              {/* Big Centered QR */}
-              <div className="col-span-5 flex flex-col items-center">
-                <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 shadow-md flex flex-col items-center">
-                  <QRCodeSVG value={qrValue} size={68} level="H" fgColor="#071d36" bgColor="#ffffff" />
-                  <span className="text-[7px] font-mono font-black text-[#071d36] uppercase mt-0.5">
-                    Scan to Verify
-                  </span>
-                </div>
+            {/* Big Centered QR */}
+            <div className="col-span-5 flex flex-col items-center">
+              <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 shadow-md flex flex-col items-center">
+                <QRCodeSVG value={qrValue} size={68} level="H" fgColor="#071d36" bgColor="#ffffff" />
+                <span className="text-[7px] font-mono font-black text-[#071d36] uppercase mt-0.5">
+                  Scan to Verify
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 flex items-end justify-between">
-            <SignatureBlock label="Authorized Signature" />
-            <Barcode number={card.security?.barcodeNumber || "1234567890"} height="h-5" textColor="text-[#071d36]" />
+          <div className="pt-1.5 border-t border-slate-100 flex items-center justify-start">
+            <SignatureBlock label="Authorized Signature" size="compact" />
           </div>
         </div>
       </div>
@@ -306,10 +296,9 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
           </div>
         </div>
 
-        {/* Footer with Signature on Left, Barcode on Right */}
-        <div className="pb-4 px-6 pt-2 border-t border-slate-100 flex items-end justify-between relative z-20">
-          <SignatureBlock label="Authorized Signature" />
-          <Barcode number={card.security?.barcodeNumber || "89845653208871"} height="h-6" textColor="text-[#1b1c3a]" />
+        {/* Footer with Signature (Upward, Barcode Removed) */}
+        <div className="pb-3 px-6 pt-1.5 border-t border-slate-100 flex items-center justify-start relative z-20">
+          <SignatureBlock label="Authorized Signature" size="large" />
         </div>
       </div>
     );
@@ -375,9 +364,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-200 flex items-end justify-between">
-            <SignatureBlock label="Authorized Signature" />
-            <Barcode number={card.security?.barcodeNumber || "01930381085"} height="h-6" showDigits={false} textColor="text-[#0077b6]" />
+          <div className="pt-1.5 border-t border-slate-200 flex items-center justify-start">
+            <SignatureBlock label="Authorized Signature" size="large" />
           </div>
         </div>
       </div>
@@ -497,9 +485,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 flex items-end justify-between">
-            <SignatureBlock label="Authorized Signature" />
-            <Barcode number={card.security?.barcodeNumber || "1234567890"} height="h-5" textColor="text-[#0066cc]" />
+          <div className="pt-1.5 border-t border-slate-100 flex items-center justify-start">
+            <SignatureBlock label="Authorized Signature" size="large" />
           </div>
         </div>
       </div>
@@ -557,9 +544,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 flex items-end justify-between">
-            <SignatureBlock label="Authorized Signature" />
-            <Barcode number={card.security?.barcodeNumber || "9840219483"} height="h-5" textColor="text-[#0284c7]" />
+          <div className="pt-1.5 border-t border-slate-100 flex items-center justify-start">
+            <SignatureBlock label="Authorized Signature" size="large" />
           </div>
         </div>
       </div>
@@ -632,9 +618,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 flex items-end justify-between">
-            <SignatureBlock label="Authorized Signature" />
-            <Barcode number={card.security?.barcodeNumber || "0000060816"} height="h-6" showDigits={true} textColor="text-[#0b1d3a]" />
+          <div className="pt-1.5 border-t border-slate-100 flex items-center justify-start">
+            <SignatureBlock label="Authorized Signature" size="large" />
           </div>
         </div>
 
@@ -661,7 +646,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-800/40 to-transparent opacity-50" />
       </div>
 
-      {/* Signature Strip (Large) */}
+      {/* Signature Strip (Large & Elevated) */}
       <div className="space-y-1.5 my-1">
         <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 uppercase tracking-wider font-bold">
           <span>Authorized Cardholder Signature</span>
@@ -720,7 +705,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
         </div>
       </div>
 
-      {/* Bottom Barcode & Telemetry Strip */}
+      {/* Bottom Telemetry Strip */}
       <div className="flex justify-between items-center border-t border-slate-800/80 pt-2 text-xs font-mono">
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -728,8 +713,9 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             {card.security?.badgeLabel || 'ACTIVE CREDENTIAL'}
           </span>
         </div>
-
-        <Barcode number={card.security?.barcodeNumber || "9840219483"} height="h-5" textColor="text-slate-400" />
+        <span className="text-[9px] text-cyan-400 font-mono font-bold tracking-widest">
+          AUTHENTICATED
+        </span>
       </div>
     </div>
   );
