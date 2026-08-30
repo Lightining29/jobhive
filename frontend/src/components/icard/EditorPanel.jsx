@@ -437,14 +437,44 @@ export default function EditorPanel({
               placeholder="https://... photo URL"
             />
 
-            {/* Quick Contact Info Box (Employee Front Contact & Office Back Contact) */}
+            {/* Quick Contact & Identity Info Box (Employee Front Contact & Office Back Contact) */}
             <div className="p-3.5 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-3.5">
               <div>
                 <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>Employee Contact (Front Page)</span>
+                  <User className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>Employee Identity & Contact (Front Page)</span>
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-300 block mb-1">
+                      ID Number / Card No (Admin Editable)
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={card.personal?.idNumber || ''}
+                        onChange={(e) => updatePersonal('idNumber', e.target.value)}
+                        placeholder="1234567890"
+                        className="w-full pl-8 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-amber-300 font-bold font-mono focus:border-indigo-500 focus:outline-none"
+                      />
+                      <CreditCard className="w-3.5 h-3.5 text-amber-400 absolute left-2.5 top-3" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-300 block mb-1">Date of Issue</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={card.personal?.issueDate || ''}
+                        onChange={(e) => updatePersonal('issueDate', e.target.value)}
+                        placeholder="01-01-2024"
+                        className="w-full pl-8 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-semibold font-mono focus:border-indigo-500 focus:outline-none"
+                      />
+                      <Calendar className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+                    </div>
+                  </div>
+
                   <div>
                     <label className="text-[11px] font-bold text-slate-300 block mb-1">Employee Phone</label>
                     <div className="relative">

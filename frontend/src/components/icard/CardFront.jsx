@@ -208,7 +208,7 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
           </p>
         </div>
 
-        {/* Bottom Left Yellow Angle (Barcode Removed) */}
+        {/* Bottom Left Yellow Angle (Barcode Removed, ID Displayed) */}
         <div className="relative pb-5 px-6 flex items-center justify-center z-20">
           <div className="absolute bottom-0 left-0 w-24 h-24 pointer-events-none">
             <svg viewBox="0 0 100 100" className="w-full h-full">
@@ -216,8 +216,8 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
               <polygon points="0,75 100,100 0,100" fill="#e2e8f0" opacity="0.8" />
             </svg>
           </div>
-          <div className="relative z-10 text-[9px] font-mono font-bold text-slate-500 tracking-widest uppercase">
-            AUTHENTICATED BADGE
+          <div className="relative z-10 text-[10px] font-mono font-black text-[#1b1c3a] tracking-widest uppercase bg-amber-200/90 px-3.5 py-1 rounded-full border border-amber-300 shadow-sm">
+            ID NO: {card.personal?.idNumber || '89845653208871'}
           </div>
         </div>
       </div>
@@ -261,8 +261,10 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
           </p>
 
           <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[9.5px] text-slate-700 font-mono mt-2 pt-2 border-t border-slate-100 w-full max-w-[280px] leading-normal">
+            <div><span className="text-slate-400 font-bold">ID:</span> <span className="font-semibold text-blue-700">{card.personal?.idNumber || '01930381085'}</span></div>
             <div><span className="text-slate-400 font-bold">P:</span> <span className="font-semibold">{card.contact?.phone || '7503962162'}</span></div>
             <div><span className="text-slate-400 font-bold">Dep:</span> <span className="font-semibold">{card.personal?.department || 'Engineering'}</span></div>
+            <div><span className="text-slate-400 font-bold">Blood:</span> <span className="font-semibold">{card.personal?.bloodGroup || 'O+'}</span></div>
             <div className="col-span-2 flex items-center min-w-0">
               <span className="text-slate-400 font-bold mr-1 flex-shrink-0">E:</span>
               <span className={`whitespace-nowrap overflow-hidden text-ellipsis font-normal text-slate-800 flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>{card.contact?.email || 'info@appletreeinfotech.in'}</span>
