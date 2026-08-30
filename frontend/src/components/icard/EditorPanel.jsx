@@ -451,7 +451,7 @@ export default function EditorPanel({
                       type="text"
                       value={card.contact?.phone || ''}
                       onChange={(e) => updateContact('phone', e.target.value)}
-                      placeholder="+1 234 567 890"
+                      placeholder="7503962162"
                       className="w-full pl-8 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-semibold focus:border-indigo-500 focus:outline-none"
                     />
                     <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />

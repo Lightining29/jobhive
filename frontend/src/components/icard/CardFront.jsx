@@ -53,13 +53,13 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
     </div>
   );
 
-  // Responsive 1-line email font calculator
+  // Responsive 1-line email font calculator (Bigger & Prominent)
   const getEmailFontSize = (emailStr) => {
-    if (!emailStr) return 'text-[11px]';
-    if (emailStr.length > 28) return 'text-[8px]';
-    if (emailStr.length > 24) return 'text-[9px]';
-    if (emailStr.length > 20) return 'text-[10px]';
-    return 'text-[11px]';
+    if (!emailStr) return 'text-xs sm:text-[13px]';
+    if (emailStr.length > 30) return 'text-[10px] sm:text-[10.5px]';
+    if (emailStr.length > 25) return 'text-[11px] sm:text-[11.5px]';
+    if (emailStr.length > 20) return 'text-[12px] sm:text-[12.5px]';
+    return 'text-xs sm:text-[13px]';
   };
 
   // =========================================================================
@@ -131,12 +131,12 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
             <div className="flex items-center">
               <span className="w-16 text-slate-900 font-extrabold flex-shrink-0">Phone</span>
               <span className="mr-2 font-extrabold">:</span>
-              <span className="font-semibold text-slate-700">{card.contact?.phone || '123 456 789'}</span>
+              <span className="font-semibold text-slate-700">{card.contact?.phone || '7503962162'}</span>
             </div>
             <div className="flex items-center min-w-0">
               <span className="w-16 text-slate-900 font-extrabold flex-shrink-0">E-mail</span>
               <span className="mr-2 font-extrabold">:</span>
-              <span className={`font-semibold text-slate-700 whitespace-nowrap overflow-hidden text-ellipsis flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>{card.contact?.email || 'info@appletreeinfotech.in'}</span>
+              <span className={`font-bold text-slate-900 whitespace-nowrap overflow-hidden text-ellipsis flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>{card.contact?.email || 'info@appletreeinfotech.in'}</span>
             </div>
           </div>
         </div>
@@ -287,13 +287,13 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
           </div>
 
           <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[9.5px] text-slate-700 font-mono mt-2 pt-2 border-t border-slate-100 w-full max-w-[280px] leading-normal">
-            <div><span className="text-slate-400">P:</span> {card.contact?.phone || '+91 98765 43210'}</div>
-            <div><span className="text-slate-400">Dep:</span> {card.personal?.department || 'Engineering'}</div>
+            <div><span className="text-slate-400 font-bold">P:</span> <span className="font-semibold">{card.contact?.phone || '7503962162'}</span></div>
+            <div><span className="text-slate-400 font-bold">Dep:</span> <span className="font-semibold">{card.personal?.department || 'Engineering'}</span></div>
             <div className="col-span-2 flex items-center min-w-0">
-              <span className="text-slate-400 mr-1 flex-shrink-0">E:</span>
-              <span className={`whitespace-nowrap overflow-hidden text-ellipsis font-semibold flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>{card.contact?.email || 'info@appletreeinfotech.in'}</span>
+              <span className="text-slate-400 font-bold mr-1 flex-shrink-0">E:</span>
+              <span className={`whitespace-nowrap overflow-hidden text-ellipsis font-bold text-slate-900 flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>{card.contact?.email || 'info@appletreeinfotech.in'}</span>
             </div>
-            <div><span className="text-slate-400">Blood:</span> {card.personal?.bloodGroup || 'O+'}</div>
+            <div><span className="text-slate-400 font-bold">Blood:</span> <span className="font-semibold">{card.personal?.bloodGroup || 'O+'}</span></div>
           </div>
         </div>
 
@@ -365,11 +365,11 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
             </div>
             <div className="flex justify-between border-b border-slate-100 pb-0.5">
               <span className="text-slate-500 font-bold">Phone:</span>
-              <strong className="text-slate-900">{card.contact?.phone || '+1 800 555 0192'}</strong>
+              <strong className="text-slate-900 font-mono">{card.contact?.phone || '7503962162'}</strong>
             </div>
             <div className="flex items-center justify-between border-b border-slate-100 pb-0.5 min-w-0">
               <span className="text-slate-500 font-bold flex-shrink-0 mr-1.5">Email:</span>
-              <strong className={`text-slate-900 whitespace-nowrap overflow-hidden text-ellipsis text-right flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>{card.contact?.email || 'info@appletreeinfotech.in'}</strong>
+              <strong className={`text-slate-950 font-bold whitespace-nowrap overflow-hidden text-ellipsis text-right flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>{card.contact?.email || 'info@appletreeinfotech.in'}</strong>
             </div>
             <div className="flex justify-between text-[9px] pt-0.5 text-slate-600 font-bold font-mono">
               <span>Date of Issue:</span>
@@ -459,11 +459,11 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
             </div>
             <div className="flex border-b border-slate-100 pb-1">
               <span className="w-16 font-black text-slate-900 flex-shrink-0">Phone:</span>
-              <span className="font-semibold">{card.contact?.phone || '123 456 789'}</span>
+              <span className="font-semibold font-mono">{card.contact?.phone || '7503962162'}</span>
             </div>
             <div className="flex border-b border-slate-100 pb-1 items-center min-w-0">
               <span className="w-16 font-black text-slate-900 flex-shrink-0">E-mail:</span>
-              <span className={`font-semibold whitespace-nowrap overflow-hidden text-ellipsis flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>{card.contact?.email || 'info@appletreeinfotech.in'}</span>
+              <span className={`font-bold text-slate-900 whitespace-nowrap overflow-hidden text-ellipsis flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>{card.contact?.email || 'info@appletreeinfotech.in'}</span>
             </div>
             <div className="flex">
               <span className="w-16 font-black text-slate-900 flex-shrink-0">Blood G:</span>
@@ -535,11 +535,11 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
             </div>
             <div className="flex items-center justify-between min-w-0">
               <span className="text-slate-900 font-bold flex-shrink-0 mr-1.5">Email</span>
-              <span className={`whitespace-nowrap overflow-hidden text-ellipsis text-right font-medium flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>: {card.contact?.email || 'info@appletreeinfotech.in'}</span>
+              <span className={`whitespace-nowrap overflow-hidden text-ellipsis text-right font-bold text-slate-900 flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>: {card.contact?.email || 'info@appletreeinfotech.in'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-900 font-bold">Phone</span>
-              <span>: {card.contact?.phone || '+00 000 000'}</span>
+              <span className="font-mono">: {card.contact?.phone || '7503962162'}</span>
             </div>
           </div>
         </div>
@@ -611,12 +611,12 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
             <div className="flex items-center min-w-0">
               <span className="w-14 font-black text-[#0b1d3a] flex-shrink-0">Email</span>
               <span className="mr-2 font-black">:</span>
-              <span className={`font-semibold whitespace-nowrap overflow-hidden text-ellipsis flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>{card.contact?.email || 'info@appletreeinfotech.in'}</span>
+              <span className={`font-bold text-slate-900 whitespace-nowrap overflow-hidden text-ellipsis flex-1 ${getEmailFontSize(card.contact?.email || 'info@appletreeinfotech.in')}`}>{card.contact?.email || 'info@appletreeinfotech.in'}</span>
             </div>
             <div className="flex items-center">
               <span className="w-14 font-black text-[#0b1d3a] flex-shrink-0">Phone</span>
               <span className="mr-2 font-black">:</span>
-              <span className="font-semibold truncate">{card.contact?.phone || '946 385 921'}</span>
+              <span className="font-semibold font-mono truncate">{card.contact?.phone || '7503962162'}</span>
             </div>
           </div>
         </div>

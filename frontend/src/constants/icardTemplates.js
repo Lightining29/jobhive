@@ -31,7 +31,7 @@ export const CARD_TEMPLATES = [
       coverBannerUrl: ""
     },
     contact: {
-      phone: "123 456 789",
+      phone: "7503962162",
       email: "info@appletreeinfotech.in",
       website: "www.appletreeinfotech.in",
       address: "C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad."
@@ -69,7 +69,7 @@ export const CARD_TEMPLATES = [
       coverBannerUrl: ""
     },
     contact: {
-      phone: "+1 800 555 0192",
+      phone: "7503962162",
       email: "info@appletreeinfotech.in",
       website: "www.appletreeinfotech.in",
       address: "C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad."
@@ -108,7 +108,7 @@ export const CARD_TEMPLATES = [
       coverBannerUrl: ""
     },
     contact: {
-      phone: "+91 98765 43210",
+      phone: "7503962162",
       email: "info@appletreeinfotech.in",
       website: "www.appletreeinfotech.in",
       address: "C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad."
@@ -145,7 +145,7 @@ export const CARD_TEMPLATES = [
       coverBannerUrl: ""
     },
     contact: {
-      phone: "+1 800 555 0192",
+      phone: "7503962162",
       email: "info@appletreeinfotech.in",
       website: "www.appletreeinfotech.in",
       address: "C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad."
@@ -184,7 +184,7 @@ export const CARD_TEMPLATES = [
       coverBannerUrl: ""
     },
     contact: {
-      phone: "123 456 789",
+      phone: "7503962162",
       email: "info@appletreeinfotech.in",
       website: "www.appletreeinfotech.in",
       address: "C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad."
@@ -221,7 +221,7 @@ export const CARD_TEMPLATES = [
       coverBannerUrl: ""
     },
     contact: {
-      phone: "+91 98765 43210",
+      phone: "7503962162",
       email: "info@appletreeinfotech.in",
       website: "www.appletreeinfotech.in",
       address: "C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad."
@@ -258,7 +258,7 @@ export const CARD_TEMPLATES = [
       coverBannerUrl: ""
     },
     contact: {
-      phone: "946 385 921",
+      phone: "7503962162",
       email: "info@appletreeinfotech.in",
       website: "www.appletreeinfotech.in",
       address: "C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad."

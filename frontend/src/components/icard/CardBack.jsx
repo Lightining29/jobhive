@@ -148,8 +148,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
                 <strong className="text-[#071d36]">{card.personal?.issueDate || '01-01-2024'}</strong>
               </div>
               <div className="flex justify-between border-b border-slate-200/80 pb-1">
-                <span className="text-slate-500 font-bold">Emergency Phone:</span>
-                <strong className="text-[#071d36]">{card.contact?.phone || '+91 98765 43210'}</strong>
+                <span className="text-slate-500 font-bold">Office Phone:</span>
+                <strong className="text-[#071d36] font-mono">{card.contact?.phone || '7503962162'}</strong>
               </div>
               <div className="flex items-start justify-between">
                 <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Official Email:</span>
@@ -213,8 +213,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
                   <span className="text-[#071d36]">{card.personal?.issueDate || '01-01-2024'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Emergency:</span>
-                  <span className="text-[#071d36] truncate">{card.contact?.phone || '+91 98765 43210'}</span>
+                  <span className="text-slate-500">Phone:</span>
+                  <span className="text-[#071d36] truncate">{card.contact?.phone || '7503962162'}</span>
                 </div>
               </div>
 
@@ -296,8 +296,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
               <strong className="text-[#1b1c3a]">{card.personal?.issueDate || '01/01/2024'}</strong>
             </div>
             <div className="flex justify-between border-b border-slate-200/60 pb-0.5">
-              <span className="text-slate-500 font-bold">Emergency Hotline:</span>
-              <strong className="text-[#1b1c3a]">{card.contact?.phone || '+1 800 555 0192'}</strong>
+              <span className="text-slate-500 font-bold">Office Phone:</span>
+              <strong className="text-[#1b1c3a] font-mono">{card.contact?.phone || '7503962162'}</strong>
             </div>
             <div className="flex items-start justify-between">
               <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Office Address:</span>
@@ -308,11 +308,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
 
         {/* Footer with Signature on Left, Barcode on Right */}
         <div className="pb-4 px-6 pt-2 border-t border-slate-100 flex items-end justify-between relative z-20">
-          <SignatureBlock label="AUTHORIZED SIGNATURE" />
-
-          <div className="text-right">
-            <Barcode number={card.security?.barcodeNumber || "89845653208871"} height="h-6" showDigits={true} textColor="text-[#1b1c3a]" />
-          </div>
+          <SignatureBlock label="Authorized Signature" />
+          <Barcode number={card.security?.barcodeNumber || "89845653208871"} height="h-6" textColor="text-[#1b1c3a]" />
         </div>
       </div>
     );
@@ -325,29 +322,29 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
     return (
       <div
         id={id}
-        className="relative w-full h-full select-none overflow-hidden flex flex-col justify-between bg-white text-slate-900 shadow-2xl rounded-3xl p-0"
+        className="relative w-full h-full select-none overflow-hidden flex flex-col justify-between bg-slate-50 text-slate-900 shadow-2xl rounded-3xl p-0"
         style={{ fontFamily: "'Montserrat', sans-serif" }}
       >
-        <div className="absolute top-0 left-0 right-0 h-28 pointer-events-none overflow-hidden z-10">
-          <svg viewBox="0 0 400 120" className="w-full h-full object-cover" preserveAspectRatio="none">
-            <path d="M0,0 L400,0 L400,60 C260,110 140,20 0,90 Z" fill="#00b4d8" />
-            <path d="M0,0 L300,0 C180,60 80,20 0,80 Z" fill="#0077b6" />
-          </svg>
+        <div className="relative h-16 bg-[#0077b6] flex items-center justify-between px-6 text-white overflow-hidden">
+          <span className="text-xs font-black tracking-[0.2em] uppercase font-mono">
+            {card.personal?.organization || 'LOGO NAME'}
+          </span>
+          <span className="text-cyan-200 text-[10px] font-bold font-mono">AUTHENTIC BADGE</span>
         </div>
 
-        <div className="relative z-20 pt-8 px-6 space-y-2.5 flex-1 flex flex-col justify-between">
+        <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
           <div>
-            <h3 className="text-xs font-black text-slate-900 tracking-tight text-center">
-              Official Cardholder Terms
-            </h3>
-            <p className="text-[9.5px] text-slate-600 leading-relaxed text-center px-1 font-medium mt-1">
-              This card certifies membership with {card.personal?.organization || 'JobHive'}. Scan the QR code to verify credential authenticity.
+            <h4 className="text-xs font-black text-[#0077b6] uppercase tracking-wider mb-1">
+              Terms & Conditions
+            </h4>
+            <p className="text-[9.5px] text-slate-600 leading-relaxed font-medium">
+              {card.personal?.termsAndConditions?.[0] || 'This credential is the exclusive property of the organization. If found, please return to the designated office address or scan the QR code.'}
             </p>
           </div>
 
-          {/* BIG CENTERED QR CODE */}
+          {/* Large Centered QR code */}
           <div className="flex flex-col items-center justify-center my-auto">
-            <div className="p-3 rounded-2xl bg-white shadow-xl border-2 border-[#0077b6]/40 flex flex-col items-center group hover:scale-105 transition-transform">
+            <div className="p-3 rounded-2xl bg-white shadow-xl border-2 border-[#00b4d8]/40 flex flex-col items-center group hover:scale-105 transition-transform">
               <QRCodeSVG value={qrValue} size={isVertical ? 115 : 75} level="H" fgColor="#0077b6" bgColor="#ffffff" />
               <span className="text-[8.5px] font-mono font-black text-[#0077b6] uppercase mt-1">
                 SCAN TO VERIFY
@@ -355,26 +352,33 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             </div>
           </div>
 
-          {/* Structured Telemetry */}
-          <div className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1 text-[9.5px] font-mono text-slate-700">
-            <div className="flex justify-between border-b border-slate-200/80 pb-0.5">
-              <span className="text-slate-500 font-bold">Member ID:</span>
-              <strong className="text-[#0077b6] font-black">{card.personal?.idNumber || 'JHV-01930'}</strong>
+          <div className="p-3 rounded-2xl bg-white border border-slate-200 space-y-1 text-[10px] text-slate-700 font-mono">
+            <div className="flex justify-between border-b border-slate-100 pb-0.5">
+              <span className="text-slate-500 font-bold">Badge ID:</span>
+              <strong className="text-[#0077b6]">{card.personal?.idNumber || '01930381085'}</strong>
             </div>
-            <div className="flex justify-between border-b border-slate-200/80 pb-0.5">
+            <div className="flex justify-between border-b border-slate-100 pb-0.5">
               <span className="text-slate-500 font-bold">Date of Issue:</span>
               <strong className="text-slate-900">{card.personal?.issueDate || '01-01-2024'}</strong>
             </div>
-            <div className="flex items-start justify-between">
-              <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Contact Email:</span>
+            <div className="flex justify-between border-b border-slate-100 pb-0.5">
+              <span className="text-slate-500 font-bold">Office Phone:</span>
+              <strong className="text-slate-900 font-mono">{card.contact?.phone || '7503962162'}</strong>
+            </div>
+            <div className="flex items-start justify-between border-b border-slate-100 pb-0.5">
+              <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Official Email:</span>
               <strong className="text-slate-900 break-all text-[9px] leading-tight text-right flex-1">{card.contact?.email || 'info@appletreeinfotech.in'}</strong>
             </div>
+            <div className="flex items-start justify-between">
+              <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Office Address:</span>
+              <strong className="text-slate-900 break-words text-[9px] leading-tight text-right flex-1">{card.contact?.address || 'C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad.'}</strong>
+            </div>
           </div>
-        </div>
 
-        <div className="relative z-20 pb-4 px-6 flex items-end justify-between border-t border-slate-100 pt-2">
-          <SignatureBlock label="Digital Signature" />
-          <Barcode number={card.security?.barcodeNumber || "01930381085"} height="h-5" textColor="text-[#0077b6]" />
+          <div className="pt-2 border-t border-slate-200 flex items-end justify-between">
+            <SignatureBlock label="Authorized Signature" />
+            <Barcode number={card.security?.barcodeNumber || "01930381085"} height="h-6" showDigits={false} textColor="text-[#0077b6]" />
+          </div>
         </div>
       </div>
     );
@@ -387,24 +391,29 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
     return (
       <div
         id={id}
-        className="relative w-full h-full select-none overflow-hidden flex flex-col justify-between bg-slate-50 text-slate-900 shadow-2xl rounded-3xl p-6 border border-slate-200"
+        className="relative w-full h-full select-none overflow-hidden flex flex-col justify-between bg-slate-50 text-slate-900 shadow-2xl rounded-2xl p-6 border border-slate-200"
         style={{ fontFamily: "'Montserrat', sans-serif" }}
       >
-        <div className="relative z-10 text-center space-y-1">
-          <h2 className="text-base font-black tracking-widest text-[#071d36] uppercase font-mono truncate">
-            {card.personal?.fullName || 'AMY WILLIAMS'}
-          </h2>
-          <p className="text-xs font-mono font-bold text-blue-600">
-            ID NO. {card.personal?.idNumber || '334265'}
-          </p>
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+          <div>
+            <h3 className="text-sm font-black text-[#071d36] uppercase tracking-wide">
+              Official Identification Badge
+            </h3>
+            <p className="text-[10px] text-blue-600 font-mono font-bold uppercase mt-0.5">
+              Property of {card.personal?.organization || 'Logo House'}
+            </p>
+          </div>
+          <div className="p-1 rounded-lg bg-blue-50 border border-blue-200">
+            <ShieldCheck className="w-5 h-5 text-blue-600" />
+          </div>
         </div>
 
-        {/* BIG CENTERED QR CODE */}
-        <div className="relative z-10 flex flex-col items-center my-auto">
-          <div className="p-4 rounded-3xl bg-white shadow-2xl border-2 border-blue-500/40 flex flex-col items-center group hover:scale-105 transition-transform">
-            <QRCodeSVG value={qrValue} size={isVertical ? 125 : 85} level="H" fgColor="#071d36" bgColor="#ffffff" />
-            <span className="text-[9px] font-mono font-black text-[#071d36] uppercase mt-1.5 tracking-wider">
-              SCAN TO VERIFY CREDENTIAL
+        {/* Central QR Validation Block */}
+        <div className="flex flex-col items-center justify-center my-auto py-2">
+          <div className="p-3 rounded-2xl bg-white shadow-xl border-2 border-blue-500/40 flex flex-col items-center group hover:scale-105 transition-transform">
+            <QRCodeSVG value={qrValue} size={isVertical ? 120 : 80} level="H" fgColor="#071d36" bgColor="#ffffff" />
+            <span className="text-[8.5px] font-mono font-black text-blue-700 uppercase mt-1">
+              SCAN TO VERIFY BADGE
             </span>
           </div>
         </div>
@@ -413,15 +422,15 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
           <div className="p-2.5 rounded-2xl bg-white border border-slate-200 space-y-1 text-[10px] font-mono text-slate-700">
             <div className="flex justify-between border-b border-slate-100 pb-0.5">
               <span className="text-slate-500 font-bold">Organization:</span>
-              <strong className="text-[#071d36]">{card.personal?.organization || 'JobHive Real Estate'}</strong>
+              <strong className="text-[#071d36]">{card.personal?.organization || 'Appletree Infotech'}</strong>
             </div>
             <div className="flex justify-between border-b border-slate-100 pb-0.5">
               <span className="text-slate-500 font-bold">Date of Issue:</span>
               <strong className="text-[#071d36]">{card.personal?.issueDate || '01-01-2024'}</strong>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500 font-bold">Emergency Hotline:</span>
-              <strong className="text-[#071d36]">{card.contact?.phone || '+91 98765 43210'}</strong>
+              <span className="text-slate-500 font-bold">Office Phone:</span>
+              <strong className="text-[#071d36] font-mono">{card.contact?.phone || '7503962162'}</strong>
             </div>
           </div>
 
@@ -439,28 +448,27 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
   }
 
   // =========================================================================
-  // 5. CHEVRON SIDEBAR (Vertical & Horizontal)
+  // 5. CHEVRON SIDEBAR (Christian Martin)
   // =========================================================================
   if (themeId === 'chevron-sidebar' || layout === 'chevron-sidebar') {
     return (
       <div
         id={id}
-        className="relative w-full h-full select-none overflow-hidden flex flex-col justify-between bg-white text-slate-900 shadow-2xl rounded-3xl p-0"
+        className="relative w-full h-full select-none overflow-hidden flex flex-col justify-between bg-white text-slate-900 shadow-2xl rounded-2xl p-0"
         style={{ fontFamily: "'Montserrat', sans-serif" }}
       >
-        {/* Top Blue Header */}
         <div className="h-12 bg-[#0066cc] flex items-center justify-between px-6 text-white font-mono font-black text-xs uppercase">
-          <span>{card.personal?.organization || 'JOBHIVE INC.'}</span>
-          <span className="text-[10px] text-cyan-200">VERIFIED ID</span>
+          <span>{card.personal?.organization || 'COMPANY NAME'}</span>
+          <span className="text-cyan-300 text-[10px]">VERIFIED CARD</span>
         </div>
 
         <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
           <div>
             <h4 className="text-xs font-black text-[#0066cc] uppercase tracking-wider mb-1">
-              Terms & Security Guidelines
+              General Instructions
             </h4>
             <p className="text-[9.5px] text-slate-600 leading-relaxed font-medium">
-              This badge is the property of {card.personal?.organization || 'JobHive'}. Scan the QR code to verify credentials.
+              This credential card remains the property of the issuer. Please return upon termination of service.
             </p>
           </div>
 
@@ -469,12 +477,11 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             <div className="p-3 rounded-2xl bg-white shadow-xl border-2 border-[#0066cc]/40 flex flex-col items-center">
               <QRCodeSVG value={qrValue} size={isVertical ? 115 : 75} level="H" fgColor="#0066cc" bgColor="#ffffff" />
               <span className="text-[8.5px] font-mono font-black text-[#0066cc] uppercase mt-1">
-                SCAN TO VERIFY
+                SCAN FOR VERIFICATION
               </span>
             </div>
           </div>
 
-          {/* Info Details */}
           <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-[9.5px] font-mono text-slate-700">
             <div className="flex justify-between border-b border-slate-200/80 pb-0.5">
               <span className="text-slate-500 font-bold">Credential ID:</span>
@@ -485,8 +492,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
               <strong className="text-slate-900">{card.personal?.issueDate || '01-01-2024'}</strong>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500 font-bold">Emergency Phone:</span>
-              <strong className="text-slate-900">{card.contact?.phone || '+91 98765 43210'}</strong>
+              <span className="text-slate-500 font-bold">Office Phone:</span>
+              <strong className="text-slate-900 font-mono">{card.contact?.phone || '7503962162'}</strong>
             </div>
           </div>
 
@@ -545,8 +552,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
               <strong className="text-slate-900">{card.personal?.issueDate || '01-01-2024'}</strong>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500 font-bold">Emergency Phone:</span>
-              <strong className="text-slate-900">{card.contact?.phone || '+91 98765 43210'}</strong>
+              <span className="text-slate-500 font-bold">Office Phone:</span>
+              <strong className="text-slate-900 font-mono">{card.contact?.phone || '7503962162'}</strong>
             </div>
           </div>
 
@@ -612,8 +619,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
               <strong className="text-[#0b1d3a]">{card.personal?.issueDate || '06/08/16'}</strong>
             </div>
             <div className="flex justify-between border-b border-slate-200/60 pb-0.5">
-              <span className="text-slate-500 font-bold">Emergency Phone:</span>
-              <strong className="text-[#0b1d3a]">{card.contact?.phone || '+91 98765 43210'}</strong>
+              <span className="text-slate-500 font-bold">Office Phone:</span>
+              <strong className="text-[#0b1d3a] font-mono">{card.contact?.phone || '7503962162'}</strong>
             </div>
             <div className="flex items-start justify-between border-b border-slate-200/60 pb-0.5">
               <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Official Email:</span>
@@ -707,8 +714,8 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             <span className="text-slate-200 font-bold">{card.personal?.issueDate || '01/2024'}</span>
           </div>
           <div>
-            <span className="text-slate-500 block">Emergency Phone</span>
-            <span className="text-slate-200 font-bold truncate block">{card.contact?.phone || '+91 98765 43210'}</span>
+            <span className="text-slate-500 block">Office Phone</span>
+            <span className="text-slate-200 font-bold truncate block font-mono">{card.contact?.phone || '7503962162'}</span>
           </div>
         </div>
       </div>
