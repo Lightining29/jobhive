@@ -436,69 +436,104 @@ export default function EditorPanel({
               placeholder="https://... photo URL"
             />
 
-            {/* Quick Contact Info Box (Phone & Email) */}
-            <div className="p-3.5 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-3">
-              <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
-                <Phone className="w-3.5 h-3.5" />
-                <span>Contact Details (Live Dynamic Update)</span>
-              </h4>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[11px] font-bold text-slate-300 block mb-1">Phone Number</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={card.contact?.phone || ''}
-                      onChange={(e) => updateContact('phone', e.target.value)}
-                      placeholder="7503962162"
-                      className="w-full pl-8 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-semibold focus:border-indigo-500 focus:outline-none"
-                    />
-                    <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+            {/* Quick Contact Info Box (Employee Front Contact & Office Back Contact) */}
+            <div className="p-3.5 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-3.5">
+              <div>
+                <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>Employee Contact (Front Page)</span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-300 block mb-1">Employee Phone</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={card.contact?.phone || ''}
+                        onChange={(e) => updateContact('phone', e.target.value)}
+                        placeholder="7503962162"
+                        className="w-full pl-8 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-semibold focus:border-indigo-500 focus:outline-none"
+                      />
+                      <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <label className="text-[11px] font-bold text-slate-300 block mb-1">Email Address</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={card.contact?.email || ''}
-                      onChange={(e) => updateContact('email', e.target.value)}
-                      placeholder="info@appletreeinfotech.in"
-                      className="w-full pl-8 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-semibold focus:border-indigo-500 focus:outline-none"
-                    />
-                    <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-300 block mb-1">Employee Email</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={card.contact?.email || ''}
+                        onChange={(e) => updateContact('email', e.target.value)}
+                        placeholder="info@appletreeinfotech.in"
+                        className="w-full pl-8 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-semibold focus:border-indigo-500 focus:outline-none"
+                      />
+                      <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-400 block mb-1">Website URL</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={card.contact?.website || ''}
-                      onChange={(e) => updateContact('website', e.target.value)}
-                      placeholder="www.appletreeinfotech.in"
-                      className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 focus:outline-none"
-                    />
-                    <Globe className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+              <div className="pt-2.5 border-t border-indigo-900/50">
+                <h4 className="text-xs font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Building className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Office / Official Details (Back Page)</span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-300 block mb-1">Office Phone Number</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={card.contact?.officePhone || ''}
+                        onChange={(e) => updateContact('officePhone', e.target.value)}
+                        placeholder="7503962162"
+                        className="w-full pl-8 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-semibold focus:border-cyan-500 focus:outline-none"
+                      />
+                      <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-400 block mb-1">Office Address</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={card.contact?.address || ''}
-                      onChange={(e) => updateContact('address', e.target.value)}
-                      placeholder="C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad."
-                      className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 focus:outline-none"
-                    />
-                    <MapPin className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                  <div>
+                    <label className="text-[11px] font-bold text-slate-300 block mb-1">Office Email ID</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={card.contact?.officeEmail || ''}
+                        onChange={(e) => updateContact('officeEmail', e.target.value)}
+                        placeholder="info@appletreeinfotech.in"
+                        className="w-full pl-8 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-semibold focus:border-cyan-500 focus:outline-none"
+                      />
+                      <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-semibold text-slate-400 block mb-1">Official Website</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={card.contact?.website || ''}
+                        onChange={(e) => updateContact('website', e.target.value)}
+                        placeholder="www.appletreeinfotech.in"
+                        className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 focus:outline-none"
+                      />
+                      <Globe className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-semibold text-slate-400 block mb-1">Office Address</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={card.contact?.address || ''}
+                        onChange={(e) => updateContact('address', e.target.value)}
+                        placeholder="C-60 R.K Tower 3rd Floor Above PizzaKart RDC Rajnagar,Ghaziabad."
+                        className="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 focus:outline-none"
+                      />
+                      <MapPin className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                    </div>
                   </div>
                 </div>
               </div>

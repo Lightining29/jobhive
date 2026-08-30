@@ -149,11 +149,11 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
               </div>
               <div className="flex justify-between border-b border-slate-200/80 pb-1">
                 <span className="text-slate-500 font-bold">Office Phone:</span>
-                <strong className="text-[#071d36] font-mono">{card.contact?.phone || '7503962162'}</strong>
+                <strong className="text-[#071d36] font-mono">{card.contact?.officePhone || card.contact?.phone || '7503962162'}</strong>
               </div>
               <div className="flex items-start justify-between">
                 <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Official Email:</span>
-                <strong className="text-[#071d36] break-all text-[9.5px] leading-tight text-right flex-1">{card.contact?.email || 'info@appletreeinfotech.in'}</strong>
+                <strong className="text-[#071d36] break-all text-[9.5px] leading-tight text-right flex-1">{card.contact?.officeEmail || card.contact?.email || 'info@appletreeinfotech.in'}</strong>
               </div>
             </div>
 
@@ -214,7 +214,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Phone:</span>
-                  <span className="text-[#071d36] truncate">{card.contact?.phone || '7503962162'}</span>
+                  <span className="text-[#071d36] truncate">{card.contact?.officePhone || card.contact?.phone || '7503962162'}</span>
                 </div>
               </div>
 
@@ -297,7 +297,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             </div>
             <div className="flex justify-between border-b border-slate-200/60 pb-0.5">
               <span className="text-slate-500 font-bold">Office Phone:</span>
-              <strong className="text-[#1b1c3a] font-mono">{card.contact?.phone || '7503962162'}</strong>
+              <strong className="text-[#1b1c3a] font-mono">{card.contact?.officePhone || card.contact?.phone || '7503962162'}</strong>
             </div>
             <div className="flex items-start justify-between">
               <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Office Address:</span>
@@ -363,11 +363,11 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             </div>
             <div className="flex justify-between border-b border-slate-100 pb-0.5">
               <span className="text-slate-500 font-bold">Office Phone:</span>
-              <strong className="text-slate-900 font-mono">{card.contact?.phone || '7503962162'}</strong>
+              <strong className="text-slate-900 font-mono">{card.contact?.officePhone || card.contact?.phone || '7503962162'}</strong>
             </div>
             <div className="flex items-start justify-between border-b border-slate-100 pb-0.5">
               <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Official Email:</span>
-              <strong className="text-slate-900 break-all text-[9px] leading-tight text-right flex-1">{card.contact?.email || 'info@appletreeinfotech.in'}</strong>
+              <strong className="text-slate-900 break-all text-[9px] leading-tight text-right flex-1">{card.contact?.officeEmail || card.contact?.email || 'info@appletreeinfotech.in'}</strong>
             </div>
             <div className="flex items-start justify-between">
               <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Office Address:</span>
@@ -430,7 +430,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500 font-bold">Office Phone:</span>
-              <strong className="text-[#071d36] font-mono">{card.contact?.phone || '7503962162'}</strong>
+              <strong className="text-[#071d36] font-mono">{card.contact?.officePhone || card.contact?.phone || '7503962162'}</strong>
             </div>
           </div>
 
@@ -493,7 +493,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500 font-bold">Office Phone:</span>
-              <strong className="text-slate-900 font-mono">{card.contact?.phone || '7503962162'}</strong>
+              <strong className="text-slate-900 font-mono">{card.contact?.officePhone || card.contact?.phone || '7503962162'}</strong>
             </div>
           </div>
 
@@ -553,7 +553,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500 font-bold">Office Phone:</span>
-              <strong className="text-slate-900 font-mono">{card.contact?.phone || '7503962162'}</strong>
+              <strong className="text-slate-900 font-mono">{card.contact?.officePhone || card.contact?.phone || '7503962162'}</strong>
             </div>
           </div>
 
@@ -620,11 +620,11 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
             </div>
             <div className="flex justify-between border-b border-slate-200/60 pb-0.5">
               <span className="text-slate-500 font-bold">Office Phone:</span>
-              <strong className="text-[#0b1d3a] font-mono">{card.contact?.phone || '7503962162'}</strong>
+              <strong className="text-[#0b1d3a] font-mono">{card.contact?.officePhone || card.contact?.phone || '7503962162'}</strong>
             </div>
             <div className="flex items-start justify-between border-b border-slate-200/60 pb-0.5">
               <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Official Email:</span>
-              <strong className="text-[#0b1d3a] break-all text-[9px] leading-tight text-right flex-1">{card.contact?.email || 'info@appletreeinfotech.in'}</strong>
+              <strong className="text-[#0b1d3a] break-all text-[9px] leading-tight text-right flex-1">{card.contact?.officeEmail || card.contact?.email || 'info@appletreeinfotech.in'}</strong>
             </div>
             <div className="flex items-start justify-between">
               <span className="text-slate-500 font-bold flex-shrink-0 mr-2">Office Address:</span>
@@ -715,7 +715,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
           </div>
           <div>
             <span className="text-slate-500 block">Office Phone</span>
-            <span className="text-slate-200 font-bold truncate block font-mono">{card.contact?.phone || '7503962162'}</span>
+            <span className="text-slate-200 font-bold truncate block font-mono">{card.contact?.officePhone || card.contact?.phone || '7503962162'}</span>
           </div>
         </div>
       </div>
