@@ -59,23 +59,26 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
     </div>
   );
 
-  // Signature Renderer using Certificate Signature asset
-  const SignatureBlock = ({ label = "Authorized Signature", customClass = "", darkBg = false }) => {
+  // Signature Renderer using Certificate Signature asset (Big Size)
+  const SignatureBlock = ({ label = "Authorized Signature", customClass = "", darkBg = false, size = "large" }) => {
     const signatureSrc = card.media?.signatureUrl || "/assets/signature.png";
+    const imgHeight = size === "xlarge" ? "h-16 sm:h-20 max-w-[210px]" : size === "compact" ? "h-10 max-w-[140px]" : "h-12 sm:h-14 max-w-[180px]";
+    const lineWidth = size === "xlarge" ? "w-48" : size === "compact" ? "w-28" : "w-40";
+
     return (
       <div className={`text-left ${customClass}`}>
-        <span className={`text-[7.5px] font-mono block uppercase font-bold tracking-wider ${darkBg ? 'text-slate-400' : 'text-slate-500'}`}>
+        <span className={`text-[8px] font-mono block uppercase font-bold tracking-wider mb-0.5 ${darkBg ? 'text-slate-400' : 'text-slate-500'}`}>
           {label}
         </span>
-        <div className="py-0.5 flex items-center">
+        <div className="py-1 flex items-center">
           <img
             src={signatureSrc}
             alt="Authorized Signature"
-            className="h-8 max-w-[120px] object-contain drop-shadow-sm"
+            className={`${imgHeight} object-contain object-left drop-shadow-md scale-110 origin-left transition-transform`}
             crossOrigin="anonymous"
           />
         </div>
-        <div className={`w-24 h-[1px] mt-0.5 ${darkBg ? 'bg-slate-700' : 'bg-slate-300'}`} />
+        <div className={`${lineWidth} h-[1.5px] mt-1 ${darkBg ? 'bg-slate-700' : 'bg-slate-400/80'}`} />
       </div>
     );
   };
@@ -651,20 +654,20 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-800/40 to-transparent opacity-50" />
       </div>
 
-      {/* Signature Strip */}
-      <div className="space-y-1">
+      {/* Signature Strip (Large) */}
+      <div className="space-y-1.5 my-1">
         <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 uppercase tracking-wider font-bold">
           <span>Authorized Cardholder Signature</span>
           <span className="text-cyan-400 font-mono">SEC-ID: {card.personal?.idNumber || 'JHV-9048-X'}</span>
         </div>
-        <div className="h-10 bg-white/95 rounded-xl border border-slate-300 flex items-center justify-between px-3.5 text-slate-900 shadow-inner">
+        <div className="h-16 bg-white/95 rounded-2xl border border-slate-300 flex items-center justify-between px-4 text-slate-900 shadow-inner">
           <img
             src={card.media?.signatureUrl || "/assets/signature.png"}
             alt="Authorized Signature"
-            className="h-8 max-w-[140px] object-contain"
+            className="h-14 max-w-[220px] object-contain object-left scale-110 origin-left drop-shadow"
             crossOrigin="anonymous"
           />
-          <span className="font-mono text-[10px] text-slate-400 tracking-widest font-bold">
+          <span className="font-mono text-xs text-slate-500 tracking-widest font-bold">
             {card.security?.barcodeNumber?.slice(-4) || '9048'}
           </span>
         </div>
