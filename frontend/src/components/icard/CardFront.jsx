@@ -366,11 +366,16 @@ export default function CardFront({ card, theme, id = "card-front-face" }) {
             </div>
           </div>
 
-          <div className="mt-2 text-center">
+          <div className="mt-2 text-center flex flex-col items-center">
             <span className="text-[9px] text-slate-400 block font-mono">Signature:</span>
-            <p className="font-serif italic text-xs text-blue-700 font-bold">
-              {card.personal?.signatureText || card.personal?.fullName || 'Amy Williams'}
-            </p>
+            <div className="py-0.5">
+              <img
+                src={card.media?.signatureUrl || "/assets/signature.png"}
+                alt="Authorized Signature"
+                className="h-6 max-w-[110px] object-contain"
+                crossOrigin="anonymous"
+              />
+            </div>
             <div className="w-32 h-[1px] bg-slate-300 mx-auto mt-0.5" />
           </div>
         </div>

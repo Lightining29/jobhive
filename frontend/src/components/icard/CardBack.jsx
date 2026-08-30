@@ -59,6 +59,27 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
     </div>
   );
 
+  // Signature Renderer using Certificate Signature asset
+  const SignatureBlock = ({ label = "Authorized Signature", customClass = "", darkBg = false }) => {
+    const signatureSrc = card.media?.signatureUrl || "/assets/signature.png";
+    return (
+      <div className={`text-left ${customClass}`}>
+        <span className={`text-[7.5px] font-mono block uppercase font-bold tracking-wider ${darkBg ? 'text-slate-400' : 'text-slate-500'}`}>
+          {label}
+        </span>
+        <div className="py-0.5 flex items-center">
+          <img
+            src={signatureSrc}
+            alt="Authorized Signature"
+            className="h-8 max-w-[120px] object-contain drop-shadow-sm"
+            crossOrigin="anonymous"
+          />
+        </div>
+        <div className={`w-24 h-[1px] mt-0.5 ${darkBg ? 'bg-slate-700' : 'bg-slate-300'}`} />
+      </div>
+    );
+  };
+
   // =========================================================================
   // 1. CORPORATE BLUE DIAGONAL (Vertical & Horizontal Rich Layout)
   // =========================================================================
@@ -135,13 +156,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
 
             {/* Authorized Signature & Barcode */}
             <div className="pt-2 border-t border-slate-200 flex items-end justify-between">
-              <div className="text-left">
-                <span className="text-[8px] font-mono text-slate-400 block uppercase font-bold">Authorized Signature</span>
-                <p className="font-serif italic text-sm text-[#071d36] font-black mt-0.5">
-                  {card.personal?.signatureText || card.personal?.fullName || 'Alex Rivera'}
-                </p>
-                <div className="w-24 h-[1px] bg-slate-300 mt-0.5" />
-              </div>
+              <SignatureBlock label="Authorized Signature" />
               <Barcode number={card.security?.barcodeNumber || "1234567890"} height="h-6" textColor="text-[#071d36]" />
             </div>
           </div>
@@ -213,12 +228,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
           </div>
 
           <div className="pt-2 border-t border-slate-100 flex items-end justify-between">
-            <div>
-              <span className="text-[7.5px] font-mono text-slate-400 block uppercase font-bold">Authorized Signature</span>
-              <p className="font-serif italic text-xs text-[#071d36] font-bold">
-                {card.personal?.signatureText || card.personal?.fullName || 'Alex Rivera'}
-              </p>
-            </div>
+            <SignatureBlock label="Authorized Signature" />
             <Barcode number={card.security?.barcodeNumber || "1234567890"} height="h-5" textColor="text-[#071d36]" />
           </div>
         </div>
@@ -295,13 +305,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
 
         {/* Footer with Signature on Left, Barcode on Right */}
         <div className="pb-4 px-6 pt-2 border-t border-slate-100 flex items-end justify-between relative z-20">
-          <div className="text-left">
-            <span className="text-[7.5px] font-mono text-slate-400 block uppercase font-bold">AUTHORIZED SIGNATURE</span>
-            <p className="font-serif italic text-base text-[#1b1c3a] font-black mt-0.5">
-              {card.personal?.signatureText || 'Jamie Jhonson'}
-            </p>
-            <div className="w-24 h-[1px] bg-slate-300 mt-0.5" />
-          </div>
+          <SignatureBlock label="AUTHORIZED SIGNATURE" />
 
           <div className="text-right">
             <Barcode number={card.security?.barcodeNumber || "89845653208871"} height="h-6" showDigits={true} textColor="text-[#1b1c3a]" />
@@ -366,12 +370,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
         </div>
 
         <div className="relative z-20 pb-4 px-6 flex items-end justify-between border-t border-slate-100 pt-2">
-          <div>
-            <span className="text-[7.5px] font-mono text-slate-400 block font-bold uppercase">Digital Signature</span>
-            <span className="font-serif italic text-sm font-bold text-[#0077b6]">
-              {card.personal?.signatureText || card.personal?.fullName || 'Anna Roe'}
-            </span>
-          </div>
+          <SignatureBlock label="Digital Signature" />
           <Barcode number={card.security?.barcodeNumber || "01930381085"} height="h-5" textColor="text-[#0077b6]" />
         </div>
       </div>
@@ -489,12 +488,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
           </div>
 
           <div className="pt-2 border-t border-slate-100 flex items-end justify-between">
-            <div>
-              <span className="text-[7.5px] font-mono text-slate-400 block uppercase font-bold">Authorized Signature</span>
-              <p className="font-serif italic text-sm text-[#0066cc] font-bold">
-                {card.personal?.signatureText || card.personal?.fullName || 'Alex Rivera'}
-              </p>
-            </div>
+            <SignatureBlock label="Authorized Signature" />
             <Barcode number={card.security?.barcodeNumber || "1234567890"} height="h-5" textColor="text-[#0066cc]" />
           </div>
         </div>
@@ -554,12 +548,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
           </div>
 
           <div className="pt-2 border-t border-slate-100 flex items-end justify-between">
-            <div>
-              <span className="text-[7.5px] font-mono text-slate-400 block font-bold uppercase">Authorized Signature</span>
-              <span className="font-serif italic text-sm text-[#0284c7] font-black">
-                {card.personal?.signatureText || card.personal?.fullName || 'Yours Sincerely'}
-              </span>
-            </div>
+            <SignatureBlock label="Authorized Signature" />
             <Barcode number={card.security?.barcodeNumber || "9840219483"} height="h-5" textColor="text-[#0284c7]" />
           </div>
         </div>
@@ -634,14 +623,7 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
           </div>
 
           <div className="pt-2 border-t border-slate-100 flex items-end justify-between">
-            <div>
-              <span className="text-[7.5px] font-mono text-slate-400 block uppercase font-bold">Authorized Signature</span>
-              <p className="font-serif italic text-sm text-[#0b1d3a] font-black">
-                {card.personal?.signatureText || card.personal?.fullName || 'Austin Ortiz'}
-              </p>
-              <div className="w-24 h-[1px] bg-slate-300 mt-0.5" />
-            </div>
-
+            <SignatureBlock label="Authorized Signature" />
             <Barcode number={card.security?.barcodeNumber || "0000060816"} height="h-6" showDigits={true} textColor="text-[#0b1d3a]" />
           </div>
         </div>
@@ -675,10 +657,13 @@ export default function CardBack({ card, theme, id = "card-back-face" }) {
           <span>Authorized Cardholder Signature</span>
           <span className="text-cyan-400 font-mono">SEC-ID: {card.personal?.idNumber || 'JHV-9048-X'}</span>
         </div>
-        <div className="h-9 bg-white/95 rounded-xl border border-slate-300 flex items-center justify-between px-3.5 text-slate-900 shadow-inner">
-          <span className="font-serif italic text-base font-bold text-slate-800 truncate">
-            {card.personal?.signatureText || card.personal?.fullName || 'Alex Rivera'}
-          </span>
+        <div className="h-10 bg-white/95 rounded-xl border border-slate-300 flex items-center justify-between px-3.5 text-slate-900 shadow-inner">
+          <img
+            src={card.media?.signatureUrl || "/assets/signature.png"}
+            alt="Authorized Signature"
+            className="h-8 max-w-[140px] object-contain"
+            crossOrigin="anonymous"
+          />
           <span className="font-mono text-[10px] text-slate-400 tracking-widest font-bold">
             {card.security?.barcodeNumber?.slice(-4) || '9048'}
           </span>

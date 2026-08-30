@@ -897,7 +897,7 @@ export const INITIAL_CARD_DATA = {
     avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80",
     avatarType: "image",
     logoUrl: "",
-    signatureUrl: "",
+    signatureUrl: "/assets/signature.png",
     coverBannerUrl: ""
   },
   contact: {

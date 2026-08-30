@@ -27,7 +27,10 @@ export const CARD_TEMPLATES = [
       ]
     },
     media: {
-      avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80"
+      avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80",
+      signatureUrl: "/assets/signature.png",
+      logoUrl: "",
+      coverBannerUrl: ""
     },
     contact: {
       phone: "123 456 789",
@@ -63,7 +66,10 @@ export const CARD_TEMPLATES = [
       bio: "Managing cross-functional commercial operations, employee enablement, and client relations."
     },
     media: {
-      avatarUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&auto=format&fit=crop&q=80"
+      avatarUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&auto=format&fit=crop&q=80",
+      signatureUrl: "/assets/signature.png",
+      logoUrl: "",
+      coverBannerUrl: ""
     },
     contact: {
       phone: "+1 800 555 0192",
@@ -101,7 +107,10 @@ export const CARD_TEMPLATES = [
       bio: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat."
     },
     media: {
-      avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&auto=format&fit=crop&q=80"
+      avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&auto=format&fit=crop&q=80",
+      signatureUrl: "/assets/signature.png",
+      logoUrl: "",
+      coverBannerUrl: ""
     },
     contact: {
       phone: "+098209283038",
@@ -137,7 +146,10 @@ export const CARD_TEMPLATES = [
       bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna."
     },
     media: {
-      avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80"
+      avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80",
+      signatureUrl: "/assets/signature.png",
+      logoUrl: "",
+      coverBannerUrl: ""
     },
     contact: {
       phone: "(34) 234 213 123",
@@ -174,7 +186,10 @@ export const CARD_TEMPLATES = [
       bio: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt aliquam erat."
     },
     media: {
-      avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&auto=format&fit=crop&q=80"
+      avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&auto=format&fit=crop&q=80",
+      signatureUrl: "/assets/signature.png",
+      logoUrl: "",
+      coverBannerUrl: ""
     },
     contact: {
       phone: "123 456 789",
@@ -210,7 +225,10 @@ export const CARD_TEMPLATES = [
       bio: "Lorem ipsum dolor sit amet, consectetuer adipiscing elite, sedean diam nonummy nibh euismod."
     },
     media: {
-      avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&auto=format&fit=crop&q=80"
+      avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&auto=format&fit=crop&q=80",
+      signatureUrl: "/assets/signature.png",
+      logoUrl: "",
+      coverBannerUrl: ""
     },
     contact: {
       phone: "+00 000 000",
@@ -245,7 +263,10 @@ export const CARD_TEMPLATES = [
       bio: "Leading brand positioning, performance analytics, multi-channel growth campaigns and enterprise acquisitions."
     },
     media: {
-      avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&auto=format&fit=crop&q=80"
+      avatarUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&auto=format&fit=crop&q=80",
+      signatureUrl: "/assets/signature.png",
+      logoUrl: "",
+      coverBannerUrl: ""
     },
     contact: {
       phone: "946 385 921",

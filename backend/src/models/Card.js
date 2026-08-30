@@ -45,7 +45,7 @@ const cardSchema = new mongoose.Schema(
       avatarUrl: { type: String, default: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80' },
       avatarType: { type: String, default: 'image' }, // 'image' | 'ai-generated' | 'initials'
       logoUrl: { type: String, default: '' },
-      signatureUrl: { type: String, default: '' },
+      signatureUrl: { type: String, default: '/assets/signature.png' },
       coverBannerUrl: { type: String, default: '' },
     },
     contact: {
