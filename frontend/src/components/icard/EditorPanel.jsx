@@ -25,6 +25,7 @@ import {
   MapPin,
   Upload,
   Camera,
+  Building,
   Building2,
   PenTool,
   X,
