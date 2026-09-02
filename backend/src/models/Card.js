@@ -34,11 +34,18 @@ const cardSchema = new mongoose.Schema(
       organization: { type: String, default: 'JobHive Technologies' },
       department: { type: String, default: 'Autonomous AI & Platform Labs' },
       idNumber: { type: String, default: 'JHV-9048-X' },
+      gender: { type: String, default: 'Male' },
+      dob: { type: String, default: '01-10-21' },
+      issueDate: { type: String, default: '01-01-2024' },
+      expiryDate: { type: String, default: '01-01-2024' },
       validUntil: { type: String, default: '12/2028' },
       bloodGroup: { type: String, default: 'O+' },
       emergencyContact: { type: String, default: '+91 98765 43210' },
       bio: { type: String, default: 'Architecting neural synthesis platforms, cloud systems, and next-gen identity runtimes.' },
       tagline: { type: String, default: 'Building the Future of Digital Identity' },
+      directorName: { type: String, default: 'Authorized Signatory' },
+      signatureText: { type: String, default: 'Authorized Signatory' },
+      termsAndConditions: [{ type: String }],
       skills: [{ type: String }],
     },
     media: {
@@ -51,6 +58,8 @@ const cardSchema = new mongoose.Schema(
     contact: {
       email: { type: String, default: 'alex.rivera@jobhive.app' },
       phone: { type: String, default: '+91 98765 43210' },
+      officeEmail: { type: String, default: 'info@appletreeinfotech.in' },
+      officePhone: { type: String, default: '7503962162' },
       website: { type: String, default: 'https://jobhive.app' },
       location: { type: String, default: 'Delhi NCR, India' },
       address: { type: String, default: 'Cyber City, Gurugram, Haryana' },
@@ -129,7 +138,7 @@ const cardSchema = new mongoose.Schema(
       vcardDownloads: { type: Number, default: 0 },
     },
   },
-  { timestamps: true }
+  { timestamps: true, strict: false }
 );
 
 module.exports = mongoose.model('Card', cardSchema);

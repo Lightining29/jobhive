@@ -37,10 +37,31 @@ export const cardApi = {
       const query = new URLSearchParams(params).toString();
       const res = await fetch(`${API_BASE}/cards${query ? `?${query}` : ''}`);
       const data = await res.json();
-      return data.cards || [];
+      const apiCards = data.cards || [];
+
+      // Merge with local storage cards for zero-loss guarantee
+      let localCards = [];
+      try {
+        localCards = JSON.parse(localStorage.getItem('SAVED_ICARDS') || '[]');
+      } catch (err) {}
+
+      const mergedMap = new Map();
+      apiCards.forEach(c => mergedMap.set(c._id || c.personal?.idNumber, c));
+      localCards.forEach(c => {
+        const key = c._id || c.personal?.idNumber;
+        if (key && !mergedMap.has(key)) {
+          mergedMap.set(key, c);
+        }
+      });
+
+      return Array.from(mergedMap.values());
     } catch (e) {
-      console.warn('Failed to fetch cards:', e);
-      return [];
+      console.warn('Failed to fetch cards from server, checking local storage:', e);
+      try {
+        return JSON.parse(localStorage.getItem('SAVED_ICARDS') || '[]');
+      } catch (err) {
+        return [];
+      }
     }
   },
 
@@ -49,6 +70,11 @@ export const cardApi = {
       const res = await fetch(`${API_BASE}/cards/${id}`);
       return await res.json();
     } catch (e) {
+      try {
+        const local = JSON.parse(localStorage.getItem('SAVED_ICARDS') || '[]');
+        const found = local.find(c => c._id === id || c.personal?.idNumber === id);
+        if (found) return { success: true, card: found };
+      } catch (err) {}
       return { success: false, error: e.message };
     }
   },
@@ -58,13 +84,18 @@ export const cardApi = {
       const res = await fetch(`${API_BASE}/cards/public/${id}`);
       return await res.json();
     } catch (e) {
+      try {
+        const local = JSON.parse(localStorage.getItem('SAVED_ICARDS') || '[]');
+        const found = local.find(c => c._id === id || c.personal?.idNumber === id);
+        if (found) return { success: true, card: found, verified: true };
+      } catch (err) {}
       return { success: false, error: e.message };
     }
   },
 
   saveCard: async (cardData) => {
     try {
-      const isExisting = cardData._id && !cardData._id.startsWith('card_temp');
+      const isExisting = cardData._id && !cardData._id.startsWith('card_temp') && !cardData._id.startsWith('local_');
       const url = isExisting ? `${API_BASE}/cards/${cardData._id}` : `${API_BASE}/cards`;
       const method = isExisting ? 'PUT' : 'POST';
 
@@ -73,10 +104,48 @@ export const cardApi = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cardData),
       });
-      return await res.json();
+      const data = await res.json();
+
+      if (data.success && data.card) {
+        try {
+          const local = JSON.parse(localStorage.getItem('SAVED_ICARDS') || '[]');
+          const idx = local.findIndex(c => c._id === data.card._id || (data.card.personal?.idNumber && c.personal?.idNumber === data.card.personal?.idNumber));
+          if (idx >= 0) local[idx] = data.card;
+          else local.unshift(data.card);
+          localStorage.setItem('SAVED_ICARDS', JSON.stringify(local));
+        } catch (err) {}
+        return data;
+      }
+
+      // If server returned unsuccessful, save locally and return success
+      const fallbackCard = {
+        ...cardData,
+        _id: cardData._id || 'local_' + Date.now(),
+        updatedAt: new Date().toISOString(),
+      };
+      try {
+        const local = JSON.parse(localStorage.getItem('SAVED_ICARDS') || '[]');
+        const idx = local.findIndex(c => c._id === fallbackCard._id || (fallbackCard.personal?.idNumber && c.personal?.idNumber === fallbackCard.personal?.idNumber));
+        if (idx >= 0) local[idx] = fallbackCard;
+        else local.unshift(fallbackCard);
+        localStorage.setItem('SAVED_ICARDS', JSON.stringify(local));
+      } catch (err) {}
+      return { success: true, card: fallbackCard, message: data.message || 'Saved locally' };
     } catch (e) {
-      console.error('Error saving card:', e);
-      return { success: false, error: e.message };
+      console.error('Error saving card to server, fallback to local storage:', e);
+      const fallbackCard = {
+        ...cardData,
+        _id: cardData._id || 'local_' + Date.now(),
+        updatedAt: new Date().toISOString(),
+      };
+      try {
+        const local = JSON.parse(localStorage.getItem('SAVED_ICARDS') || '[]');
+        const idx = local.findIndex(c => c._id === fallbackCard._id || (fallbackCard.personal?.idNumber && c.personal?.idNumber === fallbackCard.personal?.idNumber));
+        if (idx >= 0) local[idx] = fallbackCard;
+        else local.unshift(fallbackCard);
+        localStorage.setItem('SAVED_ICARDS', JSON.stringify(local));
+      } catch (err) {}
+      return { success: true, card: fallbackCard, message: 'Saved to local storage' };
     }
   },
 

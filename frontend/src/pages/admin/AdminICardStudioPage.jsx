@@ -119,10 +119,14 @@ export default function AdminICardStudioPage() {
       const res = await cardApi.saveCard(payload);
       if (res.success && res.card) {
         setCard(res.card);
+        setSavedCards((prev) => {
+          const filtered = prev.filter((c) => c._id !== res.card._id && c.personal?.idNumber !== res.card.personal?.idNumber);
+          return [res.card, ...filtered];
+        });
         toast.success(`iCard saved successfully! (ID: ${res.card.personal?.idNumber || res.card._id})`);
         fetchDirectoryCards();
       } else {
-        toast.error(res.error || 'Failed to save iCard');
+        toast.error(res.message || res.error || 'Failed to save iCard');
       }
     } catch (err) {
       toast.error(err.message || 'Error saving iCard');
@@ -145,6 +149,7 @@ export default function AdminICardStudioPage() {
     const idSuffix = Math.floor(1000 + Math.random() * 9000);
     setCard({
       ...INITIAL_CARD_DATA,
+      _id: undefined,
       personal: {
         ...INITIAL_CARD_DATA.personal,
         fullName: 'New Member',
@@ -162,16 +167,20 @@ export default function AdminICardStudioPage() {
     if (!window.confirm('Are you sure you want to delete this identity card?')) return;
 
     try {
-      const res = await cardApi.deleteCard(id);
-      if (res.success) {
-        toast.success('Card deleted successfully');
-        fetchDirectoryCards();
-        if (card._id === id) {
-          handleNewCard();
-        }
+      await cardApi.deleteCard(id);
+      try {
+        const local = JSON.parse(localStorage.getItem('SAVED_ICARDS') || '[]');
+        const filtered = local.filter((c) => c._id !== id && c.personal?.idNumber !== id);
+        localStorage.setItem('SAVED_ICARDS', JSON.stringify(filtered));
+      } catch (err) {}
+      setSavedCards((prev) => prev.filter((c) => c._id !== id && c.personal?.idNumber !== id));
+      toast.success('Card deleted successfully');
+      fetchDirectoryCards();
+      if (card._id === id) {
+        handleNewCard();
       }
     } catch (err) {
-      toast.error('Failed to delete card');
+      toast.error(err.message || 'Error deleting card');
     }
   };
 

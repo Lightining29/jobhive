@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Card = require('../models/Card');
 const logger = require('../config/logger');
 const { uploadImage } = require('../middleware/upload');
@@ -111,7 +112,10 @@ router.get('/:id', async (req, res) => {
 // ── POST /api/cards - Create new identity card ────────────────────────────────
 router.post('/', async (req, res) => {
   try {
-    const cardData = req.body;
+    const cardData = { ...req.body };
+    delete cardData._id;
+    delete cardData.id;
+
     const newCard = await Card.create(cardData);
     logger.info(`[cards] created new iCard: ${newCard._id} for ${newCard.personal?.fullName}`);
     return res.status(201).json({ success: true, card: newCard });
@@ -121,17 +125,29 @@ router.post('/', async (req, res) => {
   }
 });
 
-// ── PUT /api/cards/:id - Update card ──────────────────────────────────────────
-router.put('/:id', async (req, res) => {
+// ── PUT /api/cards or /api/cards/:id - Update or Upsert card ───────────────────
+router.put(['/', '/:id'], async (req, res) => {
   try {
-    const { id } = req.params;
-    const cardData = req.body;
+    const id = req.params.id || req.body._id || req.body.id;
+    const cardData = { ...req.body };
+    delete cardData._id;
+    delete cardData.id;
 
-    const updated = await Card.findByIdAndUpdate(id, cardData, { new: true, runValidators: true });
-    if (!updated) return res.status(404).json({ success: false, message: 'Card not found' });
+    let updated = null;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      updated = await Card.findByIdAndUpdate(id, cardData, { new: true });
+    }
+    if (!updated && cardData.personal?.idNumber) {
+      updated = await Card.findOneAndUpdate({ 'personal.idNumber': cardData.personal.idNumber }, cardData, { new: true });
+    }
+    if (!updated) {
+      updated = await Card.create(cardData);
+      logger.info(`[cards] fallback created card: ${updated._id} for ${updated.personal?.fullName}`);
+    }
 
     return res.json({ success: true, card: updated });
   } catch (error) {
+    logger.error('[cards.update] error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
