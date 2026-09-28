@@ -18,14 +18,10 @@
     "cron:fetch": "npm run cron:fetch -w backend"
   },
   "overrides": {
-    "vite": {
-      "rollup": "npm:@rollup/wasm-node@^4.62.4"
-    },
-    "rollup": "npm:@rollup/wasm-node@^4.62.4"
+    "rollup": "@rollup/wasm-node"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0",
-    "rollup": "npm:@rollup/wasm-node@^4.62.4"
+    "concurrently": "^9.1.0"
   },
   "engines": {
     "node": ">=18.0.0"
