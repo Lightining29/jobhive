@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Allow direct access to existing files/directories in root or public
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Route frontend/dist assets directly if present
+  RewriteCond %{DOCUMENT_ROOT}/frontend/dist/$1 -f
+  RewriteRule ^(.*)$ /frontend/dist/$1 [L]
+</IfModule>
+
+Options -Indexes
+AddDefaultCharset UTF-8

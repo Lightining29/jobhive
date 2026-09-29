@@ -180,13 +180,32 @@ app.get('/robots.txt', (req, res) => {
 const fs = require('fs');
 
 // ── Serve Frontend static files if dist directory exists, or root health endpoint ──
-const frontendDist = path.join(__dirname, '../../frontend/dist');
-if (fs.existsSync(frontendDist)) {
+const candidateDistDirs = [
+  path.join(__dirname, '../../frontend/dist'),
+  path.join(__dirname, '../frontend/dist'),
+  path.join(__dirname, '../../dist'),
+  path.join(__dirname, '../dist'),
+  path.join(process.cwd(), 'frontend/dist'),
+  path.join(process.cwd(), 'dist'),
+  path.join(process.cwd(), 'public_html'),
+];
+
+let frontendDist = null;
+for (const dir of candidateDistDirs) {
+  if (fs.existsSync(dir) && fs.existsSync(path.join(dir, 'index.html'))) {
+    frontendDist = dir;
+    break;
+  }
+}
+
+if (frontendDist) {
   app.use(express.static(frontendDist));
   app.get('*', (req, res, next) => {
     if (
       req.path.startsWith('/api') ||
-      req.path.startsWith('/uploads')
+      req.path.startsWith('/uploads') ||
+      req.path === '/sitemap.xml' ||
+      req.path === '/robots.txt'
     ) {
       return next();
     }
@@ -221,9 +240,10 @@ const startServer = async () => {
       // Attach Socket.IO — zero changes to existing REST routes
       initSocketIO(server);
 
-      server.listen(env.port, '0.0.0.0', () => {
-        logger.info(`[server] API + Socket.IO listening on http://0.0.0.0:${env.port}`);
-        console.log("Backend Start Successfully")
+      const port = process.env.PORT || env.port || 5000;
+      server.listen(port, () => {
+        logger.info(`[server] API + Socket.IO listening on ${port}`);
+        console.log("Backend Start Successfully");
       });
       server.on('error', (err) => {
         logger.error('[server] failed to start', { message: err.message });
