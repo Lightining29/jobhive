@@ -16,6 +16,7 @@ export const JobProvider = ({ children }) => {
 
   const loadHome = useCallback(async () => {
     try {
+      setHomeLoading(true);
       const { data } = await jobService.home();
       if (data?.sections) {
         setHomeData(data.sections);
@@ -29,6 +30,10 @@ export const JobProvider = ({ children }) => {
       setHomeLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    loadHome();
+  }, [loadHome]);
 
   const value = useMemo(
     () => ({ homeData, homeLoading, loadHome }),

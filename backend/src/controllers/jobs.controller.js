@@ -17,8 +17,8 @@ const { fetchAllJobs, cleanupExpiredJobs } = require('../services/jobIngestion.s
 const baseJobFilter = () => {
   const now = new Date();
   return {
-    isActive: true,
-    isExpired: false,
+    isActive: { $ne: false },
+    isExpired: { $ne: true },
     $or: [
       { expiresAt: { $exists: false } },
       { expiresAt: null },
@@ -30,6 +30,7 @@ const baseJobFilter = () => {
 const indiaScopeFilter = () => ({
   $or: [
     { remote: true },
+    { workMode: 'remote' },
     { country: { $regex: 'india', $options: 'i' } },
     { location: { $regex: 'india', $options: 'i' } },
   ],
@@ -473,7 +474,7 @@ const getStats = asyncHandler(async (req, res) => {
 });
 
 const CARD_FIELDS =
-  'jobTitle company headline location city state country workMode employmentType category salaryMin salaryMax salaryCurrency experience experienceLevel tags requiredSkills applyLink source postedDate trendingScore';
+  'jobTitle companyName companyLogo companyWebsite headline description location city state country workMode remote hybrid onsite employmentType category salary salaryMin salaryMax currency experience experienceLevel tags requiredSkills applicationUrl source postedDate trendingScore isVerified';
 
 let homeFeedCache = null;
 let homeFeedExpiresAt = 0;

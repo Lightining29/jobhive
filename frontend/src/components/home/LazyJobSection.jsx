@@ -73,12 +73,13 @@ export const LazyJobSection = ({
   }, [sectionName, limit]);
 
   useEffect(() => {
-    if (initialJobs && initialJobs.length > 0) {
+    if (initialJobs && Array.isArray(initialJobs) && initialJobs.length > 0) {
       setJobs(initialJobs);
       setLoading(false);
       setHasFetched(true);
+      setHasMore(initialJobs.length >= limit);
     }
-  }, [initialJobs]);
+  }, [initialJobs, limit]);
 
   useEffect(() => {
     if (initialVisible && !hasFetched) {
