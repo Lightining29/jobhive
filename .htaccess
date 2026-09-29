@@ -2,14 +2,30 @@
   RewriteEngine On
   RewriteBase /
 
-  # Allow direct access to existing files/directories in root or public
+  # 1. Direct access to existing files and directories
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # Route frontend/dist assets directly if present
+  # 2. Match assets and static files in frontend/dist
   RewriteCond %{DOCUMENT_ROOT}/frontend/dist/$1 -f
-  RewriteRule ^(.*)$ /frontend/dist/$1 [L]
+  RewriteRule ^(.*)$ frontend/dist/$1 [L]
+
+  # 3. Match assets and static files in root dist
+  RewriteCond %{DOCUMENT_ROOT}/dist/$1 -f
+  RewriteRule ^(.*)$ dist/$1 [L]
+
+  # 4. Pass API, uploads, and socket requests directly to backend
+  RewriteCond %{REQUEST_URI} ^/(api|uploads|socket\.io) [NC]
+  RewriteRule ^ - [L]
+
+  # 5. SPA Fallback: Route all page paths to frontend/dist/index.html
+  RewriteCond %{DOCUMENT_ROOT}/frontend/dist/index.html -f
+  RewriteRule ^ frontend/dist/index.html [L]
+
+  # 6. Secondary SPA Fallback: Route to dist/index.html if available
+  RewriteCond %{DOCUMENT_ROOT}/dist/index.html -f
+  RewriteRule ^ dist/index.html [L]
 </IfModule>
 
 Options -Indexes

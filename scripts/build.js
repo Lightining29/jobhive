@@ -2,7 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const distIndex = path.join(__dirname, '../frontend/dist/index.html');
+const frontendDist = path.join(__dirname, '../frontend/dist');
+const distIndex = path.join(frontendDist, 'index.html');
+const rootDist = path.join(__dirname, '../dist');
 
 console.log('[build] Checking JobHive production assets...');
 
@@ -17,6 +19,11 @@ try {
 
 if (fs.existsSync(distIndex)) {
   console.log('[build] Pre-compiled production bundle verified in frontend/dist/index.html.');
+  try {
+    if (!fs.existsSync(rootDist)) {
+      fs.cpSync(frontendDist, rootDist, { recursive: true });
+    }
+  } catch {}
   console.log('[build] Deployment assets are 100% ready. Build completed successfully!');
   process.exit(0);
 }
@@ -27,6 +34,9 @@ try {
     cwd: path.join(__dirname, '../frontend'),
     stdio: 'inherit',
   });
+  try {
+    fs.cpSync(frontendDist, rootDist, { recursive: true });
+  } catch {}
   console.log('[build] Vite build completed successfully!');
   process.exit(0);
 } catch (err) {
