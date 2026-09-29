@@ -1,5 +1,7 @@
-const { sequelize, connectMySQL } = require('./mysql');
+const { sequelize, connectMySQL, getIsMySQLConnected } = require('./mysql');
 const logger = require('./logger');
+const env = require('./env');
+const connectMongoDB = require('./db');
 
 // MySQL Models export
 const User = require('../models/sql/User.sql');
@@ -28,31 +30,32 @@ Application.belongsTo(User, { foreignKey: 'candidateId', as: 'candidate' });
 User.hasMany(Card, { foreignKey: 'userId', as: 'cards' });
 Card.belongsTo(User, { foreignKey: 'userId', as: 'owner' });
 
-const connectMongoDB = require('./db');
-
 const initDatabases = async () => {
-  logger.info('🔌 Initializing MySQL Database Engine (Hostinger/Local)...');
+  logger.info('🔌 Initializing Database Engines (MySQL + MongoDB Atlas)...');
   await connectMySQL();
 
-  // Auto-seed Super Admin user into MySQL if not present
-  try {
-    const adminEmail = 'brayw433@gmail.com';
-    const existingAdmin = await User.findOne({ where: { email: adminEmail } });
-    if (!existingAdmin) {
-      await User.create({
-        name: 'Manish Kumar',
-        email: adminEmail,
-        password: 'Manish@123', // hooks will bcrypt hash it
-        role: 'admin',
-        emailVerified: true,
-      });
-      logger.info(`✅ Default Super Admin created in MySQL: ${adminEmail}`);
+  // Auto-seed Super Admin user into MySQL if connected
+  if (getIsMySQLConnected()) {
+    try {
+      const adminEmail = 'brayw433@gmail.com';
+      const existingAdmin = await User.findOne({ where: { email: adminEmail } });
+      if (!existingAdmin) {
+        await User.create({
+          name: 'Manish Kumar',
+          email: adminEmail,
+          password: 'Manish@123', // hooks will bcrypt hash it
+          role: 'admin',
+          emailVerified: true,
+        });
+        logger.info(`✅ Default Super Admin created in MySQL: ${adminEmail}`);
+      }
+    } catch (seedErr) {
+      logger.warn(`[admin-seed] Notice: ${seedErr.message}`);
     }
-  } catch (seedErr) {
-    logger.warn(`[admin-seed] Notice: ${seedErr.message}`);
   }
 
-  if (process.env.MONGO_URI) {
+  const mongoUri = env.mongoUri || process.env.MONGO_URI;
+  if (mongoUri) {
     try {
       await connectMongoDB();
     } catch (err) {

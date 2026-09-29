@@ -4,9 +4,9 @@ const logger = require('./logger');
 const DB_DIALECT = process.env.DB_DIALECT || 'mysql';
 const DB_HOST = process.env.DB_HOST || '127.0.0.1';
 const DB_PORT = parseInt(process.env.DB_PORT, 10) || 3306;
-const DB_NAME = 'u375016581_ishika';
-const DB_USER = 'u375016581_ishika';
-const DB_PASSWORD = 'Ishika@333';
+const DB_NAME = process.env.DB_NAME || 'u375016581_ishika';
+const DB_USER = process.env.DB_USER || 'u375016581_ishika';
+const DB_PASSWORD = process.env.DB_PASSWORD || 'Ishika@333';
 
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   host: DB_HOST,
@@ -25,9 +25,12 @@ const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   },
 });
 
+let isMySQLConnected = false;
+
 const connectMySQL = async () => {
   try {
     await sequelize.authenticate();
+    isMySQLConnected = true;
     logger.info(`✅ MySQL Connected: ${DB_HOST}:${DB_PORT}/${DB_NAME}`);
     
     // Sync models with database tables
@@ -36,11 +39,13 @@ const connectMySQL = async () => {
       logger.info('✅ MySQL Models Synchronized.');
     }
   } catch (error) {
-    logger.error(`❌ MySQL Connection Error: ${error.message}`);
+    isMySQLConnected = false;
+    logger.warn(`⚠️ MySQL Connection Notice: ${error.message}`);
   }
 };
 
 module.exports = {
   sequelize,
   connectMySQL,
+  getIsMySQLConnected: () => isMySQLConnected,
 };
